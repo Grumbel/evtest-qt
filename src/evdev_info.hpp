@@ -14,24 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#ifndef HEADER_EVDEV_INFO_HPP
+#define HEADER_EVDEV_INFO_HPP
 
-class AxisWidget : public QWidget
+#include <array>
+#include <string>
+#include <linux/input.h>
+
+constexpr size_t bits_per_long = sizeof(unsigned long) * 8;
+constexpr size_t nbits(long x) { return (((x)-1) / bits_per_long)+1; }
+
+class EvdevInfo
 {
-  Q_OBJECT
-
-private:
-  int m_pos;
+public:
+  std::string name;
+  std::array<unsigned long, nbits(EV_MAX)> bit;
+  std::array<unsigned long, nbits(ABS_MAX)> abs_bit;
+  std::array<unsigned long, nbits(REL_MAX)> rel_bit;
+  std::array<unsigned long, nbits(KEY_MAX)> key_bit;
 
 public:
-  AxisWidget(QWidget* parent=0);
-  ~AxisWidget();
+  EvdevInfo();
 
-public slots:
-  void set_axis_pos(int v);
-
-protected:
-  void paintEvent(QPaintEvent* event) override;
 };
+
+#endif
 
 /* EOF */

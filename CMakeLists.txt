@@ -7,8 +7,17 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 find_package(Qt5Widgets)
 
+add_library(jslib STATIC src/
+  src/axis_widget.cpp
+  src/button_widget.cpp
+  src/evdev_controller.cpp
+  src/evdev_device.cpp
+  src/evdev_info.cpp
+  src/stick_widget.cpp)
+target_link_libraries(jslib Qt5::Widgets)
+
 file(GLOB JSTEST_QT_SOURCES src/*.cpp)
 add_executable(jstest-qt ${JSTEST_QT_SOURCES})
-target_link_libraries(jstest-qt Qt5::Widgets)
+target_link_libraries(jstest-qt Qt5::Widgets jslib)
 
 # EOF #

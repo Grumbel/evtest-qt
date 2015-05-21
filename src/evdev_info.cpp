@@ -14,24 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#include "evdev_info.hpp"
 
-class AxisWidget : public QWidget
+EvdevInfo::EvdevInfo() :
+  name(),
+  bit(),
+  abs_bit(),
+  rel_bit(),
+  key_bit()
 {
-  Q_OBJECT
-
-private:
-  int m_pos;
-
-public:
-  AxisWidget(QWidget* parent=0);
-  ~AxisWidget();
-
-public slots:
-  void set_axis_pos(int v);
-
-protected:
-  void paintEvent(QPaintEvent* event) override;
-};
+}
 
 /* EOF */

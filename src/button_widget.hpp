@@ -14,24 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#ifndef HEADER_BUTTON_WIDGET_HPP
+#define HEADER_BUTTON_WIDGET_HPP
 
-class AxisWidget : public QWidget
+class ButtonWidget
 {
-  Q_OBJECT
+private:
+public:
+  ButtonWidget();
 
 private:
-  int m_pos;
-
-public:
-  AxisWidget(QWidget* parent=0);
-  ~AxisWidget();
-
-public slots:
-  void set_axis_pos(int v);
-
-protected:
-  void paintEvent(QPaintEvent* event) override;
+  ButtonWidget(const ButtonWidget&) = delete;
+  ButtonWidget& operator=(const ButtonWidget&) = delete;
 };
+
+#endif
 
 /* EOF */

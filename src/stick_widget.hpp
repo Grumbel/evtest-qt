@@ -14,24 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#ifndef HEADER_STICK_WIDGET_HPP
+#define HEADER_STICK_WIDGET_HPP
 
-class AxisWidget : public QWidget
+class StickWidget
 {
-  Q_OBJECT
+private:
+public:
+  StickWidget();
 
 private:
-  int m_pos;
-
-public:
-  AxisWidget(QWidget* parent=0);
-  ~AxisWidget();
-
-public slots:
-  void set_axis_pos(int v);
-
-protected:
-  void paintEvent(QPaintEvent* event) override;
+  StickWidget(const StickWidget&) = delete;
+  StickWidget& operator=(const StickWidget&) = delete;
 };
+
+#endif
 
 /* EOF */

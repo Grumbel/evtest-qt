@@ -14,24 +14,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#ifndef HEADER_EVDEV_DEVICE_HPP
+#define HEADER_EVDEV_DEVICE_HPP
 
-class AxisWidget : public QWidget
+#include <memory>
+#include <string>
+
+#include "evdev_info.hpp"
+
+class EvdevDevice
 {
-  Q_OBJECT
-
 private:
-  int m_pos;
+  int m_fd;
+  std::string m_filename;
 
 public:
-  AxisWidget(QWidget* parent=0);
-  ~AxisWidget();
+  static std::unique_ptr<EvdevDevice> open(const std::string& filename);
+  EvdevDevice(int fd, const std::string& filename);
+  ~EvdevDevice();
 
-public slots:
-  void set_axis_pos(int v);
+  EvdevInfo read_evdev_info();
+  int read_event(struct input_event& event);
+  int get_fd() const { return m_fd; }
 
-protected:
-  void paintEvent(QPaintEvent* event) override;
+private:
+  EvdevDevice(const EvdevDevice&) = delete;
+  EvdevDevice& operator=(const EvdevDevice&) = delete;
 };
+
+#endif
 
 /* EOF */

@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <iostream>
 
 #include "bits.hpp"
 
@@ -30,7 +31,6 @@
 #define OFF(x)  ((x)%BITS_PER_LONG)
 #define BIT(x)  (1UL<<OFF(x))
 #define LONG(x) ((x)/BITS_PER_LONG)
-#define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
 std::unique_ptr<EvdevDevice>
 EvdevDevice::open(const std::string& filename)
@@ -91,6 +91,29 @@ EvdevDevice::read_evdev_info()
     ioctl(m_fd, EVIOCGBIT(EV_ABS, ABS_MAX), abs_bit.data());
     ioctl(m_fd, EVIOCGBIT(EV_REL, REL_MAX), rel_bit.data());
     ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit.data());
+  }
+
+  for(int i = 0; i < ABS_MAX; ++i)
+  {
+    if (bits::test_bit(i, abs_bit.data()))
+    {
+      struct input_absinfo absinfo;
+      if (ioctl(m_fd, EVIOCGABS(i), &absinfo) < 0)
+      {
+        std::cout << "error\n";
+      }
+      else
+      {
+        std::cout << "absinfo: " << i
+                  << " value:" << absinfo.value
+                  << " min:" << absinfo.minimum
+                  << " max:" <<  absinfo.maximum
+                  << " fuzz:" <<  absinfo.fuzz
+                  << " flat:" << absinfo.flat
+                  << " res:" << absinfo.resolution << "\n";
+
+      }
+    }
   }
 
   return EvdevInfo(std::move(name),

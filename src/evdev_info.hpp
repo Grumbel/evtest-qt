@@ -17,6 +17,7 @@
 #ifndef HEADER_EVDEV_INFO_HPP
 #define HEADER_EVDEV_INFO_HPP
 
+#include <vector>
 #include <array>
 #include <string>
 #include <linux/input.h>
@@ -35,6 +36,10 @@ public:
   size_t num_abs;
   size_t num_rel;
   size_t num_key;
+
+  std::vector<uint16_t> abss;
+  std::vector<uint16_t> rels;
+  std::vector<uint16_t> keys;
 
 public:
   EvdevInfo() :
@@ -60,27 +65,30 @@ public:
     num_rel(0),
     num_key(0)
   {
-    for(int i = 0; i < ABS_MAX; ++i)
+    for(uint16_t i = 0; i < ABS_MAX; ++i)
     {
       if (bits::test_bit(i, abs_bit.data()))
       {
         num_abs += 1;
+        abss.push_back(i);
       }
     }
 
-    for(int i = 0; i < REL_MAX; ++i)
+    for(uint16_t i = 0; i < REL_MAX; ++i)
     {
       if (bits::test_bit(i, rel_bit.data()))
       {
         num_rel += 1;
+        rels.push_back(i);
       }
     }
 
-    for(int i = 0; i < KEY_MAX; ++i)
+    for(uint16_t i = 0; i < KEY_MAX; ++i)
     {
       if (bits::test_bit(i, key_bit.data()))
       {
         num_key += 1;
+        keys.push_back(i);
       }
     }
   }

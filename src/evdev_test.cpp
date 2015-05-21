@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <string.h>
 
 #include "evdev_device.hpp"
 
@@ -36,16 +37,45 @@ int main(int argc, char** argv)
     std::cout << "num_rel: " << info.num_rel << std::endl;
     std::cout << "num_key: " << info.num_key << std::endl;
 
+    std::cout << "abs:\n";
+    for(size_t i = 0; i < info.abss.size(); ++i)
+    {
+      std::cout << "  " << info.abss[i] << "\n";
+    }
+    std::cout << "\n";
+
+    std::cout << "rel:\n";
+    for(size_t i = 0; i < info.rels.size(); ++i)
+    {
+      std::cout << "  " << info.rels[i] << "\n";
+    }
+    std::cout << "\n";
+
+    std::cout << "key:\n";
+    for(size_t i = 0; i < info.keys.size(); ++i)
+    {
+      std::cout << "  " << info.keys[i] << "\n";
+    }
+    std::cout << "\n";
+
     std::cout << "reading events..." << std::endl;
     std::array<struct input_event, 128> ev;
     while(true)
     {
       ssize_t num_events = device->read_events(ev.data(), ev.size());
-      for(ssize_t i = 0; i < num_events; ++i)
+      if (num_events < 0)
       {
-        std::cout << std::setw(8) << ev[i].type << " "
-                  << std::setw(8) << ev[i].code << " "
-                  << std::setw(8) << ev[i].value << std::endl;
+        std::cout << "error: " << num_events << ": " << strerror(errno) << std::endl;
+        break;
+      }
+      else
+      {
+        for(ssize_t i = 0; i < num_events; ++i)
+        {
+          std::cout << std::setw(8) << ev[i].type << " "
+                    << std::setw(8) << ev[i].code << " "
+                    << std::setw(8) << ev[i].value << std::endl;
+        }
       }
     }
 

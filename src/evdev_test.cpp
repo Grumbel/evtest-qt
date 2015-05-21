@@ -21,6 +21,66 @@
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
 
+void print_evdev_info(const EvdevInfo& info)
+{
+  std::cout << "name: " << info.name << std::endl;
+  std::cout << "num_abs: " << info.num_abs << std::endl;
+  std::cout << "num_rel: " << info.num_rel << std::endl;
+  std::cout << "num_key: " << info.num_key << std::endl;
+
+  std::cout << "abs:\n";
+  for(size_t i = 0; i < info.abss.size(); ++i)
+  {
+    std::cout << "  " << evdev_abs_names[info.abss[i]] << "\n";
+  }
+  std::cout << "\n";
+
+  std::cout << "rel:\n";
+  for(size_t i = 0; i < info.rels.size(); ++i)
+  {
+    std::cout << "  " << evdev_rel_names[info.rels[i]] << "\n";
+  }
+  std::cout << "\n";
+
+  std::cout << "key:\n";
+  for(size_t i = 0; i < info.keys.size(); ++i)
+  {
+    std::cout << "  " << evdev_key_names[info.keys[i]] << "\n";
+  }
+  std::cout << "\n";
+}
+
+void print_events(EvdevDevice& device)
+{
+  std::cout << "reading events..." << std::endl;
+  std::array<struct input_event, 1> ev;
+  while(true)
+  {
+    ssize_t num_events = device.read_events(ev.data(), ev.size());
+    if (num_events < 0)
+    {
+      std::cout << "error: " << num_events << ": " << strerror(errno) << std::endl;
+      break;
+    }
+    else
+    {
+      for(ssize_t i = 0; i < num_events; ++i)
+      {
+        if (ev[i].type == EV_SYN)
+        {
+          std::cout << "--------- sync ---------" << std::endl;
+        }
+        else
+        {
+          std::cout << std::setw(8) << ev[i].type << " "
+                    << std::setw(8) << ev[i].code << " "
+                    << std::setw(8) << ev[i].value << std::endl;
+        }
+      }
+    }
+  }
+}
+
 int main(int argc, char** argv)
 {
   if (argc != 2)
@@ -33,59 +93,8 @@ int main(int argc, char** argv)
     auto device = EvdevDevice::open(argv[1]);
     auto info = device->read_evdev_info();
 
-    std::cout << "name: " << info.name << std::endl;
-    std::cout << "num_abs: " << info.num_abs << std::endl;
-    std::cout << "num_rel: " << info.num_rel << std::endl;
-    std::cout << "num_key: " << info.num_key << std::endl;
-
-    std::cout << "abs:\n";
-    for(size_t i = 0; i < info.abss.size(); ++i)
-    {
-      std::cout << "  " << evdev_abs_names[info.abss[i]] << "\n";
-    }
-    std::cout << "\n";
-
-    std::cout << "rel:\n";
-    for(size_t i = 0; i < info.rels.size(); ++i)
-    {
-      std::cout << "  " << evdev_rel_names[info.rels[i]] << "\n";
-    }
-    std::cout << "\n";
-
-    std::cout << "key:\n";
-    for(size_t i = 0; i < info.keys.size(); ++i)
-    {
-      std::cout << "  " << evdev_key_names[info.keys[i]] << "\n";
-    }
-    std::cout << "\n";
-
-    std::cout << "reading events..." << std::endl;
-    std::array<struct input_event, 1> ev;
-    while(true)
-    {
-      ssize_t num_events = device->read_events(ev.data(), ev.size());
-      if (num_events < 0)
-      {
-        std::cout << "error: " << num_events << ": " << strerror(errno) << std::endl;
-        break;
-      }
-      else
-      {
-        for(ssize_t i = 0; i < num_events; ++i)
-        {
-          if (ev[i].type == EV_SYN)
-          {
-            std::cout << "--------- sync ---------" << std::endl;
-          }
-          else
-          {
-            std::cout << std::setw(8) << ev[i].type << " "
-                      << std::setw(8) << ev[i].code << " "
-                      << std::setw(8) << ev[i].value << std::endl;
-          }
-        }
-      }
-    }
+    print_evdev_info(info);
+    print_events(*device);
 
     return 0;
   }

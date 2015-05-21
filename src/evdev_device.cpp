@@ -26,12 +26,6 @@
 
 #include "bits.hpp"
 
-#define BITS_PER_LONG (sizeof(long) * 8)
-#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x)  ((x)%BITS_PER_LONG)
-#define BIT(x)  (1UL<<OFF(x))
-#define LONG(x) ((x)/BITS_PER_LONG)
-
 std::unique_ptr<EvdevDevice>
 EvdevDevice::open(const std::string& filename)
 {
@@ -45,7 +39,7 @@ EvdevDevice::open(const std::string& filename)
   else
   {
     auto controller = std::make_unique<EvdevDevice>(fd, filename);
-    controller->read_evdev_info();
+    //controller->read_evdev_info();
     //controller->start_qsocket_notifier();
     return controller;
   }

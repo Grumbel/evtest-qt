@@ -14,33 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_EVDEV_DEVICE_HPP
-#define HEADER_EVDEV_DEVICE_HPP
+#ifndef HEADER_BITS_HPP
+#define HEADER_BITS_HPP
 
-#include <memory>
-#include <string>
+namespace bits {
 
-#include "evdev_info.hpp"
+constexpr size_t bits_per_long = sizeof(unsigned long) * 8;
+constexpr size_t nbits(long x) { return (((x)-1) / bits_per_long)+1; }
+constexpr size_t off(size_t x) { return (x) % bits_per_long; }
+constexpr unsigned long bit(size_t x) { return 1UL << off(x); }
+constexpr size_t long_idx(size_t x) { return x / bits_per_long; }
+constexpr bool test_bit(size_t bit, unsigned long* array) { return (array[long_idx(bit)] >> off(bit)) & 1; }
 
-class EvdevDevice
-{
-private:
-  int m_fd;
-  std::string m_filename;
-
-public:
-  static std::unique_ptr<EvdevDevice> open(const std::string& filename);
-  EvdevDevice(int fd, const std::string& filename);
-  ~EvdevDevice();
-
-  EvdevInfo read_evdev_info();
-  ssize_t read_events(struct input_event* ev, size_t count);
-  int get_fd() const { return m_fd; }
-
-private:
-  EvdevDevice(const EvdevDevice&) = delete;
-  EvdevDevice& operator=(const EvdevDevice&) = delete;
-};
+} // namespace bits
 
 #endif
 

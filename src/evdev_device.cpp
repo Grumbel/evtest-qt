@@ -23,6 +23,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "bits.hpp"
+
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
 #define OFF(x)  ((x)%BITS_PER_LONG)
@@ -63,7 +65,7 @@ EvdevDevice::~EvdevDevice()
 EvdevInfo
 EvdevDevice::read_evdev_info()
 {
-  EvdevInfo info;
+  std::string name;
 
   { // Get the human readable name
     char c_name[1024] = "unknown";
@@ -75,62 +77,42 @@ EvdevDevice::read_evdev_info()
     }
     else
     {
-      info.name = c_name;
+      name = c_name;
     }
   }
+
+  std::array<unsigned long, bits::nbits(EV_MAX)> bit;
+  std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit;
+  std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit;
+  std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit;
 
   { // Read in how many btn/abs/rel the device has
-    ioctl(m_fd, EVIOCGBIT(0, EV_MAX), info.bit.data());
-    ioctl(m_fd, EVIOCGBIT(EV_ABS, ABS_MAX), info.abs_bit.data());
-    ioctl(m_fd, EVIOCGBIT(EV_REL, REL_MAX), info.rel_bit.data());
-    ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), info.key_bit.data());
-
-    for(int i = 0; i < ABS_MAX; ++i)
-    {
-      if (test_bit(i, info.abs_bit))
-      {
-      }
-    }
-
-    for(int i = 0; i < REL_MAX; ++i)
-    {
-      if (test_bit(i, info.rel_bit))
-      {
-      }
-    }
-
-    for(int i = 0; i < KEY_MAX; ++i)
-    {
-      if (test_bit(i, info.key_bit))
-      {
-      }
-    }
+    ioctl(m_fd, EVIOCGBIT(0, EV_MAX), bit.data());
+    ioctl(m_fd, EVIOCGBIT(EV_ABS, ABS_MAX), abs_bit.data());
+    ioctl(m_fd, EVIOCGBIT(EV_REL, REL_MAX), rel_bit.data());
+    ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit.data());
   }
-  return info;
+
+  return EvdevInfo(std::move(name),
+                   std::move(bit),
+                   std::move(abs_bit),
+                   std::move(rel_bit),
+                   std::move(key_bit));
 }
 
-int
-EvdevDevice::read_event(struct input_event& event)
+ssize_t
+EvdevDevice::read_events(struct input_event* ev, size_t count)
 {
   // read data
-  struct input_event ev[128];
-  int rd = 0;
-  while((rd = ::read(m_fd, ev, sizeof(struct input_event) * 128)) > 0)
+  int rd = ::read(m_fd, ev, sizeof(struct input_event) * count);
+  if (rd < 0)
   {
-    for (size_t i = 0; i < rd / sizeof(struct input_event); ++i)
-    {
-      if (ev[i].type == EV_SYN)
-      {
-        //submit_msg(m_msg, m_message_descriptor);
-      }
-      else
-      {
-        //parse(ev[i], m_msg);
-      }
-    }
+    return rd;
   }
-
-  return true;
+  else
+  {
+    return rd / sizeof(struct input_event);
+  }
 }
 
 /* EOF */

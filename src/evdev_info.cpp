@@ -16,13 +16,4 @@
 
 #include "evdev_info.hpp"
 
-EvdevInfo::EvdevInfo() :
-  name(),
-  bit(),
-  abs_bit(),
-  rel_bit(),
-  key_bit()
-{
-}
-
 /* EOF */

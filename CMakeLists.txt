@@ -16,8 +16,11 @@ add_library(jslib STATIC src/
   src/stick_widget.cpp)
 target_link_libraries(jslib Qt5::Widgets)
 
-file(GLOB JSTEST_QT_SOURCES src/*.cpp)
+file(GLOB JSTEST_QT_SOURCES src/main.cpp)
 add_executable(jstest-qt ${JSTEST_QT_SOURCES})
 target_link_libraries(jstest-qt Qt5::Widgets jslib)
+
+add_executable(evdev-test src/evdev_test.cpp)
+target_link_libraries(evdev-test jslib)
 
 # EOF #

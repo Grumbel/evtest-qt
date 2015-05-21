@@ -13,6 +13,7 @@ add_library(jslib STATIC src/
   src/evdev_controller.cpp
   src/evdev_device.cpp
   src/evdev_info.cpp
+  src/evdev_enum.cpp
   src/stick_widget.cpp)
 target_link_libraries(jslib Qt5::Widgets)
 

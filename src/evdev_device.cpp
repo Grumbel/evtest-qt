@@ -126,9 +126,12 @@ EvdevDevice::read_evdev_info()
 ssize_t
 EvdevDevice::read_events(struct input_event* ev, size_t count)
 {
-  // read data
   int rd = ::read(m_fd, ev, sizeof(struct input_event) * count);
-  if (rd < 0)
+  if (rd < EAGAIN)
+  {
+    return 0;
+  }
+  else if (rd < 0)
   {
     return rd;
   }

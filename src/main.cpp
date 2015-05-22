@@ -74,13 +74,13 @@ int main(int argc, char** argv)
   for(size_t i = 0; i < info.abss.size(); ++i)
   {
     AbsInfo absinfo = info.get_absinfo(info.abss[i]);
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_names[info.abss[i]]));
+    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_names[info.abss[i]] + ":"));
     auto axis_widget = std::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     axis_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    grid_layout.addWidget(label.get(), i, 0);
+    grid_layout.addWidget(label.get(), i, 0, Qt::AlignRight);
     grid_layout.addWidget(axis_widget.get(), i, 1);
 
     // connect all the signals

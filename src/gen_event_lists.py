@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+# jstest-qt - A graphical joystick tester
+# Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import re
 
@@ -13,7 +29,7 @@ def gen_event_list(rgx, outfilename):
                 name = line.split()[1]
                 if not re.search(r'(_MAX|_CNT)$', name):
                     fout.write("#ifdef {}\n".format(name))
-                    fout.write("  add({}, \"{}\");\n".format(name, name))
+                    fout.write("  add({}, \"{}\");\n".format(name, re.sub(r'^(ABS_|KEY_|BTN_|REL_)', r'', name)))
                     fout.write("#endif\n\n")
 
         fout.write("/* EOF */\n")

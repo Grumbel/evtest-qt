@@ -30,6 +30,7 @@ class EvdevState : public QObject
   Q_OBJECT
 
 private:
+  const EvdevInfo& m_info;
   std::vector<int32_t> m_abs_values;
   std::vector<int32_t> m_key_values;
 
@@ -43,7 +44,6 @@ public:
 
 signals:
   void sig_change(const EvdevState& state);
-  void sig_sync(const EvdevState& state);
 
 private:
   EvdevState(const EvdevState&) = delete;
@@ -53,3 +53,4 @@ private:
 #endif
 
 /* EOF */
+

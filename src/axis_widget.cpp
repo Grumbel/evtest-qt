@@ -17,7 +17,6 @@
 #include "axis_widget.hpp"
 
 #include <QPainter>
-#include <iostream>
 
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"

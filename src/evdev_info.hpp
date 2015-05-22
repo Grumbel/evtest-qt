@@ -17,6 +17,8 @@
 #ifndef HEADER_EVDEV_INFO_HPP
 #define HEADER_EVDEV_INFO_HPP
 
+#include <assert.h>
+#include <algorithm>
 #include <map>
 #include <vector>
 #include <array>
@@ -117,6 +119,20 @@ public:
         keys.push_back(i);
       }
     }
+  }
+
+  size_t get_key_idx(uint16_t code) const
+  {
+    auto it = std::find(keys.begin(), keys.end(), code);
+    assert(it != keys.end());
+    return it - keys.begin();
+  }
+
+  size_t get_abs_idx(uint16_t code) const
+  {
+    auto it = std::find(abss.begin(), abss.end(), code);
+    assert(it != abss.end());
+    return it - abss.begin();
   }
 
   AbsInfo get_absinfo(uint16_t code) const

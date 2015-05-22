@@ -19,8 +19,9 @@
 #include "evdev_info.hpp"
 
 EvdevState::EvdevState(const EvdevInfo& info) :
-  m_abs_values(info.abss.size()),
-  m_key_values(info.keys.size())
+  m_info(info),
+  m_abs_values(info.abss.size(), 0),
+  m_key_values(info.keys.size(), 0)
 {
 }
 
@@ -30,17 +31,17 @@ EvdevState::update(const input_event& ev)
   switch(ev.type)
   {
     case EV_SYN:
-      sig_sync(*this);
+      sig_change(*this);
       break;
 
     case EV_KEY:
-      m_key_values[ev.code] = ev.value;
-      sig_change(*this);
+      m_key_values[m_info.get_key_idx(ev.code)] = ev.value;
+      //sig_change(*this);
       break;
 
     case EV_ABS:
-      m_abs_values[ev.code] = ev.value;
-      sig_change(*this);
+      m_abs_values[m_info.get_abs_idx(ev.code)] = ev.value;
+      //sig_change(*this);
       break;
   }
 }
@@ -48,13 +49,13 @@ EvdevState::update(const input_event& ev)
 int
 EvdevState::get_key_value(uint16_t code) const
 {
-  return m_key_values[code];
+  return m_key_values[m_info.get_key_idx(code)];
 }
 
 int
 EvdevState::get_abs_value(uint16_t code) const
 {
-  return m_abs_values[code];
+  return m_abs_values[m_info.get_abs_idx(code)];
 }
 
 /* EOF */

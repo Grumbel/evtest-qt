@@ -16,6 +16,7 @@
 
 #include "evdev_device.hpp"
 
+#include <map>
 #include <sstream>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -87,6 +88,7 @@ EvdevDevice::read_evdev_info()
     ioctl(m_fd, EVIOCGBIT(EV_KEY, KEY_MAX), key_bit.data());
   }
 
+  std::map<uint16_t, AbsInfo> absinfos;
   for(int i = 0; i < ABS_MAX; ++i)
   {
     if (bits::test_bit(i, abs_bit.data()))
@@ -98,14 +100,7 @@ EvdevDevice::read_evdev_info()
       }
       else
       {
-        std::cout << "absinfo: " << i
-                  << " value:" << absinfo.value
-                  << " min:" << absinfo.minimum
-                  << " max:" <<  absinfo.maximum
-                  << " fuzz:" <<  absinfo.fuzz
-                  << " flat:" << absinfo.flat
-                  << " res:" << absinfo.resolution << "\n";
-
+        absinfos[i] = AbsInfo(absinfo);
       }
     }
   }
@@ -114,7 +109,8 @@ EvdevDevice::read_evdev_info()
                    std::move(bit),
                    std::move(abs_bit),
                    std::move(rel_bit),
-                   std::move(key_bit));
+                   std::move(key_bit),
+                   std::move(absinfos));
 }
 
 ssize_t

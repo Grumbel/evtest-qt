@@ -14,34 +14,47 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#include "evdev_state.hpp"
 
-#include <stdint.h>
+#include "evdev_info.hpp"
 
-class EvdevState;
-
-class AxisWidget : public QWidget
+EvdevState::EvdevState(const EvdevInfo& info) :
+  m_abs_values(info.abss.size()),
+  m_key_values(info.keys.size())
 {
-  Q_OBJECT
+}
 
-private:
-  uint16_t m_code;
-  int m_min;
-  int m_max;
-  int m_value;
+void
+EvdevState::update(const input_event& ev)
+{
+  switch(ev.type)
+  {
+    case EV_SYN:
+      sig_sync(*this);
+      break;
 
-public:
-  AxisWidget(uint16_t code, int min, int max, QWidget* parent=0);
-  ~AxisWidget();
+    case EV_KEY:
+      m_key_values[ev.code] = ev.value;
+      sig_change(*this);
+      break;
 
-  QSize sizeHint() const  override { return QSize(128, 16); };
+    case EV_ABS:
+      m_abs_values[ev.code] = ev.value;
+      sig_change(*this);
+      break;
+  }
+}
 
-public slots:
-  void set_axis_pos(int v);
-  void on_change(const EvdevState& state);
+int
+EvdevState::get_key_value(uint16_t code) const
+{
+  return m_key_values[code];
+}
 
-protected:
-  void paintEvent(QPaintEvent* event) override;
-};
+int
+EvdevState::get_abs_value(uint16_t code) const
+{
+  return m_abs_values[code];
+}
 
 /* EOF */

@@ -23,31 +23,44 @@
 
 void print_evdev_info(const EvdevInfo& info)
 {
-  std::cout << "name: " << info.name << std::endl;
-  std::cout << "num_abs: " << info.num_abs << std::endl;
-  std::cout << "num_rel: " << info.num_rel << std::endl;
-  std::cout << "num_key: " << info.num_key << std::endl;
+  std::cout << "name: '" << info.name << "'" << std::endl;
 
-  std::cout << "abs:\n";
-  for(size_t i = 0; i < info.abss.size(); ++i)
+  if (!info.abss.empty())
   {
-    std::cout << "  " << evdev_abs_names[info.abss[i]] << "\n";
+    std::cout << "abs: " << info.abss.size() << "\n";
+    for(size_t i = 0; i < info.abss.size(); ++i)
+    {
+      auto absinfo = info.get_absinfo(info.abss[i]);
+      std::cout << "  " << evdev_abs_names[info.abss[i]]
+                << " value:" << absinfo.value
+                << " min:" << absinfo.minimum
+                << " max:" <<  absinfo.maximum
+                << " fuzz:" <<  absinfo.fuzz
+                << " flat:" << absinfo.flat
+                << " res:" << absinfo.resolution << "\n";
+    }
+    std::cout << "\n";
   }
-  std::cout << "\n";
 
-  std::cout << "rel:\n";
-  for(size_t i = 0; i < info.rels.size(); ++i)
+  if (!info.rels.empty())
   {
-    std::cout << "  " << evdev_rel_names[info.rels[i]] << "\n";
+    std::cout << "rel: " << info.rels.size() << "\n";
+    for(size_t i = 0; i < info.rels.size(); ++i)
+    {
+      std::cout << "  " << evdev_rel_names[info.rels[i]] << "\n";
+    }
+    std::cout << "\n";
   }
-  std::cout << "\n";
 
-  std::cout << "key:\n";
-  for(size_t i = 0; i < info.keys.size(); ++i)
+  if (!info.keys.empty())
   {
-    std::cout << "  " << evdev_key_names[info.keys[i]] << "\n";
+    std::cout << "key: " << info.keys.size() << "\n";
+    for(size_t i = 0; i < info.keys.size(); ++i)
+    {
+      std::cout << "  " << evdev_key_names[info.keys[i]] << "\n";
+    }
+    std::cout << "\n";
   }
-  std::cout << "\n";
 }
 
 void print_events(EvdevDevice& device)
@@ -72,9 +85,32 @@ void print_events(EvdevDevice& device)
         }
         else
         {
-          std::cout << std::setw(8) << ev[i].type << " "
-                    << std::setw(8) << ev[i].code << " "
-                    << std::setw(8) << ev[i].value << std::endl;
+          switch(ev[i].type)
+          {
+            case EV_ABS:
+              std::cout << std::setw(8) << ev[i].type << " "
+                        << std::setw(8) << evdev_abs_names[ev[i].code] << " "
+                        << std::setw(8) << ev[i].value << std::endl;
+              break;
+
+            case EV_REL:
+              std::cout << std::setw(8) << ev[i].type << " "
+                        << std::setw(8) << evdev_rel_names[ev[i].code] << " "
+                        << std::setw(8) << ev[i].value << std::endl;
+              break;
+
+            case EV_KEY:
+              std::cout << std::setw(8) << ev[i].type << " "
+                        << std::setw(8) << evdev_key_names[ev[i].code] << " "
+                        << std::setw(8) << ev[i].value << std::endl;
+              break;
+
+            default:
+              std::cout << std::setw(8) << ev[i].type << " "
+                        << std::setw(8) << ev[i].code << " "
+                        << std::setw(8) << ev[i].value << std::endl;
+              break;
+          }
         }
       }
     }

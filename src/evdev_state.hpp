@@ -14,34 +14,42 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QWidget>
+#ifndef HEADER_EVDEV_STATE_HPP
+#define HEADER_EVDEV_STATE_HPP
+
+#include <QObject>
 
 #include <stdint.h>
+#include <linux/input.h>
+#include <vector>
 
-class EvdevState;
+class EvdevInfo;
 
-class AxisWidget : public QWidget
+class EvdevState : public QObject
 {
   Q_OBJECT
 
 private:
-  uint16_t m_code;
-  int m_min;
-  int m_max;
-  int m_value;
+  std::vector<int32_t> m_abs_values;
+  std::vector<int32_t> m_key_values;
 
 public:
-  AxisWidget(uint16_t code, int min, int max, QWidget* parent=0);
-  ~AxisWidget();
+  EvdevState(const EvdevInfo& info);
 
-  QSize sizeHint() const  override { return QSize(128, 16); };
+  void update(const input_event& ev);
 
-public slots:
-  void set_axis_pos(int v);
-  void on_change(const EvdevState& state);
+  int get_key_value(uint16_t code) const;
+  int get_abs_value(uint16_t code) const;
 
-protected:
-  void paintEvent(QPaintEvent* event) override;
+signals:
+  void sig_change(const EvdevState& state);
+  void sig_sync(const EvdevState& state);
+
+private:
+  EvdevState(const EvdevState&) = delete;
+  EvdevState& operator=(const EvdevState&) = delete;
 };
+
+#endif
 
 /* EOF */

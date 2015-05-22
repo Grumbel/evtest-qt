@@ -19,9 +19,14 @@
 #include <QPainter>
 #include <iostream>
 
-AxisWidget::AxisWidget(QWidget* parent) :
+#include "evdev_state.hpp"
+
+AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent) :
   QWidget(parent),
-  m_pos(0)
+  m_code(code),
+  m_min(min),
+  m_max(max),
+  m_value(0)
 {
 }
 
@@ -32,8 +37,19 @@ AxisWidget::~AxisWidget()
 void
 AxisWidget::set_axis_pos(int v)
 {
-  m_pos = v;
+  m_value = v;
   update();
+}
+
+void
+AxisWidget::on_change(const EvdevState& state)
+{
+  int old_value = m_value;
+  m_value = state.get_abs_value(m_code);
+  if (old_value != m_value)
+  {
+    update();
+  }
 }
 
 void
@@ -41,9 +57,29 @@ AxisWidget::paintEvent(QPaintEvent* event)
 {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
-  painter.drawLine(0, 0, 100, 100);
-  painter.drawLine(0, 0, 50, 100);
-  painter.drawLine(50 + m_pos/300, 30, 50 + m_pos/300, 70);
+  int value_pos = width() * (m_value - m_min) / (m_max - m_min);
+  int zero_pos = width() * (0 - m_min) / (m_max - m_min);
+
+  // blue rect
+  painter.setPen(QPen(Qt::NoPen));
+  int l = std::min(value_pos, zero_pos);
+  int r = std::max(value_pos, zero_pos);
+  painter.fillRect(l, 0, r - l, height(), QColor(192, 192, 255));
+
+  if (false)
+  {
+    // zero line
+    painter.setPen(QColor(128, 128, 128));
+    painter.drawLine(zero_pos, 0, zero_pos, height());
+  }
+
+  // value line
+  painter.setPen(QColor(0, 0, 0));
+  painter.drawLine(value_pos, 0, value_pos, height());
+
+  // box outline
+  painter.setPen(QColor(0, 0, 0));
+  painter.drawRect(0, 0, width(), height());
 }
 
 /* EOF */

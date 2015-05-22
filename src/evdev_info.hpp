@@ -17,12 +17,44 @@
 #ifndef HEADER_EVDEV_INFO_HPP
 #define HEADER_EVDEV_INFO_HPP
 
+#include <map>
 #include <vector>
 #include <array>
 #include <string>
 #include <linux/input.h>
 
 #include "bits.hpp"
+
+class AbsInfo
+{
+public:
+  int32_t value;
+  int32_t minimum;
+  int32_t maximum;
+  int32_t fuzz;
+  int32_t flat;
+  int32_t resolution;
+
+  AbsInfo() :
+    value(),
+    minimum(),
+    maximum(),
+    fuzz(),
+    flat(),
+    resolution()
+  {
+  }
+
+  AbsInfo(const input_absinfo& absinfo) :
+    value(absinfo.value),
+    minimum(absinfo.minimum),
+    maximum(absinfo.maximum),
+    fuzz(absinfo.fuzz),
+    flat(absinfo.flat),
+    resolution(absinfo.resolution)
+  {
+  }
+};
 
 class EvdevInfo
 {
@@ -33,9 +65,7 @@ public:
   std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit;
   std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit;
 
-  size_t num_abs;
-  size_t num_rel;
-  size_t num_key;
+  std::map<uint16_t, AbsInfo> absinfos;
 
   std::vector<uint16_t> abss;
   std::vector<uint16_t> rels;
@@ -55,21 +85,19 @@ public:
             std::array<unsigned long, bits::nbits(EV_MAX)> bit_,
             std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit_,
             std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit_,
-            std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit_) :
+            std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit_,
+            std::map<uint16_t, AbsInfo> absinfos_) :
     name(std::move(name)),
     bit(std::move(bit_)),
     abs_bit(std::move(abs_bit_)),
     rel_bit(std::move(rel_bit_)),
     key_bit(std::move(key_bit_)),
-    num_abs(0),
-    num_rel(0),
-    num_key(0)
+    absinfos(std::move(absinfos_))
   {
     for(uint16_t i = 0; i < ABS_MAX; ++i)
     {
       if (bits::test_bit(i, abs_bit.data()))
       {
-        num_abs += 1;
         abss.push_back(i);
       }
     }
@@ -78,7 +106,6 @@ public:
     {
       if (bits::test_bit(i, rel_bit.data()))
       {
-        num_rel += 1;
         rels.push_back(i);
       }
     }
@@ -87,9 +114,21 @@ public:
     {
       if (bits::test_bit(i, key_bit.data()))
       {
-        num_key += 1;
         keys.push_back(i);
       }
+    }
+  }
+
+  AbsInfo get_absinfo(uint16_t code) const
+  {
+    auto it = absinfos.find(code);
+    if (it == absinfos.end())
+    {
+      throw std::runtime_error("invalid code");
+    }
+    else
+    {
+      return it->second;
     }
   }
 };

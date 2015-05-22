@@ -19,6 +19,7 @@
 #include <QPainter>
 #include <iostream>
 
+#include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
 AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent) :
@@ -28,6 +29,7 @@ AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent) :
   m_max(max),
   m_value(0)
 {
+  setToolTip(QString::fromStdString(evdev_abs_names[m_code]));
 }
 
 AxisWidget::~AxisWidget()
@@ -61,7 +63,7 @@ AxisWidget::paintEvent(QPaintEvent* event)
   int zero_pos = width() * (0 - m_min) / (m_max - m_min);
 
   // blue rect
-  painter.setPen(QPen(Qt::NoPen));
+  painter.setPen(Qt::NoPen);
   int l = std::min(value_pos, zero_pos);
   int r = std::max(value_pos, zero_pos);
   painter.fillRect(l, 0, r - l, height(), QColor(192, 192, 255));

@@ -17,11 +17,29 @@
 #ifndef HEADER_BUTTON_WIDGET_HPP
 #define HEADER_BUTTON_WIDGET_HPP
 
-class ButtonWidget
+#include <QWidget>
+
+class EvdevState;
+
+class ButtonWidget : public QWidget
 {
+  Q_OBJECT
+
 private:
+  uint16_t m_code;
+  int32_t m_value;
+
 public:
-  ButtonWidget();
+  ButtonWidget(uint16_t code, QWidget* parent = 0);
+  ~ButtonWidget();
+
+  QSize sizeHint() const  override { return QSize(48, 24); };
+
+public slots:
+  void on_change(const EvdevState& state);
+
+protected:
+  void paintEvent(QPaintEvent* event) override;
 
 private:
   ButtonWidget(const ButtonWidget&) = delete;

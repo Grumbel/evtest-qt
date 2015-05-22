@@ -16,5 +16,57 @@
 
 #include "button_widget.hpp"
 
+#include <QPainter>
+
+#include "evdev_enum.hpp"
+#include "evdev_state.hpp"
+
+ButtonWidget::ButtonWidget(uint16_t code, QWidget* parent) :
+  m_code(code),
+  m_value(0)
+{
+  setToolTip(QString::fromStdString(evdev_key_names[m_code]));
+}
+
+ButtonWidget::~ButtonWidget()
+{
+}
+
+void
+ButtonWidget::on_change(const EvdevState& state)
+{
+  int old_value = m_value;
+  m_value = state.get_key_value(m_code);
+  if (old_value != m_value)
+  {
+    update();
+  }
+}
+
+void
+ButtonWidget::paintEvent(QPaintEvent* event)
+{
+  QPainter painter(this);
+  painter.setRenderHint(QPainter::Antialiasing);
+
+  if (m_value)
+  {
+    painter.setPen(Qt::NoPen);
+    painter.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
+  }
+  else
+  {
+    //painter.setPen(Qt::NoPen);
+    //painter.fillRect(0, 0, width(), height(), QColor(0, 0, 255));
+  }
+
+  painter.setPen(QColor(0, 0, 0));
+  painter.drawText(0, 0, width(), height(), Qt::AlignVCenter | Qt::AlignCenter,
+                   QString::fromStdString(evdev_key_names[m_code]));
+
+  // box outline
+  painter.setPen(QColor(0, 0, 0));
+  painter.drawRect(0, 0, width(), height());
+}
 
 /* EOF */

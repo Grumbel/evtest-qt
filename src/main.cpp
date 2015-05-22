@@ -16,22 +16,24 @@
 
 #include <QApplication>
 #include <QGridLayout>
-#include <QLayout>
 #include <QLabel>
+#include <QLayout>
 #include <QMainWindow>
 #include <QSocketNotifier>
+#include <QVBoxLayout>
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <iostream>
 #include <linux/input.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
+#include "axis_widget.hpp"
+#include "button_widget.hpp"
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
-#include "axis_widget.hpp"
 
 void on_data(EvdevDevice& device, EvdevState& state)
 {
@@ -68,9 +70,11 @@ int main(int argc, char** argv)
   EvdevState state(info);
 
   QWidget window;
-  QGridLayout grid_layout(&window);
 
-  std::vector<std::unique_ptr<QWidget> > widgets;
+  QVBoxLayout vbox_layout(&window);
+
+  QGridLayout axis_layout;
+  //std::vector<std::unique_ptr<QWidget> > widgets;
   for(size_t i = 0; i < info.abss.size(); ++i)
   {
     AbsInfo absinfo = info.get_absinfo(info.abss[i]);
@@ -80,17 +84,43 @@ int main(int argc, char** argv)
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     axis_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    grid_layout.addWidget(label.get(), i, 0, Qt::AlignRight);
-    grid_layout.addWidget(axis_widget.get(), i, 1);
-
     // connect all the signals
     //state.on_update().connect(axis_widget.set_value());
     QObject::connect(&state, &EvdevState::sig_change,
                      axis_widget.get(), &AxisWidget::on_change);
 
-    widgets.push_back(std::move(label));
-    widgets.push_back(std::move(axis_widget));
+
+    axis_layout.addWidget(label.release(), i, 0, Qt::AlignRight);
+    axis_layout.addWidget(axis_widget.release(), i, 1);
+
+    //widgets.push_back(std::move(label));
+    //widgets.push_back(std::move(axis_widget));
   }
+
+  QGridLayout button_layout;
+  int row = 0;
+  int col = 0;
+  for(size_t i = 0; i < info.keys.size(); ++i)
+  {
+    auto button_widget = std::make_unique<ButtonWidget>(info.keys[i]);
+
+    QObject::connect(&state, &EvdevState::sig_change,
+                     button_widget.get(), &ButtonWidget::on_change);
+
+    button_layout.addWidget(button_widget.release(), row, col);
+
+    col += 1;
+    if (col > 6)
+    {
+      col = 0;
+      row += 1;
+    }
+
+    //widgets.push_back(std::move(button_widget));
+  }
+
+  vbox_layout.addLayout(&axis_layout);
+  vbox_layout.addLayout(&button_layout);
 
   int retval;
   {

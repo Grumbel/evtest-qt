@@ -49,15 +49,25 @@ ButtonWidget::paintEvent(QPaintEvent* event)
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
 
-  if (m_value)
+  switch(m_value)
   {
-    painter.setPen(Qt::NoPen);
-    painter.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
-  }
-  else
-  {
-    //painter.setPen(Qt::NoPen);
-    //painter.fillRect(0, 0, width(), height(), QColor(0, 0, 255));
+    case 0: // key up
+      break;
+
+    case 1: // key down
+      painter.setPen(Qt::NoPen);
+      painter.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
+      break;
+
+    case 2: // key repeat
+      painter.setPen(Qt::NoPen);
+      painter.fillRect(0, 0, width(), height(), QColor(255, 0, 255));
+      break;
+
+    default: // unknown
+      painter.setPen(Qt::NoPen);
+      painter.fillRect(0, 0, width(), height(), QColor(255, 255, 0));
+      break;
   }
 
   painter.setPen(QColor(0, 0, 0));

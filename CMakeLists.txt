@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(jstest-qt)
+project(evtest-qt)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -18,9 +18,9 @@ add_library(jslib STATIC src/
   src/stick_widget.cpp)
 target_link_libraries(jslib Qt5::Widgets)
 
-file(GLOB JSTEST_QT_SOURCES src/main.cpp)
-add_executable(jstest-qt ${JSTEST_QT_SOURCES})
-target_link_libraries(jstest-qt Qt5::Widgets jslib)
+file(GLOB EVTEST_QT_SOURCES src/main.cpp)
+add_executable(evtest-qt ${EVTEST_QT_SOURCES})
+target_link_libraries(evtest-qt Qt5::Widgets jslib)
 
 add_executable(evdev-test src/evdev_test.cpp)
 target_link_libraries(evdev-test jslib)

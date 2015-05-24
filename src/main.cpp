@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <QSocketNotifier>
 #include <QVBoxLayout>
+#include <QComboBox>
 
 #include <fcntl.h>
 #include <iostream>
@@ -33,6 +34,7 @@
 #include "button_widget.hpp"
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
+#include "evdev_list.hpp"
 #include "evdev_state.hpp"
 
 void on_data(EvdevDevice& device, EvdevState& state)
@@ -64,14 +66,52 @@ int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
+  QWidget window;
+
+  QVBoxLayout vbox_layout(&window);
+
+  QComboBox evdev_list_box;
+
+  QObject::connect(&evdev_list_box, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
+                   [&evdev_list_box](int index)
+                   {
+                     std::string dev = evdev_list_box.itemData(index).toString().toUtf8().data();
+                     std::cout << "activated: " << dev << std::endl;
+                   });
+
+  for(auto dev : EvdevList::scan("/dev/input"))
+  {
+    auto dev_fp = EvdevDevice::open(dev);
+    auto info = dev_fp->read_evdev_info();
+
+    std::ostringstream str;
+    str << dev.substr(11) << ": " << info.name;
+    evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+  }
+
   auto device = EvdevDevice::open(argv[1]);
   auto info = device->read_evdev_info();
 
   EvdevState state(info);
 
-  QWidget window;
+  QGridLayout info_layout;
 
-  QVBoxLayout vbox_layout(&window);
+  QLabel driver_version_label("Input driver version:");
+  QLabel device_id_label("Input device ID:");
+  QLabel device_name_label("Input device name:");
+
+  QLabel driver_version_v_label("1.0.1");
+  QLabel device_id_v_label("bus 0x3 vendor 0x45e product 0x28e version 0x110");
+  QLabel device_name_v_label(info.name.c_str());
+
+  info_layout.addWidget(&driver_version_label, 0, 0);
+  info_layout.addWidget(&driver_version_v_label, 0, 1);
+
+  info_layout.addWidget(&device_id_label, 1, 0);
+  info_layout.addWidget(&device_id_v_label, 1, 1);
+
+  info_layout.addWidget(&device_name_label, 2, 0);
+  info_layout.addWidget(&device_name_v_label, 2, 1);
 
   QGridLayout axis_layout;
   //std::vector<std::unique_ptr<QWidget> > widgets;
@@ -119,6 +159,8 @@ int main(int argc, char** argv)
     //widgets.push_back(std::move(button_widget));
   }
 
+  vbox_layout.addWidget(&evdev_list_box);
+  vbox_layout.addLayout(&info_layout);
   vbox_layout.addLayout(&axis_layout);
   vbox_layout.addLayout(&button_layout);
 

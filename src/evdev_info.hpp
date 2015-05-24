@@ -79,22 +79,29 @@ public:
     bit(),
     abs_bit(),
     rel_bit(),
-    key_bit()
+    key_bit(),
+    absinfos(),
+    abss(),
+    rels(),
+    keys()
   {
   }
 
-  EvdevInfo(std::string name,
+  EvdevInfo(std::string name_,
             std::array<unsigned long, bits::nbits(EV_MAX)> bit_,
             std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit_,
             std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit_,
             std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit_,
             std::map<uint16_t, AbsInfo> absinfos_) :
-    name(std::move(name)),
+    name(std::move(name_)),
     bit(std::move(bit_)),
     abs_bit(std::move(abs_bit_)),
     rel_bit(std::move(rel_bit_)),
     key_bit(std::move(key_bit_)),
-    absinfos(std::move(absinfos_))
+    absinfos(std::move(absinfos_)),
+    abss(),
+    rels(),
+    keys()
   {
     for(uint16_t i = 0; i < ABS_MAX; ++i)
     {

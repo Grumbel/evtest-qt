@@ -37,7 +37,7 @@ EvdevList::scan(const std::string& evdev_directory)
     std::vector<std::string> devices;
 
     struct dirent* dentry;
-    while(dentry = readdir(dirp))
+    while((dentry = readdir(dirp)) != nullptr)
     {
       if (fnmatch("event[0-9]", dentry->d_name, FNM_PATHNAME) == 0 ||
           fnmatch("event[0-9][0-9]", dentry->d_name, FNM_PATHNAME) == 0)

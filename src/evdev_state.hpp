@@ -45,7 +45,7 @@ public:
   int get_abs_value(uint16_t code) const;
 
 signals:
-  void sig_change(const EvdevState& state);
+  void sig_change(const EvdevState& state) const;
 
 private:
   EvdevState(const EvdevState&) = delete;

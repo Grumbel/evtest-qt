@@ -21,7 +21,8 @@
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
-ButtonWidget::ButtonWidget(uint16_t code, QWidget* parent) :
+ButtonWidget::ButtonWidget(uint16_t code, QWidget* parent_) :
+  QWidget(parent_),
   m_code(code),
   m_value(0)
 {
@@ -44,7 +45,7 @@ ButtonWidget::on_change(const EvdevState& state)
 }
 
 void
-ButtonWidget::paintEvent(QPaintEvent* event)
+ButtonWidget::paintEvent(QPaintEvent* ev)
 {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);

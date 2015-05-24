@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_EVTEST_APP_HPP
-#define HEADER_EVTEST_APP_HPP
+#ifndef HEADER_EVDEV_WIDGET_HPP
+#define HEADER_EVDEV_WIDGET_HPP
 
 #include <QApplication>
 #include <QGridLayout>
@@ -40,36 +40,32 @@
 #include "evdev_list.hpp"
 #include "evdev_state.hpp"
 
-class EvdevState;
-class EvdevDevice;
-
-class EvtestApp
+class EvdevWidget : public QWidget
 {
+  Q_OBJECT
+
 private:
-  QWidget m_window;
-
   QVBoxLayout m_vbox_layout;
-  QComboBox m_evdev_list_box;
 
-  std::unique_ptr<QWidget> m_ev_widget;
+  QGridLayout m_info_layout;
+  QGridLayout m_axis_layout;
+  QGridLayout m_button_layout;
 
-  std::unique_ptr<EvdevDevice> m_device;
-  std::unique_ptr<EvdevState> m_state;
-  std::unique_ptr<QSocketNotifier> m_notifier;
+  QLabel m_driver_version_label;
+  QLabel m_device_id_label;
+  QLabel m_device_name_label;
+
+  QLabel m_driver_version_v_label;
+  QLabel m_device_id_v_label;
+  QLabel m_device_name_v_label;
 
 public:
-  EvtestApp();
-
-  void refresh_device_list();
-
-private:
-  void on_data(EvdevDevice& device, EvdevState& state);
-  void on_item_change(int index);
-  void on_device_change(const std::string& filename);
+  EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent=0);
+  virtual ~EvdevWidget();
 
 private:
-  EvtestApp(const EvtestApp&) = delete;
-  EvtestApp& operator=(const EvtestApp&) = delete;
+  EvdevWidget(const EvdevWidget&) = delete;
+  EvdevWidget& operator=(const EvdevWidget&) = delete;
 };
 
 #endif

@@ -31,7 +31,7 @@ private:
 
 public:
   ButtonWidget(uint16_t code, QWidget* parent = 0);
-  ~ButtonWidget();
+  virtual ~ButtonWidget();
 
   QSize sizeHint() const  override { return QSize(32, 16); };
 

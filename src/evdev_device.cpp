@@ -146,7 +146,7 @@ EvdevDevice::read_evdev_info()
   }
 
   std::map<uint16_t, AbsInfo> absinfos;
-  for(int i = 0; i < ABS_MAX; ++i)
+  for(uint16_t i = 0; i < ABS_MAX; ++i)
   {
     if (bits::test_bit(i, abs_bit.data()))
     {
@@ -173,7 +173,7 @@ EvdevDevice::read_evdev_info()
 ssize_t
 EvdevDevice::read_events(struct input_event* ev, size_t count)
 {
-  int rd = ::read(m_fd, ev, sizeof(struct input_event) * count);
+  ssize_t rd = ::read(m_fd, ev, sizeof(struct input_event) * count);
   if (rd < EAGAIN)
   {
     return 0;

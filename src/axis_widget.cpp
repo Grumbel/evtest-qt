@@ -21,8 +21,8 @@
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
-AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent) :
-  QWidget(parent),
+AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent_) :
+  QWidget(parent_),
   m_code(code),
   m_min(min),
   m_max(max),
@@ -54,7 +54,7 @@ AxisWidget::on_change(const EvdevState& state)
 }
 
 void
-AxisWidget::paintEvent(QPaintEvent* event)
+AxisWidget::paintEvent(QPaintEvent* ev)
 {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);

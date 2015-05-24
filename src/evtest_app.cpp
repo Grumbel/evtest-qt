@@ -16,32 +16,24 @@
 
 #include "evtest_app.hpp"
 
+#include "evdev_widget.hpp"
+
 EvtestApp::EvtestApp() :
   m_window(),
   m_vbox_layout(&m_window),
   m_evdev_list_box(),
-  m_driver_version_label("Input driver version:"),
-  m_device_id_label("Input device ID:"),
-  m_device_name_label("Input device name:"),
-  m_driver_version_v_label(),
-  m_device_id_v_label(),
-  m_device_name_v_label(),
-  m_device()
+  m_ev_widget(),
+  m_device(),
+  m_state(),
+  m_notifier()
 {
-  m_info_layout.addWidget(&m_driver_version_label, 0, 0);
-  m_info_layout.addWidget(&m_driver_version_v_label, 0, 1);
-
-  m_info_layout.addWidget(&m_device_id_label, 1, 0);
-  m_info_layout.addWidget(&m_device_id_v_label, 1, 1);
-
-  m_info_layout.addWidget(&m_device_name_label, 2, 0);
-  m_info_layout.addWidget(&m_device_name_v_label, 2, 1);
-
   m_vbox_layout.addWidget(&m_evdev_list_box);
-  m_vbox_layout.addLayout(&m_info_layout);
-  m_vbox_layout.addLayout(&m_axis_layout);
-  m_vbox_layout.addLayout(&m_button_layout);
 
+  m_ev_widget = std::make_unique<QLabel>("nothing selected");
+  m_vbox_layout.addWidget(m_ev_widget.get());
+
+  // FIXME: this disallows resizing, which isn't intended, but it does
+  // keep the window to the proper size on switching evdevs
   m_vbox_layout.setSizeConstraint(QLayout::SetFixedSize);
 
   QObject::connect(
@@ -112,81 +104,22 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
 }
 
 void
-EvtestApp::clear_ev_widgets()
-{
-  QLayoutItem* item;
-  while((item = m_axis_layout.itemAt(0)) != nullptr)
-  {
-    delete item->widget();
-  }
-
-  while((item = m_button_layout.itemAt(0)) != nullptr)
-  {
-    delete item->widget();
-  }
-}
-
-void
-EvtestApp::refresh_ev_widgets(const EvdevInfo& info)
-{
-  // axis widgets
-  for(size_t i = 0; i < info.abss.size(); ++i)
-  {
-    AbsInfo absinfo = info.get_absinfo(info.abss[i]);
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_names[info.abss[i]] + ":"));
-    auto axis_widget = std::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
-
-    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    axis_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QObject::connect(m_state.get(), &EvdevState::sig_change,
-                     axis_widget.get(), &AxisWidget::on_change);
-
-    m_axis_layout.addWidget(label.release(), i, 0, Qt::AlignRight);
-    m_axis_layout.addWidget(axis_widget.release(), i, 1);
-  }
-
-  // button widgets
-  int row = 0;
-  int col = 0;
-  for(size_t i = 0; i < info.keys.size(); ++i)
-  {
-    auto button_widget = std::make_unique<ButtonWidget>(info.keys[i]);
-
-    QObject::connect(m_state.get(), &EvdevState::sig_change,
-                     button_widget.get(), &ButtonWidget::on_change);
-
-    button_widget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    m_button_layout.addWidget(button_widget.release(), row, col);
-
-    col += 1;
-    if (col > 6)
-    {
-      col = 0;
-      row += 1;
-    }
-  }
-}
-
-void
 EvtestApp::on_device_change(const std::string& filename)
 {
   m_notifier.reset();
   m_state.reset();
-  clear_ev_widgets();
+  //m_vbox_layout.removeWidget(m_ev_widget.get());
+  m_ev_widget.reset();
 
   try
   {
     m_device = EvdevDevice::open(filename);
     auto info = m_device->read_evdev_info();
 
-    m_driver_version_v_label.setText("(placeholder) 1.0.1");
-    m_device_id_v_label.setText("(placeholder) bus 0x3 vendor 0x45e product 0x28e version 0x110");
-    m_device_name_v_label.setText(info.name.c_str());
-
     m_state = std::make_unique<EvdevState>(info);
 
-    refresh_ev_widgets(info);
+    m_ev_widget = std::make_unique<EvdevWidget>(*m_state, info);
+    m_vbox_layout.addWidget(m_ev_widget.get());
 
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
     QObject::connect(
@@ -196,6 +129,8 @@ EvtestApp::on_device_change(const std::string& filename)
   catch(const std::exception& err)
   {
     std::cout << filename << ": " << err.what() << std::endl;
+    m_ev_widget = std::make_unique<QLabel>(err.what());
+    m_vbox_layout.addWidget(m_ev_widget.get());
   }
 }
 

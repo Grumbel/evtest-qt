@@ -22,6 +22,7 @@ class StickWidget
 private:
 public:
   StickWidget();
+  virtual ~StickWidget();
 
 private:
   StickWidget(const StickWidget&) = delete;

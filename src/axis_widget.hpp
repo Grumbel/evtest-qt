@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef HEADER_AXIS_WIDGET_HPP
+#define HEADER_AXIS_WIDGET_HPP
+
 #include <QWidget>
 
 #include <stdint.h>
@@ -32,7 +35,7 @@ private:
 
 public:
   AxisWidget(uint16_t code, int min, int max, QWidget* parent=0);
-  ~AxisWidget();
+  virtual ~AxisWidget();
 
   QSize sizeHint() const  override { return QSize(128, 16); };
 
@@ -43,5 +46,7 @@ public slots:
 protected:
   void paintEvent(QPaintEvent* event) override;
 };
+
+#endif
 
 /* EOF */

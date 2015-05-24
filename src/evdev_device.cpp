@@ -76,6 +76,63 @@ EvdevDevice::read_evdev_info()
     }
   }
 
+  {
+    char c_name[1024] = "unknown";
+    if (ioctl(m_fd, EVIOCGPHYS(sizeof(c_name)), c_name) < 0)
+    {
+      std::ostringstream out;
+      out << m_filename << ": " << strerror(errno);
+      throw std::runtime_error(out.str());
+    }
+    else
+    {
+      std::cout << "phys: '" << c_name << "'" << std::endl;
+    }
+  }
+
+  if (false)
+  { // this just fails a lot and doesn't seem to be of much use
+    char c_name[256] = "unknown";
+    if (ioctl(m_fd, EVIOCGUNIQ(sizeof(c_name)), c_name) < 0)
+    {
+      std::cout << m_filename << ": " << strerror(errno) << '\n';
+    }
+    else
+    {
+      std::cout << "uniq: '" << c_name << "'" << std::endl;
+    }
+  }
+
+  {
+    unsigned long propbits[INPUT_PROP_MAX];
+    if (ioctl(m_fd, EVIOCGPROP(sizeof(propbits)), propbits) < 0)
+    {
+      std::ostringstream out;
+      out << m_filename << ": " << strerror(errno);
+      throw std::runtime_error(out.str());
+    }
+    else
+    {
+      //for (prop = 0; prop < INPUT_PROP_MAX; prop++) {
+      //if (test_bit(prop, propbits))
+      //                printf("  Property type %d (%s)\n", prop, propname(prop));
+    }
+  }
+
+  struct input_id id;
+  {
+    if (ioctl(m_fd, EVIOCGID, &id) < 0)
+    {
+      std::ostringstream out;
+      out << m_filename << ": " << strerror(errno);
+      throw std::runtime_error(out.str());
+    }
+    else
+    {
+      // nothing to do
+    }
+  }
+
   std::array<unsigned long, bits::nbits(EV_MAX)> bit;
   std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit;
   std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit;

@@ -23,6 +23,8 @@
 #include <linux/input.h>
 #include <vector>
 
+#include "evdev_info.hpp"
+
 class EvdevInfo;
 
 class EvdevState : public QObject
@@ -30,7 +32,7 @@ class EvdevState : public QObject
   Q_OBJECT
 
 private:
-  const EvdevInfo& m_info;
+  EvdevInfo m_info;
   std::vector<int32_t> m_abs_values;
   std::vector<int32_t> m_key_values;
 

@@ -57,12 +57,23 @@ EvtestApp::refresh_device_list()
   m_evdev_list_box.clear();
   for(auto dev : EvdevList::scan("/dev/input"))
   {
-    auto dev_fp = EvdevDevice::open(dev);
-    auto info = dev_fp->read_evdev_info();
+    try
+    {
+      auto dev_fp = EvdevDevice::open(dev);
+      auto info = dev_fp->read_evdev_info();
 
-    std::ostringstream str;
-    str << dev.substr(11) << ": " << info.name;
-    m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+      std::ostringstream str;
+      str << dev.substr(11) << ": " << info.name;
+      m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+    }
+    catch(const std::exception& err)
+    {
+      std::cout << dev << ": " << err.what() << std::endl;
+
+      std::ostringstream str;
+      str << dev.substr(11) << ": " << "[error: " << err.what() << "]";
+      m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+    }
   }
 }
 
@@ -101,7 +112,7 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
 }
 
 void
-EvtestApp::refresh_ev_widgets(const EvdevInfo& info)
+EvtestApp::clear_ev_widgets()
 {
   QLayoutItem* item;
   while((item = m_axis_layout.itemAt(0)) != nullptr)
@@ -113,7 +124,11 @@ EvtestApp::refresh_ev_widgets(const EvdevInfo& info)
   {
     delete item->widget();
   }
+}
 
+void
+EvtestApp::refresh_ev_widgets(const EvdevInfo& info)
+{
   // axis widgets
   for(size_t i = 0; i < info.abss.size(); ++i)
   {
@@ -157,22 +172,31 @@ void
 EvtestApp::on_device_change(const std::string& filename)
 {
   m_notifier.reset();
+  m_state.reset();
+  clear_ev_widgets();
 
-  m_device = EvdevDevice::open(filename);
-  auto info = m_device->read_evdev_info();
+  try
+  {
+    m_device = EvdevDevice::open(filename);
+    auto info = m_device->read_evdev_info();
 
-  m_driver_version_v_label.setText("(placeholder) 1.0.1");
-  m_device_id_v_label.setText("(placeholder) bus 0x3 vendor 0x45e product 0x28e version 0x110");
-  m_device_name_v_label.setText(info.name.c_str());
+    m_driver_version_v_label.setText("(placeholder) 1.0.1");
+    m_device_id_v_label.setText("(placeholder) bus 0x3 vendor 0x45e product 0x28e version 0x110");
+    m_device_name_v_label.setText(info.name.c_str());
 
-  m_state = std::make_unique<EvdevState>(info);
+    m_state = std::make_unique<EvdevState>(info);
 
-  refresh_ev_widgets(info);
+    refresh_ev_widgets(info);
 
-  m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
-  QObject::connect(
-    m_notifier.get(), &QSocketNotifier::activated,
-    [this](int fd) { on_data(*m_device, *m_state); });
+    m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
+    QObject::connect(
+      m_notifier.get(), &QSocketNotifier::activated,
+      [this](int fd) { on_data(*m_device, *m_state); });
+  }
+  catch(const std::exception& err)
+  {
+    std::cout << filename << ": " << err.what() << std::endl;
+  }
 }
 
 /* EOF */

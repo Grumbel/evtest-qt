@@ -72,6 +72,7 @@ public:
   void refresh_device_list();
 
 private:
+  void clear_ev_widgets();
   void refresh_ev_widgets(const EvdevInfo& info);
   void on_data(EvdevDevice& device, EvdevState& state);
   void on_item_change(int index);

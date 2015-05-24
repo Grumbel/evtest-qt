@@ -58,8 +58,14 @@ AxisWidget::paintEvent(QPaintEvent* event)
 {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
-  int value_pos = width() * (m_value - m_min) / (m_max - m_min);
-  int zero_pos = width() * (0 - m_min) / (m_max - m_min);
+  int value_pos = 0;
+  int zero_pos = 0;
+
+  if (m_max - m_min != 0)
+  {
+    value_pos = width() * (m_value - m_min) / (m_max - m_min);
+    zero_pos = width() * (0 - m_min) / (m_max - m_min);
+  }
 
   // blue rect
   painter.setPen(Qt::NoPen);

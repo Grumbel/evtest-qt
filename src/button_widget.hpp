@@ -33,7 +33,7 @@ public:
   ButtonWidget(uint16_t code, QWidget* parent = 0);
   ~ButtonWidget();
 
-  QSize sizeHint() const  override { return QSize(48, 24); };
+  QSize sizeHint() const  override { return QSize(32, 16); };
 
 public slots:
   void on_change(const EvdevState& state);

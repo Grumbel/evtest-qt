@@ -21,6 +21,12 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
   EvtestApp evtest;
   evtest.refresh_device_list();
+
+  if (argc == 2)
+  {
+    // FIXME: select
+  }
+
   return app.exec();
 }
 

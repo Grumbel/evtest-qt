@@ -86,7 +86,7 @@ EvdevDevice::read_evdev_info()
     }
     else
     {
-      std::cout << "phys: '" << c_name << "'" << std::endl;
+      //std::cout << "phys: '" << c_name << "'" << std::endl;
     }
   }
 

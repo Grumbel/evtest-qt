@@ -16,7 +16,7 @@
 
 #include "evdev_state.hpp"
 
-#include "evdev_info.hpp"
+#include <iostream>
 
 EvdevState::EvdevState(const EvdevInfo& info) :
   m_info(info),

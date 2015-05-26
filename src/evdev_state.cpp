@@ -21,6 +21,7 @@
 EvdevState::EvdevState(const EvdevInfo& info) :
   m_info(info),
   m_abs_values(info.abss.size(), 0),
+  m_rel_values(info.rels.size(), 0),
   m_key_values(info.keys.size(), 0)
 {
 }
@@ -32,6 +33,12 @@ EvdevState::update(const input_event& ev)
   {
     case EV_SYN:
       sig_change(*this);
+
+      // clear rel values
+      for(auto& v : m_rel_values)
+      {
+        v = 0;
+      }
       break;
 
     case EV_KEY:
@@ -42,6 +49,11 @@ EvdevState::update(const input_event& ev)
     case EV_ABS:
       m_abs_values[m_info.get_abs_idx(ev.code)] = ev.value;
       //sig_change(*this);
+      break;
+
+    case EV_REL:
+      // rel values are accumulated until a EV_SYN event
+      m_rel_values[m_info.get_rel_idx(ev.code)] += ev.value;
       break;
   }
 }
@@ -56,6 +68,12 @@ int
 EvdevState::get_abs_value(uint16_t code) const
 {
   return m_abs_values[m_info.get_abs_idx(code)];
+}
+
+int
+EvdevState::get_rel_value(uint16_t code) const
+{
+  return m_rel_values[m_info.get_rel_idx(code)];
 }
 
 /* EOF */

@@ -23,6 +23,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   m_vbox_layout(this),
   m_info_layout(),
   m_axis_layout(),
+  m_rel_layout(),
   m_button_layout(),
   m_driver_version_label("Input driver version:"),
   m_device_id_label("Input device ID:"),
@@ -42,6 +43,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
   m_vbox_layout.addLayout(&m_info_layout);
   m_vbox_layout.addLayout(&m_axis_layout);
+  m_vbox_layout.addLayout(&m_rel_layout);
   m_vbox_layout.addLayout(&m_button_layout);
 
   m_driver_version_v_label.setText("(placeholder) 1.0.1");
@@ -63,6 +65,22 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
     m_axis_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_axis_layout.addWidget(axis_widget.release(), static_cast<int>(i), 1);
+  }
+
+  // rel widgets
+  for(size_t i = 0; i < info.rels.size(); ++i)
+  {
+    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_rel_names[info.rels[i]] + ":"));
+    auto rel_widget = std::make_unique<RelWidget>(info.rels[i]);
+
+    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    rel_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    QObject::connect(&state, &EvdevState::sig_change,
+                     rel_widget.get(), &RelWidget::on_change);
+
+    m_rel_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
+    m_rel_layout.addWidget(rel_widget.release(), static_cast<int>(i), 1);
   }
 
   // button widgets

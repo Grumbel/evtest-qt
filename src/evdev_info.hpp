@@ -135,6 +135,13 @@ public:
     return it - keys.begin();
   }
 
+  size_t get_rel_idx(uint16_t code) const
+  {
+    auto it = std::find(rels.begin(), rels.end(), code);
+    assert(it != rels.end());
+    return it - rels.begin();
+  }
+
   size_t get_abs_idx(uint16_t code) const
   {
     auto it = std::find(abss.begin(), abss.end(), code);

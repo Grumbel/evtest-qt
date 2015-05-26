@@ -34,6 +34,7 @@
 #include <unistd.h>
 
 #include "axis_widget.hpp"
+#include "rel_widget.hpp"
 #include "button_widget.hpp"
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
@@ -49,6 +50,7 @@ private:
 
   QGridLayout m_info_layout;
   QGridLayout m_axis_layout;
+  QGridLayout m_rel_layout;
   QGridLayout m_button_layout;
 
   QLabel m_driver_version_label;

@@ -18,6 +18,7 @@ find_package(Qt5Widgets)
 
 add_library(jslib STATIC src/
   src/axis_widget.cpp
+  src/rel_widget.cpp
   src/button_widget.cpp
   src/evdev_device.cpp
   src/evdev_info.cpp

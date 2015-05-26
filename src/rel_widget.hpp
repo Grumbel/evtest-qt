@@ -14,47 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_EVDEV_STATE_HPP
-#define HEADER_EVDEV_STATE_HPP
+#ifndef HEADER_REL_WIDGET_HPP
+#define HEADER_REL_WIDGET_HPP
 
-#include <QObject>
-
+#include <QWidget>
 #include <stdint.h>
-#include <linux/input.h>
-#include <vector>
 
-#include "evdev_info.hpp"
+class EvdevState;
 
-class EvdevInfo;
-
-class EvdevState : public QObject
+class RelWidget : public QWidget
 {
   Q_OBJECT
 
 private:
-  EvdevInfo m_info;
-  std::vector<int32_t> m_abs_values;
-  std::vector<int32_t> m_rel_values;
-  std::vector<int32_t> m_key_values;
+  uint16_t m_code;
+  int m_offset_x;
 
 public:
-  EvdevState(const EvdevInfo& info);
+  RelWidget(uint16_t code, QWidget* parent=0);
+  virtual ~RelWidget();
 
-  void update(const input_event& ev);
+  QSize sizeHint() const  override { return QSize(128, 16); };
 
-  int get_key_value(uint16_t code) const;
-  int get_abs_value(uint16_t code) const;
-  int get_rel_value(uint16_t code) const;
+public slots:
+  void on_change(const EvdevState& state);
 
-signals:
-  void sig_change(const EvdevState& state) const;
+protected:
+  void paintEvent(QPaintEvent* ev) override;
 
 private:
-  EvdevState(const EvdevState&) = delete;
-  EvdevState& operator=(const EvdevState&) = delete;
+  RelWidget(const RelWidget&) = delete;
+  RelWidget& operator=(const RelWidget&) = delete;
 };
 
 #endif
 
 /* EOF */
-

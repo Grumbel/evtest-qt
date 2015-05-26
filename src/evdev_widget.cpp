@@ -58,7 +58,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
     auto axis_widget = std::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    axis_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    axis_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QObject::connect(&state, &EvdevState::sig_change,
                      axis_widget.get(), &AxisWidget::on_change);
@@ -93,7 +93,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
     QObject::connect(&state, &EvdevState::sig_change,
                      button_widget.get(), &ButtonWidget::on_change);
 
-    button_widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    button_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     m_button_layout.addWidget(button_widget.release(), row, col);
 
     col += 1;

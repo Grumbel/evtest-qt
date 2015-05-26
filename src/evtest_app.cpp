@@ -16,6 +16,8 @@
 
 #include "evtest_app.hpp"
 
+#include <QTimer>
+
 #include "evdev_widget.hpp"
 
 EvtestApp::EvtestApp() :
@@ -31,10 +33,6 @@ EvtestApp::EvtestApp() :
 
   m_ev_widget = std::make_unique<QLabel>("nothing selected");
   m_vbox_layout.addWidget(m_ev_widget.get());
-
-  // FIXME: this disallows resizing, which isn't intended, but it does
-  // keep the window to the proper size on switching evdevs
-  m_vbox_layout.setSizeConstraint(QLayout::SetFixedSize);
 
   QObject::connect(
     &m_evdev_list_box, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
@@ -125,6 +123,8 @@ EvtestApp::on_device_change(const std::string& filename)
     QObject::connect(
       m_notifier.get(), &QSocketNotifier::activated,
       [this](int fd) { on_data(*m_device, *m_state); });
+
+    QTimer::singleShot(0, [this]{ m_window.resize(0, 0); });
   }
   catch(const std::exception& err)
   {

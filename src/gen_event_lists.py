@@ -29,7 +29,7 @@ def gen_event_list(rgx, outfilename):
                 name = line.split()[1]
                 if not re.search(r'(_MAX|_CNT)$', name):
                     fout.write("#ifdef {}\n".format(name))
-                    fout.write("  add({}, \"{}\");\n".format(name, re.sub(r'^(ABS_|KEY_|BTN_|REL_)', r'', name)))
+                    fout.write("  add({}, \"{}\");\n".format(name, name))
                     fout.write("#endif\n\n")
 
         fout.write("/* EOF */\n")

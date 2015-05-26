@@ -31,7 +31,7 @@ void print_evdev_info(const EvdevInfo& info)
     for(size_t i = 0; i < info.abss.size(); ++i)
     {
       auto absinfo = info.get_absinfo(info.abss[i]);
-      std::cout << "  " << evdev_abs_names[info.abss[i]]
+      std::cout << "  " << evdev_abs_name(info.abss[i])
                 << " value:" << absinfo.value
                 << " min:" << absinfo.minimum
                 << " max:" <<  absinfo.maximum
@@ -47,7 +47,7 @@ void print_evdev_info(const EvdevInfo& info)
     std::cout << "rel: " << info.rels.size() << "\n";
     for(size_t i = 0; i < info.rels.size(); ++i)
     {
-      std::cout << "  " << evdev_rel_names[info.rels[i]] << "\n";
+      std::cout << "  " << evdev_rel_name(info.rels[i]) << "\n";
     }
     std::cout << "\n";
   }
@@ -57,7 +57,7 @@ void print_evdev_info(const EvdevInfo& info)
     std::cout << "key: " << info.keys.size() << "\n";
     for(size_t i = 0; i < info.keys.size(); ++i)
     {
-      std::cout << "  " << evdev_key_names[info.keys[i]] << "\n";
+      std::cout << "  " << evdev_key_name(info.keys[i]) << "\n";
     }
     std::cout << "\n";
   }
@@ -89,19 +89,19 @@ void print_events(EvdevDevice& device)
           {
             case EV_ABS:
               std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_abs_names[ev[i].code] << " "
+                        << std::setw(8) << evdev_abs_name(ev[i].code) << " "
                         << std::setw(8) << ev[i].value << std::endl;
               break;
 
             case EV_REL:
               std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_rel_names[ev[i].code] << " "
+                        << std::setw(8) << evdev_rel_name(ev[i].code) << " "
                         << std::setw(8) << ev[i].value << std::endl;
               break;
 
             case EV_KEY:
               std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_key_names[ev[i].code] << " "
+                        << std::setw(8) << evdev_key_name(ev[i].code) << " "
                         << std::setw(8) << ev[i].value << std::endl;
               break;
 

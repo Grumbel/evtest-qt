@@ -19,27 +19,9 @@
 
 #include "enum_box.hpp"
 
-class EvDevRelEnum : public EnumBox<int>
-{
-public:
-  EvDevRelEnum();
-};
-
-class EvDevAbsEnum : public EnumBox<int>
-{
-public:
-  EvDevAbsEnum();
-};
-
-class EvDevKeyEnum : public EnumBox<int>
-{
-public:
-  EvDevKeyEnum();
-};
-
-extern EvDevRelEnum evdev_rel_names;
-extern EvDevKeyEnum evdev_key_names;
-extern EvDevAbsEnum evdev_abs_names;
+std::string evdev_abs_name(uint16_t code);
+std::string evdev_key_name(uint16_t code);
+std::string evdev_rel_name(uint16_t code);
 
 #endif
 

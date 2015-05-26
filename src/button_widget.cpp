@@ -26,7 +26,7 @@ ButtonWidget::ButtonWidget(uint16_t code, QWidget* parent_) :
   m_code(code),
   m_value(0)
 {
-  setToolTip(QString::fromStdString(evdev_key_names[m_code]));
+  setToolTip(QString::fromStdString(evdev_key_name(m_code)));
 }
 
 ButtonWidget::~ButtonWidget()
@@ -73,7 +73,7 @@ ButtonWidget::paintEvent(QPaintEvent* ev)
 
   painter.setPen(QColor(0, 0, 0));
   painter.drawText(0, 0, width(), height(), Qt::AlignVCenter | Qt::AlignCenter,
-                   QString::fromStdString(evdev_key_names[m_code]));
+                   QString::fromStdString(evdev_key_name(m_code)));
 
   // box outline
   painter.setPen(QColor(0, 0, 0));

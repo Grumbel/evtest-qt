@@ -18,26 +18,82 @@
 
 #include <linux/input.h>
 
-EvDevRelEnum evdev_rel_names;
-EvDevKeyEnum evdev_key_names;
-EvDevAbsEnum evdev_abs_names;
-
-EvDevRelEnum::EvDevRelEnum() :
-  EnumBox<int>("EV_REL")
+class EvDevRelEnum : public EnumBox<uint16_t>
 {
+public:
+  EvDevRelEnum() :
+    EnumBox<uint16_t>("EV_REL")
+  {
 #  include "rel_list.x"
-}
+  }
+};
 
-EvDevAbsEnum::EvDevAbsEnum() :
-    EnumBox<int>("EV_ABS")
+class EvDevAbsEnum : public EnumBox<uint16_t>
 {
+public:
+  EvDevAbsEnum() :
+    EnumBox<uint16_t>("EV_ABS")
+  {
 #  include "abs_list.x"
+  }
+};
+
+class EvDevKeyEnum : public EnumBox<uint16_t>
+{
+public:
+  EvDevKeyEnum() :
+    EnumBox<uint16_t>("EV_KEY")
+  {
+#  include "key_list.x"
+  }
+};
+
+std::string evdev_abs_name(uint16_t code)
+{
+  static EvDevAbsEnum evdev_abs_names;
+  auto it = evdev_abs_names.find(code);
+  if (it == evdev_abs_names.end())
+  {
+    std::ostringstream out;
+    out << "ABS_#" << code;
+    return out.str();
+  }
+  else
+  {
+    return it->second;
+  }
 }
 
-EvDevKeyEnum::EvDevKeyEnum() :
-  EnumBox<int>("EV_KEY")
+std::string evdev_key_name(uint16_t code)
 {
-#  include "key_list.x"
+  static EvDevKeyEnum evdev_key_names;
+  auto it = evdev_key_names.find(code);
+  if (it == evdev_key_names.end())
+  {
+    std::ostringstream out;
+    out << "KEY_#" << code;
+    return out.str();
+  }
+  else
+  {
+    return it->second;
+  }
+}
+
+std::string evdev_rel_name(uint16_t code)
+{
+  static EvDevRelEnum evdev_rel_names;
+  auto it = evdev_rel_names.find(code);
+  if (it == evdev_rel_names.end())
+  {
+    std::ostringstream out;
+    out << "REL_#" << code;
+    return out.str();
+  }
+  else
+  {
+    return it->second;
+  }
 }
 
 /* EOF */

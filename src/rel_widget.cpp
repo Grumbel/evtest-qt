@@ -26,7 +26,7 @@ RelWidget::RelWidget(uint16_t code, QWidget* parent_) :
   m_code(code),
   m_offset_x()
 {
-  setToolTip(QString::fromStdString(evdev_rel_names[m_code]));
+  setToolTip(QString::fromStdString(evdev_rel_name(m_code)));
 }
 
 RelWidget::~RelWidget()

@@ -54,7 +54,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   for(size_t i = 0; i < info.abss.size(); ++i)
   {
     AbsInfo absinfo = info.get_absinfo(info.abss[i]);
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_names[info.abss[i]] + ":"));
+    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_name(info.abss[i]) + ":"));
     auto axis_widget = std::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -70,11 +70,11 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   // rel widgets
   for(size_t i = 0; i < info.rels.size(); ++i)
   {
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_rel_names[info.rels[i]] + ":"));
+    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_rel_name(info.rels[i]) + ":"));
     auto rel_widget = std::make_unique<RelWidget>(info.rels[i]);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    rel_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    rel_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QObject::connect(&state, &EvdevState::sig_change,
                      rel_widget.get(), &RelWidget::on_change);

@@ -28,7 +28,7 @@ AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent_) :
   m_max(max),
   m_value(0)
 {
-  setToolTip(QString::fromStdString(evdev_abs_names[m_code]));
+  setToolTip(QString::fromStdString(evdev_abs_name(m_code)));
 }
 
 AxisWidget::~AxisWidget()

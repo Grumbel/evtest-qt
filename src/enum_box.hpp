@@ -59,6 +59,11 @@ public:
   iterator begin() { return m_enum2string.begin(); }
   iterator end()   { return m_enum2string.end();   }
 
+  const_iterator find(Enum v) const
+  {
+    return m_enum2string.find(v);
+  }
+
   Enum operator[](const std::string& str) const
   {
     typename std::map<std::string, Enum>::const_iterator i = m_string2enum.find(str);

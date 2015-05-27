@@ -24,7 +24,7 @@ constexpr size_t nbits(long x) { return (((x)-1) / bits_per_long)+1; }
 constexpr size_t off(size_t x) { return (x) % bits_per_long; }
 constexpr unsigned long bit(size_t x) { return 1UL << off(x); }
 constexpr size_t long_idx(size_t x) { return x / bits_per_long; }
-constexpr bool test_bit(size_t bit, unsigned long* array) { return (array[long_idx(bit)] >> off(bit)) & 1; }
+constexpr bool test_bit(size_t bit, const unsigned long* array) { return (array[long_idx(bit)] >> off(bit)) & 1; }
 
 } // namespace bits
 

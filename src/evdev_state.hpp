@@ -27,6 +27,26 @@
 
 class EvdevInfo;
 
+class MultitouchState
+{
+public:
+  MultitouchState() :
+    x(0),
+    y(0),
+    tracking_id(0)
+  {}
+
+  MultitouchState(int x_, int y_, int tracking_id_) :
+    x(x_),
+    y(y_),
+    tracking_id(tracking_id_)
+  {}
+
+  int x;
+  int y;
+  int tracking_id;
+};
+
 class EvdevState : public QObject
 {
   Q_OBJECT
@@ -36,8 +56,7 @@ private:
   std::vector<int32_t> m_abs_values;
   std::vector<int32_t> m_rel_values;
   std::vector<int32_t> m_key_values;
-  std::vector<int32_t> m_mt_x_values;
-  std::vector<int32_t> m_mt_y_values;
+  std::vector<MultitouchState> m_mt_states;
 
 public:
   EvdevState(const EvdevInfo& info);
@@ -49,8 +68,7 @@ public:
   int get_rel_value(uint16_t code) const;
 
   int get_mt_slot_count() const;
-  int get_mt_x(int slot) const;
-  int get_mt_y(int slot) const;
+  MultitouchState get_mt_state(int slot) const;
 
   const EvdevInfo& get_info() const { return m_info; }
 

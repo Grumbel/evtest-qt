@@ -19,7 +19,7 @@
 
 #include <QWidget>
 
-class EvdevState;
+#include "evdev_state.hpp"
 
 class MultitouchWidget : public QWidget
 {
@@ -28,8 +28,7 @@ class MultitouchWidget : public QWidget
 private:
   int m_max_x;
   int m_max_y;
-  std::vector<int> m_mt_x;
-  std::vector<int> m_mt_y;
+  std::vector<MultitouchState> m_mt_states;
 
 public:
   MultitouchWidget(QWidget* parent_=0);

@@ -36,6 +36,8 @@ private:
   std::vector<int32_t> m_abs_values;
   std::vector<int32_t> m_rel_values;
   std::vector<int32_t> m_key_values;
+  std::vector<int32_t> m_mt_x_values;
+  std::vector<int32_t> m_mt_y_values;
 
 public:
   EvdevState(const EvdevInfo& info);
@@ -45,6 +47,12 @@ public:
   int get_key_value(uint16_t code) const;
   int get_abs_value(uint16_t code) const;
   int get_rel_value(uint16_t code) const;
+
+  int get_mt_slot_count() const;
+  int get_mt_x(int slot) const;
+  int get_mt_y(int slot) const;
+
+  const EvdevInfo& get_info() const { return m_info; }
 
 signals:
   void sig_change(const EvdevState& state) const;

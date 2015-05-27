@@ -16,6 +16,8 @@
 
 #include "evdev_widget.hpp"
 
+#include "multitouch_widget.hpp"
+
 #include <iostream>
 
 EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent_) :
@@ -44,6 +46,19 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   m_vbox_layout.addLayout(&m_info_layout);
   m_vbox_layout.addLayout(&m_axis_layout);
   m_vbox_layout.addLayout(&m_rel_layout);
+
+  if (info.has_abs(ABS_MT_SLOT))
+  {
+    std::cout << "Adding multitouch" << std::endl;
+    auto multitouch_widget = std::make_unique<MultitouchWidget>();
+    multitouch_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+    QObject::connect(&state, &EvdevState::sig_change,
+                     multitouch_widget.get(), &MultitouchWidget::on_change);
+
+    m_vbox_layout.addWidget(multitouch_widget.release());
+  }
+
   m_vbox_layout.addLayout(&m_button_layout);
 
   m_driver_version_v_label.setText("(placeholder) 1.0.1");

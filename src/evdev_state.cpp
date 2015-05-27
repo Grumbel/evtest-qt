@@ -22,8 +22,17 @@ EvdevState::EvdevState(const EvdevInfo& info) :
   m_info(info),
   m_abs_values(info.abss.size(), 0),
   m_rel_values(info.rels.size(), 0),
-  m_key_values(info.keys.size(), 0)
+  m_key_values(info.keys.size(), 0),
+  m_mt_x_values(),
+  m_mt_y_values()
 {
+  if (info.has_abs(ABS_MT_SLOT))
+  {
+    AbsInfo absinfo = info.get_absinfo(ABS_MT_SLOT);
+    assert(absinfo.minimum == 0);
+    m_mt_x_values.resize(absinfo.maximum + 1);
+    m_mt_y_values.resize(absinfo.maximum + 1);
+  }
 }
 
 void
@@ -43,12 +52,22 @@ EvdevState::update(const input_event& ev)
 
     case EV_KEY:
       m_key_values[m_info.get_key_idx(ev.code)] = ev.value;
-      //sig_change(*this);
       break;
 
     case EV_ABS:
       m_abs_values[m_info.get_abs_idx(ev.code)] = ev.value;
-      //sig_change(*this);
+
+      if (m_info.has_abs(ABS_MT_SLOT))
+      {
+        if (ev.code == ABS_MT_POSITION_X)
+        {
+          m_mt_x_values[m_abs_values[m_info.get_abs_idx(ABS_MT_SLOT)]] = ev.value;
+        }
+        else if (ev.code == ABS_MT_POSITION_Y)
+        {
+          m_mt_y_values[m_abs_values[m_info.get_abs_idx(ABS_MT_SLOT)]] = ev.value;
+        }
+      }
       break;
 
     case EV_REL:
@@ -74,6 +93,25 @@ int
 EvdevState::get_rel_value(uint16_t code) const
 {
   return m_rel_values[m_info.get_rel_idx(code)];
+}
+
+int
+EvdevState::get_mt_slot_count() const
+{
+  assert(m_mt_x_values.size() == m_mt_y_values.size());
+  return static_cast<int>(m_mt_x_values.size());
+}
+
+int
+EvdevState::get_mt_x(int slot) const
+{
+  return m_mt_x_values[slot];
+}
+
+int
+EvdevState::get_mt_y(int slot) const
+{
+  return m_mt_y_values[slot];
 }
 
 /* EOF */

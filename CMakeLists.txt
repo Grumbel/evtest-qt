@@ -27,6 +27,7 @@ add_library(jslib STATIC src/
   src/evdev_list.cpp
   src/evdev_widget.cpp
   src/evtest_app.cpp
+  src/multitouch_widget.cpp
   src/stick_widget.cpp)
 target_link_libraries(jslib Qt5::Widgets)
 target_compile_options(jslib PRIVATE ${WARNINGS_CXX_FLAGS})

@@ -22,13 +22,16 @@
 
 EvtestApp::EvtestApp() :
   m_window(),
-  m_vbox_layout(&m_window),
+  m_widget(),
+  m_vbox_layout(&m_widget),
   m_evdev_list_box(),
   m_ev_widget(),
   m_device(),
   m_state(),
   m_notifier()
 {
+  m_window.setCentralWidget(&m_widget);
+
   m_vbox_layout.addWidget(&m_evdev_list_box);
 
   m_ev_widget = std::make_unique<QLabel>("nothing selected");

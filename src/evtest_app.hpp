@@ -17,6 +17,7 @@
 #ifndef HEADER_EVTEST_APP_HPP
 #define HEADER_EVTEST_APP_HPP
 
+#include <QMainWindow>
 #include <QApplication>
 #include <QGridLayout>
 #include <QLabel>
@@ -46,7 +47,8 @@ class EvdevDevice;
 class EvtestApp
 {
 private:
-  QWidget m_window;
+  QMainWindow m_window;
+  QWidget m_widget;
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;

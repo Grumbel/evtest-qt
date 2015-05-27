@@ -61,6 +61,7 @@ public:
   EvtestApp();
 
   void refresh_device_list();
+  void select_device(const QString& device);
 
 private:
   void on_data(EvdevDevice& device, EvdevState& state);

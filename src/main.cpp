@@ -14,17 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <QCommandLineParser>
+
 #include "evtest_app.hpp"
 
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
+
+  QApplication::setApplicationName("evtest-qt");
+  QApplication::setApplicationVersion("0.1");
+
+  QCommandLineParser parser;
+  parser.setApplicationDescription("A graphical joystick tester");
+  parser.addHelpOption();
+  parser.addVersionOption();
+  parser.addPositionalArgument("DEVICE", "event device file to start with");
+
+  parser.process(app);
+
+  const QStringList args = parser.positionalArguments();
+
   EvtestApp evtest;
   evtest.refresh_device_list();
 
-  if (argc == 2)
+  if (!args.empty())
   {
-    // FIXME: select
+    evtest.select_device(args[0]);
   }
 
   return app.exec();

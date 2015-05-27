@@ -68,6 +68,12 @@ EvtestApp::refresh_device_list()
 }
 
 void
+EvtestApp::select_device(const QString& device)
+{
+  on_device_change(device.toStdString());
+}
+
+void
 EvtestApp::on_item_change(int index)
 {
   std::string dev = m_evdev_list_box.itemData(index).toString().toUtf8().data();

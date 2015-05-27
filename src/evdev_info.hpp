@@ -128,6 +128,21 @@ public:
     }
   }
 
+  bool has_key(uint16_t code) const
+  {
+    return bits::test_bit(code, key_bit.data());
+  }
+
+  bool has_abs(uint16_t code) const
+  {
+    return bits::test_bit(code, abs_bit.data());
+  }
+
+  bool has_rel(uint16_t code) const
+  {
+    return bits::test_bit(code, rel_bit.data());
+  }
+
   size_t get_key_idx(uint16_t code) const
   {
     auto it = std::find(keys.begin(), keys.end(), code);

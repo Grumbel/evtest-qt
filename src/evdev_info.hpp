@@ -61,7 +61,10 @@ public:
 class EvdevInfo
 {
 public:
+  int version;
   std::string name;
+  std::string phys;
+  struct input_id id;
   std::array<unsigned long, bits::nbits(EV_MAX)> bit;
   std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit;
   std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit;
@@ -75,7 +78,10 @@ public:
 
 public:
   EvdevInfo() :
+    version(),
     name(),
+    phys(),
+    id(),
     bit(),
     abs_bit(),
     rel_bit(),
@@ -87,13 +93,19 @@ public:
   {
   }
 
-  EvdevInfo(std::string name_,
+  EvdevInfo(int version_,
+            std::string name_,
+            std::string phys_,
+            input_id id_,
             std::array<unsigned long, bits::nbits(EV_MAX)> bit_,
             std::array<unsigned long, bits::nbits(ABS_MAX)> abs_bit_,
             std::array<unsigned long, bits::nbits(REL_MAX)> rel_bit_,
             std::array<unsigned long, bits::nbits(KEY_MAX)> key_bit_,
             std::map<uint16_t, AbsInfo> absinfos_) :
+    version(version_),
     name(std::move(name_)),
+    phys(std::move(phys_)),
+    id(id_),
     bit(std::move(bit_)),
     abs_bit(std::move(abs_bit_)),
     rel_bit(std::move(rel_bit_)),

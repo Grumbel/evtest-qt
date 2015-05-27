@@ -62,6 +62,12 @@ EvdevDevice::read_evdev_info()
 {
   std::string name;
 
+  int version = 0;
+  if (ioctl(m_fd, EVIOCGVERSION, &version) < 0)
+  {
+    std::cout << m_filename << ": " << strerror(errno) << '\n';
+  }
+
   { // Get the human readable name
     char c_name[1024] = "unknown";
     if (ioctl(m_fd, EVIOCGNAME(sizeof(c_name)), c_name) < 0)
@@ -76,6 +82,7 @@ EvdevDevice::read_evdev_info()
     }
   }
 
+  std::string phys;
   {
     char c_name[1024] = "unknown";
     if (ioctl(m_fd, EVIOCGPHYS(sizeof(c_name)), c_name) < 0)
@@ -87,6 +94,7 @@ EvdevDevice::read_evdev_info()
     else
     {
       //std::cout << "phys: '" << c_name << "'" << std::endl;
+      phys = c_name;
     }
   }
 
@@ -162,7 +170,10 @@ EvdevDevice::read_evdev_info()
     }
   }
 
-  return EvdevInfo(std::move(name),
+  return EvdevInfo(version,
+                   std::move(name),
+                   std::move(phys),
+                   id,
                    std::move(bit),
                    std::move(abs_bit),
                    std::move(rel_bit),

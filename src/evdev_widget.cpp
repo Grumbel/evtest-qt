@@ -30,10 +30,14 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   m_driver_version_label("Input driver version:"),
   m_device_id_label("Input device ID:"),
   m_device_name_label("Input device name:"),
+  m_device_phys_label("Input device phys:"),
   m_driver_version_v_label(),
   m_device_id_v_label(),
-  m_device_name_v_label()
+  m_device_name_v_label(),
+  m_device_phys_v_label()
 {
+  m_info_layout.setColumnStretch(0, 0);
+  m_info_layout.setColumnStretch(1, 1);
   m_info_layout.addWidget(&m_driver_version_label, 0, 0);
   m_info_layout.addWidget(&m_driver_version_v_label, 0, 1);
 
@@ -42,6 +46,9 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
   m_info_layout.addWidget(&m_device_name_label, 2, 0);
   m_info_layout.addWidget(&m_device_name_v_label, 2, 1);
+
+  m_info_layout.addWidget(&m_device_phys_label, 3, 0);
+  m_info_layout.addWidget(&m_device_phys_v_label, 3, 1);
 
   m_vbox_layout.addLayout(&m_info_layout);
   m_vbox_layout.addLayout(&m_axis_layout);
@@ -61,9 +68,24 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
   m_vbox_layout.addLayout(&m_button_layout);
 
-  m_driver_version_v_label.setText("(placeholder) 1.0.1");
-  m_device_id_v_label.setText("(placeholder) bus 0x3 vendor 0x45e product 0x28e version 0x110");
-  m_device_name_v_label.setText(info.name.c_str());
+  {
+    auto str = QString("%1.%2.%3")
+      .arg(info.version >> 16)
+      .arg((info.version >> 8) & 0xff)
+      .arg(info.version & 0xff);
+    m_driver_version_v_label.setText(str);
+  }
+
+  {
+    auto str = QString("bus: 0x%1 vendor: 0x%2 product: 0x%3 version: 0x%4")
+      .arg(info.id.bustype, 0, 16)
+      .arg(info.id.vendor, 0, 16)
+      .arg(info.id.product, 0, 16)
+      .arg(info.id.version, 0, 16);
+    m_device_id_v_label.setText(str);
+  }
+  m_device_name_v_label.setText(QString::fromStdString(info.name));
+  m_device_phys_v_label.setText(QString::fromStdString(info.phys));
 
   // axis widgets
   for(size_t i = 0; i < info.abss.size(); ++i)

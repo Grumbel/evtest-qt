@@ -56,10 +56,12 @@ private:
   QLabel m_driver_version_label;
   QLabel m_device_id_label;
   QLabel m_device_name_label;
+  QLabel m_device_phys_label;
 
   QLabel m_driver_version_v_label;
   QLabel m_device_id_v_label;
   QLabel m_device_name_v_label;
+  QLabel m_device_phys_v_label;
 
 public:
   EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent=0);

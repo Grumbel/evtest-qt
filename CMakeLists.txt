@@ -51,16 +51,17 @@ add_library(jslib STATIC src/
   src/evtest_app.cpp
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
-target_link_libraries(jslib Qt5::Widgets)
 target_compile_options(jslib PRIVATE ${WARNINGS_CXX_FLAGS})
+target_link_libraries(jslib PUBLIC Qt5::Widgets)
+target_include_directories(jslib PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})
-target_link_libraries(evtest-qt Qt5::Widgets jslib)
 target_compile_options(evtest-qt PRIVATE ${WARNINGS_CXX_FLAGS})
+target_link_libraries(evtest-qt jslib)
 
 add_executable(evdev-test src/evdev_test.cpp)
-target_link_libraries(evdev-test jslib)
 target_compile_options(evdev-test PRIVATE ${WARNINGS_CXX_FLAGS})
+target_link_libraries(evdev-test jslib)
 
 # EOF #

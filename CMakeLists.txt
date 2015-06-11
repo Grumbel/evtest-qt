@@ -38,6 +38,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
 find_package(Qt5Widgets REQUIRED)
 
+add_definitions(-fPIC)
+
 add_library(jslib STATIC src/
   src/axis_widget.cpp
   src/rel_widget.cpp

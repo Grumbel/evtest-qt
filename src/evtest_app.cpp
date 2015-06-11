@@ -30,11 +30,13 @@ EvtestApp::EvtestApp() :
   m_state(),
   m_notifier()
 {
+  //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);
 
   m_vbox_layout.addWidget(&m_evdev_list_box);
 
   m_ev_widget = std::make_unique<QLabel>("nothing selected");
+  static_cast<QLabel*>(m_ev_widget.get())->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
   m_vbox_layout.addWidget(m_ev_widget.get());
 
   QObject::connect(
@@ -104,7 +106,7 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
     {
       for(ssize_t i = 0; i < num_events; ++i)
       {
-        state.update(ev[i]);
+        state.update(ev[static_cast<size_t>(i)]);
       }
     }
   }

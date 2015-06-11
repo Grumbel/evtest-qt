@@ -39,11 +39,11 @@ MultitouchWidget::on_change(const EvdevState& state)
   m_max_x = state.get_info().get_absinfo(ABS_MT_POSITION_X).maximum;
   m_max_y = state.get_info().get_absinfo(ABS_MT_POSITION_Y).maximum;
 
-  m_mt_states.resize(state.get_mt_slot_count());
+  m_mt_states.resize(static_cast<size_t>(state.get_mt_slot_count()));
 
   for(int slot = 0; slot < state.get_mt_slot_count(); ++slot)
   {
-    m_mt_states[slot] = state.get_mt_state(slot);
+    m_mt_states[static_cast<size_t>(slot)] = state.get_mt_state(slot);
   }
 
   update();

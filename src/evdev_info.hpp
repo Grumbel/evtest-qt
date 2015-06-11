@@ -159,21 +159,21 @@ public:
   {
     auto it = std::find(keys.begin(), keys.end(), code);
     assert(it != keys.end());
-    return it - keys.begin();
+    return static_cast<size_t>(it - keys.begin());
   }
 
   size_t get_rel_idx(uint16_t code) const
   {
     auto it = std::find(rels.begin(), rels.end(), code);
     assert(it != rels.end());
-    return it - rels.begin();
+    return static_cast<size_t>(it - rels.begin());
   }
 
   size_t get_abs_idx(uint16_t code) const
   {
     auto it = std::find(abss.begin(), abss.end(), code);
     assert(it != abss.end());
-    return it - abss.begin();
+    return static_cast<size_t>(it - abss.begin());
   }
 
   AbsInfo get_absinfo(uint16_t code) const

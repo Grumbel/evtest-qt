@@ -56,7 +56,6 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
   if (info.has_abs(ABS_MT_SLOT))
   {
-    std::cout << "Adding multitouch" << std::endl;
     auto multitouch_widget = std::make_unique<MultitouchWidget>();
     multitouch_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 

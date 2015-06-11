@@ -77,7 +77,7 @@ void print_events(EvdevDevice& device)
     }
     else
     {
-      for(ssize_t i = 0; i < num_events; ++i)
+      for(size_t i = 0; i < static_cast<size_t>(num_events); ++i)
       {
         if (ev[i].type == EV_SYN)
         {

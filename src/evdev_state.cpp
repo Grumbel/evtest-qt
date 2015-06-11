@@ -29,7 +29,7 @@ EvdevState::EvdevState(const EvdevInfo& info) :
   {
     AbsInfo absinfo = info.get_absinfo(ABS_MT_SLOT);
     assert(absinfo.minimum == 0);
-    m_mt_states.resize(absinfo.maximum + 1);
+    m_mt_states.resize(static_cast<size_t>(absinfo.maximum + 1));
   }
 }
 
@@ -61,15 +61,15 @@ EvdevState::update(const input_event& ev)
 
         if (ev.code == ABS_MT_POSITION_X)
         {
-          m_mt_states[slot].x = ev.value;
+          m_mt_states[static_cast<size_t>(slot)].x = ev.value;
         }
         else if (ev.code == ABS_MT_POSITION_Y)
         {
-          m_mt_states[slot].y = ev.value;
+          m_mt_states[static_cast<size_t>(slot)].y = ev.value;
         }
         else if (ev.code == ABS_MT_TRACKING_ID)
         {
-          m_mt_states[slot].tracking_id = ev.value;
+          m_mt_states[static_cast<size_t>(slot)].tracking_id = ev.value;
         }
       }
       break;
@@ -108,7 +108,7 @@ EvdevState::get_mt_slot_count() const
 MultitouchState
 EvdevState::get_mt_state(int slot) const
 {
-  return m_mt_states[slot];
+  return m_mt_states[static_cast<size_t>(slot)];
 }
 
 /* EOF */

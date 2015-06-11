@@ -20,7 +20,7 @@
 namespace bits {
 
 constexpr size_t bits_per_long = sizeof(unsigned long) * 8;
-constexpr size_t nbits(long x) { return (((x)-1) / bits_per_long)+1; }
+constexpr size_t nbits(size_t x) { return (((x)-1) / bits_per_long)+1; }
 constexpr size_t off(size_t x) { return (x) % bits_per_long; }
 constexpr unsigned long bit(size_t x) { return 1UL << off(x); }
 constexpr size_t long_idx(size_t x) { return x / bits_per_long; }

@@ -195,7 +195,7 @@ EvdevDevice::read_events(struct input_event* ev, size_t count)
   }
   else
   {
-    return rd / sizeof(struct input_event);
+    return rd / static_cast<ssize_t>(sizeof(struct input_event));
   }
 }
 

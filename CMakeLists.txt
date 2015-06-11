@@ -36,7 +36,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-find_package(Qt5Widgets)
+find_package(Qt5Widgets REQUIRED)
 
 add_library(jslib STATIC src/
   src/axis_widget.cpp

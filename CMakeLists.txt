@@ -53,7 +53,7 @@ add_library(jslib STATIC src/
   src/stick_widget.cpp)
 target_compile_options(jslib PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(jslib PUBLIC Qt5::Widgets)
-target_include_directories(jslib PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
+target_include_directories(jslib SYSTEM PUBLIC ${Qt5Widgets_INCLUDE_DIRS})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})

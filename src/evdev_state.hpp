@@ -74,10 +74,6 @@ public:
 
 signals:
   void sig_change(const EvdevState& state) const;
-
-private:
-  EvdevState(const EvdevState&) = delete;
-  EvdevState& operator=(const EvdevState&) = delete;
 };
 
 #endif

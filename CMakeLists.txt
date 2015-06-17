@@ -17,6 +17,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(evtest-qt)
 
+include(GNUInstallDirs)
+
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 
@@ -65,5 +67,12 @@ target_link_libraries(evtest-qt jslib)
 add_executable(evdev-test src/evdev_test.cpp)
 target_compile_options(evdev-test PRIVATE ${WARNINGS_CXX_FLAGS})
 target_link_libraries(evdev-test jslib)
+
+install(TARGETS evtest-qt
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# install(FILES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/doc/man/pingus.6
+#   DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
 
 # EOF #

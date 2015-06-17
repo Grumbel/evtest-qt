@@ -18,6 +18,7 @@
 
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

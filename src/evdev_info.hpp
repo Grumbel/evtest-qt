@@ -24,6 +24,7 @@
 #include <array>
 #include <string>
 #include <linux/input.h>
+#include <stdexcept>
 
 #include "bits.hpp"
 

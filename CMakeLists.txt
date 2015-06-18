@@ -35,7 +35,7 @@ if(WERROR)
 endif()
 
 add_definitions(${WARNINGS_CXX_FLAGS})
-include_directories(${Qt4Widgets_INCLUDE_DIRS})
+include_directories(${QT_INCLUDE_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)

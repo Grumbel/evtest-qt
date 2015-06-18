@@ -112,6 +112,18 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
 }
 
 void
+EvtestApp::on_shrink_action()
+{
+  m_window.resize(0, 0);
+}
+
+void
+EvtestApp::on_notification(int fd)
+{
+  on_data(*m_device, *m_state);
+}
+
+void
 EvtestApp::on_device_change(const std::string& filename)
 {
   m_notifier.reset();
@@ -131,12 +143,10 @@ EvtestApp::on_device_change(const std::string& filename)
 
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
 
-#if 0
     QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
-                     [this](int fd) { on_data(*m_device, *m_state); });
+                     this, SLOT(on_notification(int)));
 
-    QTimer::singleShot(0, [this]{ m_window.resize(0, 0); });
-#endif
+    QTimer::singleShot(0, this, SIGNAL(on_shrink_action()));
   }
   catch(const std::exception& err)
   {

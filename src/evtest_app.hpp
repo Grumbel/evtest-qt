@@ -73,6 +73,8 @@ private:
 
 public slots:
   void on_item_change(int index);
+  void on_shrink_action();
+  void on_notification(int);
 
 private:
   EvtestApp(const EvtestApp&) = delete;

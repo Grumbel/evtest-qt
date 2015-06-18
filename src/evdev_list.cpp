@@ -50,7 +50,7 @@ EvdevList::scan(const std::string& evdev_directory)
     closedir(dirp);
 
     std::sort(devices.begin(), devices.end(),
-              [](auto const& lhs, auto const& rhs)
+              [](std::string const& lhs, std::string const& rhs)
               {
                 if (lhs.size() < rhs.size())
                 {

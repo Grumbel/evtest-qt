@@ -18,6 +18,7 @@
 
 #include <QTimer>
 
+#include "util.hpp"
 #include "evdev_widget.hpp"
 
 EvtestApp::EvtestApp() :
@@ -35,7 +36,7 @@ EvtestApp::EvtestApp() :
 
   m_vbox_layout.addWidget(&m_evdev_list_box);
 
-  m_ev_widget = std::make_unique<QLabel>("nothing selected");
+  m_ev_widget = util::make_unique<QLabel>("nothing selected");
   static_cast<QLabel*>(m_ev_widget.get())->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
   m_vbox_layout.addWidget(m_ev_widget.get());
 
@@ -136,12 +137,12 @@ EvtestApp::on_device_change(const std::string& filename)
     m_device = EvdevDevice::open(filename);
     auto info = m_device->read_evdev_info();
 
-    m_state = std::make_unique<EvdevState>(info);
+    m_state = util::make_unique<EvdevState>(info);
 
-    m_ev_widget = std::make_unique<EvdevWidget>(*m_state, info);
+    m_ev_widget = util::make_unique<EvdevWidget>(*m_state, info);
     m_vbox_layout.addWidget(m_ev_widget.get());
 
-    m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
+    m_notifier = util::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
 
     QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
                      this, SLOT(on_notification(int)));
@@ -151,7 +152,7 @@ EvtestApp::on_device_change(const std::string& filename)
   catch(const std::exception& err)
   {
     std::cout << filename << ": " << err.what() << std::endl;
-    m_ev_widget = std::make_unique<QLabel>(err.what());
+    m_ev_widget = util::make_unique<QLabel>(err.what());
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
 }

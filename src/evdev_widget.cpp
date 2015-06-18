@@ -17,6 +17,7 @@
 #include "evdev_widget.hpp"
 
 #include "multitouch_widget.hpp"
+#include "util.hpp"
 
 #include <iostream>
 
@@ -56,7 +57,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 
   if (info.has_abs(ABS_MT_SLOT))
   {
-    auto multitouch_widget = std::make_unique<MultitouchWidget>();
+    auto multitouch_widget = util::make_unique<MultitouchWidget>();
     multitouch_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QObject::connect(&state, SIGNAL(sig_change(EvdevState const &)),
@@ -90,8 +91,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   for(size_t i = 0; i < info.abss.size(); ++i)
   {
     AbsInfo absinfo = info.get_absinfo(info.abss[i]);
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_abs_name(info.abss[i]) + ":"));
-    auto axis_widget = std::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
+    auto label = util::make_unique<QLabel>(QString::fromStdString(evdev_abs_name(info.abss[i]) + ":"));
+    auto axis_widget = util::make_unique<AxisWidget>(info.abss[i], absinfo.minimum, absinfo.maximum);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     axis_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -106,8 +107,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   // rel widgets
   for(size_t i = 0; i < info.rels.size(); ++i)
   {
-    auto label = std::make_unique<QLabel>(QString::fromStdString(evdev_rel_name(info.rels[i]) + ":"));
-    auto rel_widget = std::make_unique<RelWidget>(info.rels[i]);
+    auto label = util::make_unique<QLabel>(QString::fromStdString(evdev_rel_name(info.rels[i]) + ":"));
+    auto rel_widget = util::make_unique<RelWidget>(info.rels[i]);
 
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     rel_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -124,7 +125,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   int col = 0;
   for(size_t i = 0; i < info.keys.size(); ++i)
   {
-    auto button_widget = std::make_unique<ButtonWidget>(info.keys[i]);
+    auto button_widget = util::make_unique<ButtonWidget>(info.keys[i]);
 
     QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
                      button_widget.get(), SLOT(on_change(EvdevState const&)));

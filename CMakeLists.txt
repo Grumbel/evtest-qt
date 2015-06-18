@@ -41,7 +41,7 @@ add_definitions(${WARNINGS_CXX_FLAGS})
 # remove 'override' keyboard from source
 add_definitions(-Doverride=)
 
-include_directories(
+include_directories(SYSTEM
   ${QT_INCLUDE_DIR}
   ${QT_QTGUI_INCLUDE_DIR}
   ${QT_QTCORE_INCLUDE_DIR})

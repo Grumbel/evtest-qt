@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QCommandLineParser>
+//#include <QCommandLineParser>
 
 #include "evtest_app.hpp"
 
@@ -25,6 +25,7 @@ int main(int argc, char** argv)
   QApplication::setApplicationName("evtest-qt");
   QApplication::setApplicationVersion("0.1");
 
+#if 0
   QCommandLineParser parser;
   parser.setApplicationDescription("A graphical joystick tester");
   parser.addHelpOption();
@@ -42,6 +43,7 @@ int main(int argc, char** argv)
   {
     evtest.select_device(args[0]);
   }
+#endif
 
   return app.exec();
 }

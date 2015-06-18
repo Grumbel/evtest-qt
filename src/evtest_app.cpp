@@ -39,9 +39,8 @@ EvtestApp::EvtestApp() :
   static_cast<QLabel*>(m_ev_widget.get())->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
   m_vbox_layout.addWidget(m_ev_widget.get());
 
-  QObject::connect(
-    &m_evdev_list_box, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated),
-    [this](int index){ on_item_change(index); });
+  QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
+                   this, SLOT(on_item_change(int)));
 
   m_window.show();
 }
@@ -131,11 +130,13 @@ EvtestApp::on_device_change(const std::string& filename)
     m_vbox_layout.addWidget(m_ev_widget.get());
 
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
-    QObject::connect(
-      m_notifier.get(), &QSocketNotifier::activated,
-      [this](int fd) { on_data(*m_device, *m_state); });
+
+#if 0
+    QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
+                     [this](int fd) { on_data(*m_device, *m_state); });
 
     QTimer::singleShot(0, [this]{ m_window.resize(0, 0); });
+#endif
   }
   catch(const std::exception& err)
   {

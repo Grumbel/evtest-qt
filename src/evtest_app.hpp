@@ -44,8 +44,10 @@
 class EvdevState;
 class EvdevDevice;
 
-class EvtestApp
+class EvtestApp : public QObject
 {
+  Q_OBJECT
+
 private:
   QMainWindow m_window;
   QWidget m_widget;
@@ -67,8 +69,10 @@ public:
 
 private:
   void on_data(EvdevDevice& device, EvdevState& state);
-  void on_item_change(int index);
   void on_device_change(const std::string& filename);
+
+public slots:
+  void on_item_change(int index);
 
 private:
   EvtestApp(const EvtestApp&) = delete;

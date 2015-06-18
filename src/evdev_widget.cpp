@@ -59,8 +59,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
     auto multitouch_widget = std::make_unique<MultitouchWidget>();
     multitouch_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, &EvdevState::sig_change,
-                     multitouch_widget.get(), &MultitouchWidget::on_change);
+    QObject::connect(&state, SIGNAL(sig_change(EvdevState const &)),
+                     multitouch_widget.get(), SLOT(on_change(EvdevState const &)));
 
     m_vbox_layout.addWidget(multitouch_widget.release());
   }
@@ -96,8 +96,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     axis_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, &EvdevState::sig_change,
-                     axis_widget.get(), &AxisWidget::on_change);
+    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
+                     axis_widget.get(), SLOT(on_change(EvdevState const&)));
 
     m_axis_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_axis_layout.addWidget(axis_widget.release(), static_cast<int>(i), 1);
@@ -112,8 +112,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     rel_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, &EvdevState::sig_change,
-                     rel_widget.get(), &RelWidget::on_change);
+    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
+                     rel_widget.get(), SLOT(on_change(EvdevState const&)));
 
     m_rel_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_rel_layout.addWidget(rel_widget.release(), static_cast<int>(i), 1);
@@ -126,8 +126,8 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
   {
     auto button_widget = std::make_unique<ButtonWidget>(info.keys[i]);
 
-    QObject::connect(&state, &EvdevState::sig_change,
-                     button_widget.get(), &ButtonWidget::on_change);
+    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
+                     button_widget.get(), SLOT(on_change(EvdevState const&)));
 
     button_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     m_button_layout.addWidget(button_widget.release(), row, col);

@@ -14,9 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <QCommandLineParser>
+#include <iostream>
 
 #include "evtest_app.hpp"
+
+void print_help()
+{
+  std::cout << "Usage: evtest-qt [DEVICE]\n"
+            << "A graphical joystick tester\n"
+            << "\n"
+            << "   DEVICE  event device file to start with\n"
+            << "\n"
+            << "   -h, --help   Print help\n";
+}
 
 int main(int argc, char** argv)
 {
@@ -25,15 +35,29 @@ int main(int argc, char** argv)
   QApplication::setApplicationName("evtest-qt");
   QApplication::setApplicationVersion("0.1");
 
-  QCommandLineParser parser;
-  parser.setApplicationDescription("A graphical joystick tester");
-  parser.addHelpOption();
-  parser.addVersionOption();
-  parser.addPositionalArgument("DEVICE", "event device file to start with");
+  std::vector<QString> args;
 
-  parser.process(app);
-
-  const QStringList args = parser.positionalArguments();
+  for(int i = 1; i < argc; ++i)
+  {
+    if (strcmp(argv[i], "-h") == 0 ||
+        strcmp(argv[i], "--help") == 0)
+    {
+      print_help();
+      return 0;
+    }
+    else
+    {
+      if (!args.empty())
+      {
+        print_help();
+        return 1;
+      }
+      else
+      {
+        args.push_back(argv[i]);
+      }
+    }
+  }
 
   EvtestApp evtest;
   evtest.refresh_device_list();

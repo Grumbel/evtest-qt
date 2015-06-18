@@ -22,6 +22,8 @@ include(GNUInstallDirs)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 
+find_package(Qt4 REQUIRED)
+
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
@@ -35,15 +37,18 @@ if(WERROR)
 endif()
 
 add_definitions(${WARNINGS_CXX_FLAGS})
-include_directories(${QT_INCLUDE_DIR})
+
+# remove 'override' keyboard from source
+add_definitions(-Doverride=)
+
+include_directories(
+  ${QT_INCLUDE_DIR}
+  ${QT_QTGUI_INCLUDE_DIR}
+  ${QT_QTCORE_INCLUDE_DIR})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-find_package(Qt4 REQUIRED)
-
-add_definitions(-fPIC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 add_library(jslib STATIC src/
   src/axis_widget.cpp
@@ -58,7 +63,7 @@ add_library(jslib STATIC src/
   src/evtest_app.cpp
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
-target_link_libraries(jslib PUBLIC Qt4::QtGui)
+target_link_libraries(jslib Qt4::QtGui)
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})

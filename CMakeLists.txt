@@ -35,6 +35,7 @@ if(WERROR)
 endif()
 
 add_definitions(${WARNINGS_CXX_FLAGS})
+include_directories(${Qt4Widgets_INCLUDE_DIRS})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -58,7 +59,6 @@ add_library(jslib STATIC src/
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
 target_link_libraries(jslib PUBLIC Qt4::QtGui)
-target_include_directories(jslib SYSTEM PUBLIC ${Qt4Widgets_INCLUDE_DIRS})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})

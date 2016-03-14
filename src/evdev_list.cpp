@@ -49,12 +49,17 @@ EvdevList::scan(const std::string& evdev_directory)
     }
     closedir(dirp);
 
+    // numerical sort (i.e. event2 < event10)
     std::sort(devices.begin(), devices.end(),
               [](std::string const& lhs, std::string const& rhs) -> bool
               {
                 if (lhs.size() < rhs.size())
                 {
                   return true;
+                }
+                else if (lhs.size() > rhs.size())
+                {
+                  return false;
                 }
                 else
                 {

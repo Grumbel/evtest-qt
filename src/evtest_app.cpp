@@ -29,7 +29,8 @@ EvtestApp::EvtestApp() :
   m_ev_widget(),
   m_device(),
   m_state(),
-  m_notifier()
+  m_notifier(),
+  m_fs_watcher()
 {
   //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);
@@ -42,6 +43,11 @@ EvtestApp::EvtestApp() :
 
   QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
                    this, SLOT(on_item_change(int)));
+
+  QObject::connect(&m_fs_watcher, SIGNAL(directoryChanged(const QString&)),
+                   this, SLOT(on_device_dir_change(const QString&)));
+
+  m_fs_watcher.addPath("/dev/input");
 
   m_window.show();
 }
@@ -155,6 +161,13 @@ EvtestApp::on_device_change(const std::string& filename)
     m_ev_widget = util::make_unique<QLabel>(err.what());
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
+}
+
+void
+EvtestApp::on_device_dir_change(const QString& dir)
+{
+  std::cout << dir.toStdString() << " changed, refreshing device list" << std::endl;
+  this->refresh_device_list();
 }
 
 /* EOF */

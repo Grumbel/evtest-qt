@@ -27,6 +27,7 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QFileSystemWatcher>
+#include <QTimer>
 
 #include <fcntl.h>
 #include <iostream>
@@ -63,6 +64,7 @@ private:
   std::unique_ptr<QSocketNotifier> m_notifier;
 
   QFileSystemWatcher m_fs_watcher;
+  QTimer m_devlist_refresh_timer;
 
 public:
   EvtestApp();
@@ -79,6 +81,7 @@ public slots:
   void on_shrink_action();
   void on_notification(int);
   void on_device_dir_change(const QString& dir);
+  void on_devlist_refresh_timeout();
 
 private:
   EvtestApp(const EvtestApp&) = delete;

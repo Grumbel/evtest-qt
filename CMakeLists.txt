@@ -22,7 +22,7 @@ include(GNUInstallDirs)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 
-find_package(Qt4 REQUIRED)
+find_package(Qt5Widgets)
 
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
@@ -63,7 +63,7 @@ add_library(jslib STATIC src/
   src/evtest_app.cpp
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
-target_link_libraries(jslib Qt4::QtGui)
+target_link_libraries(jslib ${Qt5Widgets_LIBRARIES})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})

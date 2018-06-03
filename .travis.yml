@@ -44,7 +44,7 @@ env:
 
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-4.0"; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-5.0"; fi
 
 addons:
   apt:
@@ -54,7 +54,7 @@ addons:
     packages:
     - libqt4-dev
     - g++-4.9
-    - clang-4.0
+    - clang-5.0
 
 script:
   # Clean from previous Travis build

@@ -126,13 +126,21 @@ int main(int argc, char** argv)
   }
   else
   {
-    auto device = EvdevDevice::open(argv[1]);
-    auto info = device->read_evdev_info();
+    try
+    {
+      auto device = EvdevDevice::open(argv[1]);
+      auto info = device->read_evdev_info();
 
-    print_evdev_info(info);
-    print_events(*device);
+      print_evdev_info(info);
+      print_events(*device);
 
-    return 0;
+      return 0;
+    }
+    catch(std::exception const& err)
+    {
+      std::cerr << "error: " << err.what() << std::endl;
+      return 1;
+    }
   }
 }
 

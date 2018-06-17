@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=evtest-qt
+Comment=Linux input device tester using Qt
+Icon=evtest-qt
+Terminal=false
+Exec=evtest-qt
+Type=Application
+Categories=Utility;Games
+StartupNotify=false
+Terminal=false

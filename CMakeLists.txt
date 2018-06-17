@@ -82,8 +82,12 @@ target_link_libraries(evdev-test jslib)
 install(TARGETS evtest-qt
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# install(FILES
-#   ${CMAKE_CURRENT_SOURCE_DIR}/doc/man/pingus.6
-#   DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
+install(FILES
+  evtest-qt.svg
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+
+install(FILES
+  evtest-qt.desktop
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
 # EOF #

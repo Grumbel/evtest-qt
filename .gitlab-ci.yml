@@ -40,6 +40,13 @@ before_script:
     - make VERBOSE=1
     # - make test VERBOSE=1 ARGS="-V"
 
+build:qt5:gcc5:release:
+  <<: *build_evtest
+  variables:
+    CXX: "g++-5"
+    USE_QT5: "ON"
+    BUILD_TYPE: "Release"
+
 build:qt5:gcc:release:
   <<: *build_evtest
   variables:
@@ -53,6 +60,13 @@ build:qt5:clang:release:
     CXX: "clang++-6.0"
     USE_QT5: "ON"
     BUILD_TYPE: "Release"
+
+build:qt5:gcc5:debug:
+  <<: *build_evtest
+  variables:
+    CXX: "g++-5"
+    USE_QT5: "ON"
+    BUILD_TYPE: "Debug"
 
 build:qt5:gcc:debug:
   <<: *build_evtest
@@ -68,6 +82,13 @@ build:qt5:clang:debug:
     USE_QT5: "ON"
     BUILD_TYPE: "Debug"
 
+build:qt4:gcc5:release:
+  <<: *build_evtest
+  variables:
+    CXX: "g++-5"
+    USE_QT5: "OFF"
+    BUILD_TYPE: "Release"
+
 build:qt4:gcc:release:
   <<: *build_evtest
   variables:
@@ -81,6 +102,13 @@ build:qt4:clang:release:
     CXX: "clang++-6.0"
     USE_QT5: "OFF"
     BUILD_TYPE: "Release"
+
+build:qt4:gcc5:debug:
+  <<: *build_evtest
+  variables:
+    CXX: "g++-5"
+    USE_QT5: "OFF"
+    BUILD_TYPE: "Debug"
 
 build:qt4:gcc:debug:
   <<: *build_evtest

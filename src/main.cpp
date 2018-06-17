@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+#include <QIcon>
+
 #include "evtest_app.hpp"
 
 void print_help()
@@ -32,8 +34,9 @@ int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
-  QApplication::setApplicationName("evtest-qt");
-  QApplication::setApplicationVersion("0.1");
+  app.setApplicationName("evtest-qt");
+  app.setApplicationVersion("0.1");
+  app.setWindowIcon(QIcon::fromTheme("evtest-qt"));
 
   std::vector<QString> args;
 

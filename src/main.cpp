@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
 
   app.setApplicationName("evtest-qt");
-  app.setApplicationVersion("0.1");
+  app.setApplicationVersion(PROJECT_VERSION);
   app.setWindowIcon(QIcon::fromTheme("evtest-qt"));
 
   std::vector<QString> args;

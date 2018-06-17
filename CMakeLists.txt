@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 2.8)
-project(evtest-qt)
+cmake_minimum_required(VERSION 3.0)
+project(evtest-qt VERSION 0.1.0)
 
 include(GNUInstallDirs)
 
@@ -45,8 +45,10 @@ endif()
 
 add_definitions(${WARNINGS_CXX_FLAGS})
 
-# remove 'override' keyboard from source
+# remove 'override' keyword from source
 add_definitions(-Doverride=)
+
+add_definitions(-DPROJECT_VERSION="${PROJECT_VERSION}")
 
 include_directories(SYSTEM
   ${QT_INCLUDE_DIR}

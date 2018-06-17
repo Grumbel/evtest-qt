@@ -5,6 +5,6 @@ Icon=evtest-qt
 Terminal=false
 Exec=evtest-qt
 Type=Application
-Categories=Utility;Games
+Categories=Utility;System;Game
 StartupNotify=false
 Terminal=false

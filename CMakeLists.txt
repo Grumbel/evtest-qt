@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.0)
-project(evtest-qt VERSION 0.1.0)
+project(evtest-qt)
 
 include(GNUInstallDirs)
 
@@ -24,6 +24,17 @@ option(WERROR "Turn warnings into errors" OFF)
 option(USE_QT5 "Use Qt5 instead of Qt4" OFF)
 option(BUILD_TESTS "Build test cases" OFF)
 
+find_package(Git REQUIRED)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always HEAD
+  OUTPUT_VARIABLE GIT_REPO_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+execute_process(COMMAND ${GIT_EXECUTABLE} log -n 1 --pretty=%cd --date=format:%Y-%m-%d ${GIT_REPO_VERSION}
+  OUTPUT_VARIABLE GIT_REPO_DATE
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+add_definitions(-DEVTEST_QT_VERSION="${GIT_REPO_VERSION}")
 
 if(USE_QT5)
   find_package(Qt5Widgets REQUIRED)
@@ -53,8 +64,6 @@ add_definitions(${WARNINGS_CXX_FLAGS})
 
 # remove 'override' keyword from source
 add_definitions(-Doverride=)
-
-add_definitions(-DPROJECT_VERSION="${PROJECT_VERSION}")
 
 include_directories(SYSTEM
   ${QT_INCLUDE_DIR}

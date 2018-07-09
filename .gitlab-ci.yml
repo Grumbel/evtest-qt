@@ -25,6 +25,7 @@ before_script:
   - lsb_release -a
   - apt-get -qq -y install
     build-essential
+    git
     cmake
     g++-8
     g++-5

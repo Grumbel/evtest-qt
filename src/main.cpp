@@ -27,7 +27,8 @@ void print_help()
             << "\n"
             << "   DEVICE  event device file to start with\n"
             << "\n"
-            << "   -h, --help   Print help\n";
+            << "   -v, --version   Print version number\n"
+            << "   -h, --help      Print help\n";
 }
 
 int main(int argc, char** argv)
@@ -46,6 +47,12 @@ int main(int argc, char** argv)
         strcmp(argv[i], "--help") == 0)
     {
       print_help();
+      return 0;
+    }
+    else if (strcmp(argv[i], "-v") == 0 ||
+             strcmp(argv[i], "--version") == 0)
+    {
+      std::cout << "evtest-qt " << EVTEST_QT_VERSION << std::endl;
       return 0;
     }
     else

@@ -15,25 +15,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.0)
-project(evtest-qt)
-
+project(evtest-qt VERSION 0.2.0)
+# $Id$
 include(GNUInstallDirs)
 
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 option(BUILD_TESTS "Build test cases" OFF)
 
-find_package(Git REQUIRED)
+find_package(Git)
+if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+  execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always HEAD
+    OUTPUT_VARIABLE GIT_REPO_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always HEAD
-  OUTPUT_VARIABLE GIT_REPO_VERSION
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${GIT_EXECUTABLE} log -n 1 --pretty=%cd --date=format:%Y-%m-%d ${GIT_REPO_VERSION}
+    OUTPUT_VARIABLE GIT_REPO_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+else()
+  set(GIT_REPO_VERSION "${PROJECT_VERSION}")
+endif()
 
-execute_process(COMMAND ${GIT_EXECUTABLE} log -n 1 --pretty=%cd --date=format:%Y-%m-%d ${GIT_REPO_VERSION}
-  OUTPUT_VARIABLE GIT_REPO_DATE
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-add_definitions(-DEVTEST_QT_VERSION="${GIT_REPO_VERSION}")
+add_definitions(-DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
 find_package(Qt5 COMPONENTS Core Widgets)
 

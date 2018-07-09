@@ -22,6 +22,8 @@ include(GNUInstallDirs)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 option(USE_QT5 "Use Qt5 instead of Qt4" OFF)
+option(BUILD_TESTS "Build test cases" OFF)
+
 
 if(USE_QT5)
   find_package(Qt5Widgets REQUIRED)
@@ -42,6 +44,10 @@ if(WERROR)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -Werror)
 endif()
+
+if (BUILD_TESTS)
+  enable_testing()
+endif(BUILD_TESTS)
 
 add_definitions(${WARNINGS_CXX_FLAGS})
 
@@ -91,5 +97,15 @@ install(FILES
 install(FILES
   evtest-qt.desktop
   DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+
+configure_file(evtest-qt.appdata.xml.in ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+
+if (BUILD_TESTS)
+  add_test(NAME evtest-qt.appdata.xml
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND appstream-util validate-relax ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml)
+endif(BUILD_TESTS)
 
 # EOF #

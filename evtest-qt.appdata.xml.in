@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<component type="console-application">
+<component type="desktop-application">
   <id>io.gitlab.evtest_qt.evtest_qt</id>
   <name>evtest-qt</name>
   <metadata_license>CC0-1.0</metadata_license>
@@ -9,10 +8,10 @@
   <summary>A simple input device tester for Qt</summary>
   <description>
     <p>
-      `evtest-qt` is a simple input device tester for Linux, it is
-      analogous to the `evtest` command line tool, but with a Qt based
-      GUI. It provides a list of attached input devices and displays
-      which axis and buttons are pressed.
+      A simple input device tester for Linux, it is analogous to the
+      'evtest' command line tool, but with a Qt based GUI. It provides
+      a list of attached input devices and displays which axis and
+      buttons are pressed.
     </p>
   </description>
   <url type="homepage">https://evtest-qt.gitlab.io</url>

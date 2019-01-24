@@ -21,7 +21,6 @@ include(GNUInstallDirs)
 
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
-option(USE_QT5 "Use Qt5 instead of Qt4" OFF)
 option(BUILD_TESTS "Build test cases" OFF)
 
 find_package(Git REQUIRED)
@@ -36,12 +35,15 @@ execute_process(COMMAND ${GIT_EXECUTABLE} log -n 1 --pretty=%cd --date=format:%Y
 
 add_definitions(-DEVTEST_QT_VERSION="${GIT_REPO_VERSION}")
 
-if(USE_QT5)
-  find_package(Qt5Widgets REQUIRED)
-  set(QT_LIBRARIES ${Qt5Widgets_LIBRARIES})
+find_package(Qt5 COMPONENTS Core Widgets)
+
+if (Qt5_FOUND)
+  set(QT_LIBRARIES Qt5::Core Qt5::Widgets)
+  message(STATUS "Using Qt version: Qt5")
 else()
   find_package(Qt4 REQUIRED)
   set(QT_LIBRARIES Qt4::QtGui)
+  message(STATUS "Using Qt version: Qt4")
 endif()
 
 if(WARNINGS)

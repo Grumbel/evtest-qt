@@ -17,23 +17,16 @@
 cmake_minimum_required(VERSION 3.0)
 project(evtest-qt)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake)
+
+include(GetProjectVersion)
 include(GNUInstallDirs)
 
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 option(BUILD_TESTS "Build test cases" OFF)
 
-find_package(Git REQUIRED)
-
-execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --always HEAD
-  OUTPUT_VARIABLE GIT_REPO_VERSION
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-execute_process(COMMAND ${GIT_EXECUTABLE} log -n 1 --pretty=%cd --date=format:%Y-%m-%d ${GIT_REPO_VERSION}
-  OUTPUT_VARIABLE GIT_REPO_DATE
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-add_definitions(-DEVTEST_QT_VERSION="${GIT_REPO_VERSION}")
+add_definitions(-DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
 find_package(Qt5 COMPONENTS Core Widgets)
 

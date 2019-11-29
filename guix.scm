@@ -15,8 +15,8 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (set! %load-path
-      (cons* "/ipfs/QmetP3eCAM9q3VPCj9BvjFdWkTA7voycebnXjyfc2zacFE/guix-cocfree_v0.0.0-45-g0fe3c86"
-             %load-path))
+  (cons* "/ipfs/QmeUZkZxWMHKNR4HAGU9G2VRFcyiSFt3JNpuF5RBC9wKZa/guix-cocfree_0.0.0-51-gc2bce55"
+         %load-path))
 
 (use-modules (guix packages)
              (guix build utils)
@@ -31,7 +31,7 @@
   (package
    (name "evtest-qt")
    (version (version-from-source %source-dir))
-   (source (source-from-source %source-dir))
+   (source (source-from-source %source-dir #:version version))
    (arguments
     `(#:tests? #f))
    (inputs

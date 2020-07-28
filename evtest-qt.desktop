@@ -7,4 +7,3 @@ Exec=evtest-qt
 Type=Application
 Categories=Utility;System;Game
 StartupNotify=false
-Terminal=false

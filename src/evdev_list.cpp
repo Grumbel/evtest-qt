@@ -40,7 +40,7 @@ EvdevList::scan(const std::string& evdev_directory)
     while((dentry = readdir(dirp)) != nullptr)
     {
       if (fnmatch("event[0-9]", dentry->d_name, FNM_PATHNAME) == 0 ||
-          fnmatch("event[0-9][0-9]", dentry->d_name, FNM_PATHNAME) == 0)
+          fnmatch("event[0-9][0-9]*", dentry->d_name, FNM_PATHNAME) == 0)
       {
         std::ostringstream str;
         str << evdev_directory << "/" << dentry->d_name;

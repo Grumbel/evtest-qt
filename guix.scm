@@ -15,7 +15,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (set! %load-path
-  (cons* "/ipfs/QmeUZkZxWMHKNR4HAGU9G2VRFcyiSFt3JNpuF5RBC9wKZa/guix-cocfree_0.0.0-51-gc2bce55"
+  (cons* "/ipfs/QmcQaosGtaQ6dsb4iykNihZ2ZTie8om2i7pgHucZ9Ranyq/guix-cocfree_0.0.0-64-gd618440"
          %load-path))
 
 (use-modules (guix packages)

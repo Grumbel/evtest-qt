@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-image: ubuntu:latest
+image: ubuntu:18.04
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
+  - export DEBIAN_FRONTEND=noninteractive
   - apt-get -qq update
   - apt-get -qq -y install lsb-release
   - lsb_release -a

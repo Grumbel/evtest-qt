@@ -29,7 +29,9 @@ EvtestApp::EvtestApp() :
   m_ev_widget(),
   m_device(),
   m_state(),
-  m_notifier()
+  m_notifier(),
+  m_fs_watcher(),
+  m_devlist_refresh_timer()
 {
   //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);
@@ -42,6 +44,15 @@ EvtestApp::EvtestApp() :
 
   QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
                    this, SLOT(on_item_change(int)));
+
+  QObject::connect(&m_fs_watcher, SIGNAL(directoryChanged(const QString&)),
+                   this, SLOT(on_device_dir_change(const QString&)));
+
+  QObject::connect(&m_devlist_refresh_timer, SIGNAL(timeout()),
+                   this, SLOT(on_devlist_refresh_timeout()));
+
+  m_devlist_refresh_timer.setSingleShot(true);
+  m_fs_watcher.addPath("/dev/input");
 
   m_window.show();
 }
@@ -155,6 +166,19 @@ EvtestApp::on_device_change(const std::string& filename)
     m_ev_widget = util::make_unique<QLabel>(err.what());
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
+}
+
+void
+EvtestApp::on_device_dir_change(const QString& dir)
+{
+  m_devlist_refresh_timer.start(1000);
+}
+
+void
+EvtestApp::on_devlist_refresh_timeout()
+{
+  std::cout << "refreshing device list" << std::endl;
+  this->refresh_device_list();
 }
 
 /* EOF */

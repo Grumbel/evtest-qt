@@ -32,11 +32,12 @@
    (name "evtest-qt")
    (version (version-from-source %source-dir))
    (source (source-from-source %source-dir #:version version))
+   (build-system cmake-build-system)
    (arguments
     `(#:tests? #f))
    (inputs
-    `(("qtbase" ,qtbase)))
-   (build-system cmake-build-system)
+    `(("qtbase" ,qtbase-5)
+      ))
    (synopsis (synopsis-from-source %source-dir))
    (description (description-from-source %source-dir))
    (home-page (homepage-from-source %source-dir))

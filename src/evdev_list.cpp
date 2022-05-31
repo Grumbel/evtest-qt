@@ -39,8 +39,13 @@ EvdevList::scan(const std::string& evdev_directory)
     struct dirent* dentry;
     while((dentry = readdir(dirp)) != nullptr)
     {
+      // Valid event device names are event0-31,256-1023, see:
+      // https://github.com/torvalds/linux/blob/master/Documentation/admin-guide/devices.txt
+      // https://github.com/torvalds/linux/blob/master/drivers/input/input.c
       if (fnmatch("event[0-9]", dentry->d_name, FNM_PATHNAME) == 0 ||
-          fnmatch("event[0-9][0-9]*", dentry->d_name, FNM_PATHNAME) == 0)
+          fnmatch("event[0-9][0-9]", dentry->d_name, FNM_PATHNAME) == 0 ||
+          fnmatch("event[0-9][0-9][0-9]", dentry->d_name, FNM_PATHNAME) == 0 ||
+          fnmatch("event[0-9][0-9][0-9][0-9]", dentry->d_name, FNM_PATHNAME) == 0)
       {
         std::ostringstream str;
         str << evdev_directory << "/" << dentry->d_name;

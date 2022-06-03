@@ -87,17 +87,11 @@ EvdevDevice::read_evdev_info()
   std::string phys;
   {
     char c_name[1024] = "unknown";
-    if (ioctl(m_fd, EVIOCGPHYS(sizeof(c_name)), c_name) < 0)
-    {
-      std::ostringstream out;
-      out << m_filename << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+    if (ioctl(m_fd, EVIOCGPHYS(sizeof(c_name)), c_name) < 0) {
+      // only worth a warning, as uinput devices might not have this set
+      std::cerr << m_filename << ": EVIOCGPHYS failed: " << strerror(errno) << std::endl;
     }
-    else
-    {
-      //std::cout << "phys: '" << c_name << "'" << std::endl;
-      phys = c_name;
-    }
+    phys = c_name;
   }
 
   if (false)

@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_ENUM_BOX_HPP
-#define HEADER_XBOXDRV_ENUM_BOX_HPP
+#ifndef HEADER_EVTEST_QT_ENUM_BOX_HPP
+#define HEADER_EVTEST_QT_ENUM_BOX_HPP
 
 #include <map>
 #include <sstream>

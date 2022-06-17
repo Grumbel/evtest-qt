@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_AXIS_WIDGET_HPP
-#define HEADER_AXIS_WIDGET_HPP
+#ifndef HEADER_EVTEST_QT_AXIS_WIDGET_HPP
+#define HEADER_EVTEST_QT_AXIS_WIDGET_HPP
 
 #include <QWidget>
 

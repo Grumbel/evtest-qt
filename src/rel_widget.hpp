@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_REL_WIDGET_HPP
-#define HEADER_REL_WIDGET_HPP
+#ifndef HEADER_EVTEST_QT_REL_WIDGET_HPP
+#define HEADER_EVTEST_QT_REL_WIDGET_HPP
 
 #include <QWidget>
 #include <stdint.h>

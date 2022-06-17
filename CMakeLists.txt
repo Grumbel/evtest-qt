@@ -14,12 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.7)
 project(evtest-qt)
 
 include(mk/cmake/TinyCMMC.cmake)
-
-add_definitions(-DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
 find_package(Qt6 COMPONENTS Core Widgets)
 if(Qt6_FOUND)
@@ -37,44 +35,51 @@ else()
   endif()
 endif()
 
+if(Qt6_FOUND)
+  qt_standard_project_setup()
+else()
+  set(CMAKE_AUTOMOC ON)
+  set(CMAKE_AUTORCC ON)
+  set(CMAKE_AUTOUIC ON)
+endif()
+
 if (BUILD_TESTS)
   enable_testing()
 endif(BUILD_TESTS)
 
-include_directories(SYSTEM
-  ${QT_INCLUDE_DIR}
-  ${QT_QTGUI_INCLUDE_DIR}
-  ${QT_QTCORE_INCLUDE_DIR})
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-
-add_library(jslib STATIC src/
+file(GLOB EVTEST_QT_SOURCES
   src/axis_widget.cpp
-  src/rel_widget.cpp
   src/button_widget.cpp
   src/evdev_device.cpp
-  src/evdev_info.cpp
   src/evdev_enum.cpp
-  src/evdev_state.cpp
+  src/evdev_info.cpp
   src/evdev_list.cpp
+  src/evdev_state.cpp
   src/evdev_widget.cpp
   src/evtest_app.cpp
   src/multitouch_widget.cpp
-  src/stick_widget.cpp)
-target_link_libraries(jslib PUBLIC ${QT_LIBRARIES})
-target_compile_options(jslib PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-
-file(GLOB EVTEST_QT_SOURCES src/main.cpp)
-add_executable(evtest-qt ${EVTEST_QT_SOURCES})
-target_link_libraries(evtest-qt jslib)
+  src/rel_widget.cpp
+  src/stick_widget.cpp
+  )
+add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})
+target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES})
 target_compile_options(evtest-qt PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 
+file(GLOB EVTEST_QT_MAIN_SOURCES
+  src/main.cpp
+  )
+add_executable(evtest-qt_exe ${EVTEST_QT_MAIN_SOURCES})
+target_link_libraries(evtest-qt_exe evtest-qt)
+set_target_properties(evtest-qt_exe PROPERTIES
+  OUTPUT_NAME "evtest-qt")
+target_compile_options(evtest-qt_exe PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+target_compile_definitions(evtest-qt_exe PRIVATE -DEVTEST_QT_VERSION="${PROJECT_VERSION}")
+
 add_executable(evdev-test src/evdev_test.cpp)
-target_link_libraries(evdev-test jslib)
+target_link_libraries(evdev-test evtest-qt)
 target_compile_options(evdev-test PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 
-install(TARGETS evtest-qt
+install(TARGETS evtest-qt_exe
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES

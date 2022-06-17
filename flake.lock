@@ -34,7 +34,31 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "tinycmmc": "tinycmmc"
+      }
+    },
+    "tinycmmc": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1655130564,
+        "narHash": "sha256-bifHHWrPsUhCe5uh5oQzdd95tdpkpySz+o+PvXBXWGE=",
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "rev": "47da91f484162d6efe9d9a6ee9e77afdbf55dee9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "type": "github"
       }
     }
   },

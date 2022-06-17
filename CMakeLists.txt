@@ -17,17 +17,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(evtest-qt)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake)
-
-include(GetProjectVersion)
-include(GNUInstallDirs)
-
-option(WARNINGS "Switch on extra warnings" OFF)
-option(WERROR "Turn warnings into errors" OFF)
-option(BUILD_TESTS "Build test cases" OFF)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+include(mk/cmake/TinyCMMC.cmake)
 
 add_definitions(-DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
@@ -47,26 +37,9 @@ else()
   endif()
 endif()
 
-if(WARNINGS)
-  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
-    -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
-  # -Winline -Wfloat-equal -Wunreachable-code
-endif()
-
-if(WERROR)
-  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
-    -Werror)
-endif()
-
 if (BUILD_TESTS)
   enable_testing()
 endif(BUILD_TESTS)
-
-add_definitions(${WARNINGS_CXX_FLAGS})
-
-# remove 'override' keyword from source
-add_definitions(-Doverride=)
 
 include_directories(SYSTEM
   ${QT_INCLUDE_DIR}
@@ -75,7 +48,6 @@ include_directories(SYSTEM
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 add_library(jslib STATIC src/
   src/axis_widget.cpp
@@ -91,13 +63,16 @@ add_library(jslib STATIC src/
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
 target_link_libraries(jslib PUBLIC ${QT_LIBRARIES})
+target_compile_options(jslib PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})
 target_link_libraries(evtest-qt jslib)
+target_compile_options(evtest-qt PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 
 add_executable(evdev-test src/evdev_test.cpp)
 target_link_libraries(evdev-test jslib)
+target_compile_options(evdev-test PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 
 install(TARGETS evtest-qt
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

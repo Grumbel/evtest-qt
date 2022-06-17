@@ -26,17 +26,25 @@ option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Turn warnings into errors" OFF)
 option(BUILD_TESTS "Build test cases" OFF)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 add_definitions(-DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
-find_package(Qt5 COMPONENTS Core Widgets)
-
-if (Qt5_FOUND)
-  set(QT_LIBRARIES Qt5::Core Qt5::Widgets)
-  message(STATUS "Using Qt version: Qt5")
+find_package(Qt6 COMPONENTS Core Widgets)
+if(Qt6_FOUND)
+  set(QT_LIBRARIES Qt6::Core Qt6::Widgets)
+  message(STATUS "Using Qt version: Qt6")
 else()
-  find_package(Qt4 REQUIRED)
-  set(QT_LIBRARIES Qt4::QtGui)
-  message(STATUS "Using Qt version: Qt4")
+  find_package(Qt5 COMPONENTS Core Widgets)
+  if(Qt5_FOUND)
+    set(QT_LIBRARIES Qt5::Core Qt5::Widgets)
+    message(STATUS "Using Qt version: Qt5")
+  else()
+    find_package(Qt4 REQUIRED)
+    set(QT_LIBRARIES Qt4::QtGui)
+    message(STATUS "Using Qt version: Qt4")
+  endif()
 endif()
 
 if(WARNINGS)
@@ -82,7 +90,7 @@ add_library(jslib STATIC src/
   src/evtest_app.cpp
   src/multitouch_widget.cpp
   src/stick_widget.cpp)
-target_link_libraries(jslib ${QT_LIBRARIES})
+target_link_libraries(jslib PUBLIC ${QT_LIBRARIES})
 
 file(GLOB EVTEST_QT_SOURCES src/main.cpp)
 add_executable(evtest-qt ${EVTEST_QT_SOURCES})

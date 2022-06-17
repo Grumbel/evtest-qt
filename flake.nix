@@ -19,13 +19,14 @@
             nativeBuildInputs = [
               pkgs.cmake
               pkgs.pkgconfig
-              pkgs.qt5.wrapQtAppsHook
+              pkgs.qt6.wrapQtAppsHook
             ];
             buildInputs = [
-              pkgs.qt5.qtbase
+              pkgs.qt6.qtbase
             ];
            };
         };
         defaultPackage = packages.evtest-qt;
-      });
+      }
+    );
 }

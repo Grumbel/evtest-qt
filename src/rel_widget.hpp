@@ -31,7 +31,7 @@ private:
   int m_offset_x;
 
 public:
-  RelWidget(uint16_t code, QWidget* parent=0);
+  RelWidget(uint16_t code, QWidget* parent = nullptr);
   virtual ~RelWidget();
 
   QSize sizeHint() const  override { return QSize(128, 16); };

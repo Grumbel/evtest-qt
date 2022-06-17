@@ -30,7 +30,7 @@ private:
   int32_t m_value;
 
 public:
-  ButtonWidget(uint16_t code, QWidget* parent = 0);
+  ButtonWidget(uint16_t code, QWidget* parent = nullptr);
   virtual ~ButtonWidget();
 
   QSize sizeHint() const  override { return QSize(32, 16); };

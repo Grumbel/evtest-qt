@@ -64,7 +64,7 @@ private:
   QLabel m_device_phys_v_label;
 
 public:
-  EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent=0);
+  EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent = nullptr);
   virtual ~EvdevWidget();
 
 private:

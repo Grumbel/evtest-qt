@@ -31,7 +31,7 @@ private:
   std::vector<MultitouchState> m_mt_states;
 
 public:
-  MultitouchWidget(QWidget* parent_=0);
+  MultitouchWidget(QWidget* parent_ = nullptr);
   virtual ~MultitouchWidget();
 
   QSize sizeHint() const  override { return QSize(400, 225); };

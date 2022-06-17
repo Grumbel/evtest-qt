@@ -34,7 +34,7 @@ private:
   int m_value;
 
 public:
-  AxisWidget(uint16_t code, int min, int max, QWidget* parent=0);
+  AxisWidget(uint16_t code, int min, int max, QWidget* parent = nullptr);
   virtual ~AxisWidget();
 
   QSize sizeHint() const  override { return QSize(128, 16); };

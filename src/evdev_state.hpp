@@ -24,10 +24,9 @@
 #include <vector>
 
 #include "evdev_info.hpp"
+#include "fwd.hpp"
 
 namespace evtest_qt {
-
-class EvdevInfo;
 
 class MultitouchState
 {

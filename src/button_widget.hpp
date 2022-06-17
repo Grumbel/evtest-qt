@@ -19,9 +19,9 @@
 
 #include <QWidget>
 
-namespace evtest_qt {
+#include "fwd.hpp"
 
-class EvdevState;
+namespace evtest_qt {
 
 class ButtonWidget : public QWidget
 {

@@ -40,11 +40,9 @@
 #include "evdev_enum.hpp"
 #include "evdev_list.hpp"
 #include "evdev_state.hpp"
+#include "fwd.hpp"
 
 namespace evtest_qt {
-
-class EvdevState;
-class EvdevDevice;
 
 class EvtestApp : public QObject
 {

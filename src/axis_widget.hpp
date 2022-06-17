@@ -21,9 +21,9 @@
 
 #include <stdint.h>
 
-namespace evtest_qt {
+#include "fwd.hpp"
 
-class EvdevState;
+namespace evtest_qt {
 
 class AxisWidget : public QWidget
 {

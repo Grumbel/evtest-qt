@@ -1,5 +1,5 @@
 // evtest-qt - A graphical joystick tester
-// Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
+// Copyright (C) 2022 Ingo Ruhnke <grumbel@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,40 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_REL_WIDGET_HPP
-#define HEADER_REL_WIDGET_HPP
-
-#include <QWidget>
-#include <stdint.h>
-
-#include "fwd.hpp"
+#ifndef HEADER_EVTEST_QT_FWD_HPP
+#define HEADER_EVTEST_QT_FWD_HPP
 
 namespace evtest_qt {
 
-class RelWidget : public QWidget
-{
-  Q_OBJECT
-
-private:
-  uint16_t m_code;
-  int m_offset_x;
-
-public:
-  RelWidget(uint16_t code, QWidget* parent = nullptr);
-  virtual ~RelWidget();
-
-  QSize sizeHint() const  override { return QSize(128, 16); };
-
-public slots:
-  void on_change(const EvdevState& state);
-
-protected:
-  void paintEvent(QPaintEvent* ev) override;
-
-private:
-  RelWidget(const RelWidget&) = delete;
-  RelWidget& operator=(const RelWidget&) = delete;
-};
+class AbsInfo;
+class AxisWidget;
+class ButtonWidget;
+class EvDevAbsEnum;
+class EvDevKeyEnum;
+class EvDevRelEnum;
+class EvdevDevice;
+class EvdevInfo;
+class EvdevList;
+class EvdevState;
+class EvdevWidget;
+class EvtestApp;
+class MultitouchState;
+class MultitouchWidget;
+class RelWidget;
+class StickWidget;
 
 } // namespace evtest_qt
 

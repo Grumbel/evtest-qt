@@ -21,6 +21,8 @@
 
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 MultitouchWidget::MultitouchWidget(QWidget* parent_) :
   QWidget(parent_),
   m_max_x(),
@@ -76,5 +78,7 @@ MultitouchWidget::paintEvent(QPaintEvent* ev)
   }
   painter.drawRect(0, 0, width(), height());
 }
+
+} // namespace evtest_qt
 
 /* EOF */

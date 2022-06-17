@@ -21,6 +21,8 @@
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 RelWidget::RelWidget(uint16_t code, QWidget* parent_) :
   QWidget(parent_),
   m_code(code),
@@ -55,5 +57,7 @@ RelWidget::on_change(const EvdevState& state)
   //m_offset_y += state.get_rel_value(m_code);
   update();
 }
+
+} // namespace evtest_qt
 
 /* EOF */

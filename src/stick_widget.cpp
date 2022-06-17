@@ -16,5 +16,9 @@
 
 #include "stick_widget.hpp"
 
+namespace evtest_qt {
+
+
+} // namespace evtest_qt
 
 /* EOF */

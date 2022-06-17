@@ -22,6 +22,8 @@
 
 #include "evdev_info.hpp"
 
+namespace evtest_qt {
+
 class EvdevDevice
 {
 private:
@@ -41,6 +43,8 @@ private:
   EvdevDevice(const EvdevDevice&) = delete;
   EvdevDevice& operator=(const EvdevDevice&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

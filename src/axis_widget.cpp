@@ -21,6 +21,8 @@
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent_) :
   QWidget(parent_),
   m_code(code),
@@ -88,5 +90,7 @@ AxisWidget::paintEvent(QPaintEvent* ev)
   painter.setPen(QColor(0, 0, 0));
   painter.drawRect(0, 0, width(), height());
 }
+
+} // namespace evtest_qt
 
 /* EOF */

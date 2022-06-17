@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+namespace evtest_qt {
+
 template<class Enum>
 class EnumBox
 {
@@ -113,6 +115,8 @@ public:
     return lst;
   }
 };
+
+} // namespace evtest_qt
 
 #endif
 

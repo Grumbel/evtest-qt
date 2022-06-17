@@ -17,6 +17,8 @@
 #ifndef HEADER_EVTEST_QT_UTIL_HPP
 #define HEADER_EVTEST_QT_UTIL_HPP
 
+namespace evtest_qt {
+
 namespace util {
 
 template<typename T, typename... Args>
@@ -26,6 +28,8 @@ std::unique_ptr<T> make_unique(Args&&... args)
 }
 
 } // namespace util
+
+} // namespace evtest_qt
 
 #endif
 

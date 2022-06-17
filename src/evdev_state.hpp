@@ -25,6 +25,8 @@
 
 #include "evdev_info.hpp"
 
+namespace evtest_qt {
+
 class EvdevInfo;
 
 class MultitouchState
@@ -75,6 +77,8 @@ public:
 signals:
   void sig_change(const EvdevState& state) const;
 };
+
+} // namespace evtest_qt
 
 #endif
 

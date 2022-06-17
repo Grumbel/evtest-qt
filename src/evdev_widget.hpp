@@ -41,6 +41,8 @@
 #include "evdev_list.hpp"
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 class EvdevWidget : public QWidget
 {
   Q_OBJECT
@@ -71,6 +73,8 @@ private:
   EvdevWidget(const EvdevWidget&) = delete;
   EvdevWidget& operator=(const EvdevWidget&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

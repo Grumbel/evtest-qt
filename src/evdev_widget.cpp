@@ -21,6 +21,8 @@
 
 #include <iostream>
 
+namespace evtest_qt {
+
 EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent_) :
   QWidget(parent_),
   m_vbox_layout(this),
@@ -145,5 +147,7 @@ EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget
 EvdevWidget::~EvdevWidget()
 {
 }
+
+} // namespace evtest_qt
 
 /* EOF */

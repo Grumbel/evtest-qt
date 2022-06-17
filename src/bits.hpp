@@ -17,6 +17,8 @@
 #ifndef HEADER_BITS_HPP
 #define HEADER_BITS_HPP
 
+namespace evtest_qt {
+
 namespace bits {
 
 constexpr size_t bits_per_long = sizeof(unsigned long) * 8;
@@ -27,6 +29,8 @@ constexpr size_t long_idx(size_t x) { return x / bits_per_long; }
 constexpr bool test_bit(size_t bit, const unsigned long* array) { return (array[long_idx(bit)] >> off(bit)) & 1; }
 
 } // namespace bits
+
+} // namespace evtest_qt
 
 #endif
 

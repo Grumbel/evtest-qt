@@ -16,4 +16,8 @@
 
 #include "evdev_info.hpp"
 
+namespace evtest_qt {
+
+} // namespace evtest_qt
+
 /* EOF */

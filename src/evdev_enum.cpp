@@ -18,6 +18,8 @@
 
 #include <linux/input.h>
 
+namespace evtest_qt {
+
 class EvDevRelEnum : public EnumBox<uint16_t>
 {
 public:
@@ -95,5 +97,7 @@ std::string evdev_rel_name(uint16_t code)
     return it->second;
   }
 }
+
+} // namespace evtest_qt
 
 /* EOF */

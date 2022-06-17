@@ -20,6 +20,8 @@
 #include <QWidget>
 #include <stdint.h>
 
+namespace evtest_qt {
+
 class EvdevState;
 
 class RelWidget : public QWidget
@@ -46,6 +48,8 @@ private:
   RelWidget(const RelWidget&) = delete;
   RelWidget& operator=(const RelWidget&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

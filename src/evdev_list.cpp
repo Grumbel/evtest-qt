@@ -24,6 +24,8 @@
 #include <fnmatch.h>
 #include <sstream>
 
+namespace evtest_qt {
+
 std::vector<std::string>
 EvdevList::scan(const std::string& evdev_directory)
 {
@@ -75,5 +77,7 @@ EvdevList::scan(const std::string& evdev_directory)
     return devices;
   }
 }
+
+} // namespace evtest_qt
 
 /* EOF */

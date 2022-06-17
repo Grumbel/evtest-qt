@@ -20,6 +20,8 @@
 
 #include "evtest_app.hpp"
 
+namespace {
+
 void print_help()
 {
   std::cout << "Usage: evtest-qt [DEVICE]\n"
@@ -30,6 +32,8 @@ void print_help()
             << "   -v, --version   Print version number\n"
             << "   -h, --help      Print help\n";
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {
@@ -69,7 +73,7 @@ int main(int argc, char** argv)
     }
   }
 
-  EvtestApp evtest;
+  evtest_qt::EvtestApp evtest;
   evtest.refresh_device_list();
 
   if (!args.empty())

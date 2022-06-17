@@ -19,6 +19,8 @@
 
 #include <QWidget>
 
+namespace evtest_qt {
+
 class EvdevState;
 
 class ButtonWidget : public QWidget
@@ -45,6 +47,8 @@ private:
   ButtonWidget(const ButtonWidget&) = delete;
   ButtonWidget& operator=(const ButtonWidget&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

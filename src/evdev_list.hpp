@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+namespace evtest_qt {
+
 class EvdevList
 {
 public:
@@ -29,6 +31,8 @@ private:
   EvdevList(const EvdevList&) = delete;
   EvdevList& operator=(const EvdevList&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

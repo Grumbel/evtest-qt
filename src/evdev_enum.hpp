@@ -19,9 +19,13 @@
 
 #include "enum_box.hpp"
 
+namespace evtest_qt {
+
 std::string evdev_abs_name(uint16_t code);
 std::string evdev_key_name(uint16_t code);
 std::string evdev_rel_name(uint16_t code);
+
+} // namespace evtest_qt
 
 #endif
 

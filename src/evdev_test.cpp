@@ -21,6 +21,8 @@
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
 
+namespace evtest_qt {
+
 void print_evdev_info(const EvdevInfo& info)
 {
   std::cout << "name: '" << info.name << "'" << std::endl;
@@ -117,6 +119,8 @@ void print_events(EvdevDevice& device)
   }
 }
 
+} // namespace evtest_qt
+
 int main(int argc, char** argv)
 {
   if (argc != 2)
@@ -128,7 +132,7 @@ int main(int argc, char** argv)
   {
     try
     {
-      auto device = EvdevDevice::open(argv[1]);
+      auto device = evtest_qt::EvdevDevice::open(argv[1]);
       auto info = device->read_evdev_info();
 
       print_evdev_info(info);

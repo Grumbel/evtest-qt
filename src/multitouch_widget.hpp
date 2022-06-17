@@ -21,6 +21,8 @@
 
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 class MultitouchWidget : public QWidget
 {
   Q_OBJECT
@@ -46,6 +48,8 @@ private:
   MultitouchWidget(const MultitouchWidget&) = delete;
   MultitouchWidget& operator=(const MultitouchWidget&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+namespace evtest_qt {
+
 EvdevState::EvdevState(const EvdevInfo& info) :
   m_info(info),
   m_abs_values(info.abss.size(), 0),
@@ -110,5 +112,7 @@ EvdevState::get_mt_state(int slot) const
 {
   return m_mt_states[static_cast<size_t>(slot)];
 }
+
+} // namespace evtest_qt
 
 /* EOF */

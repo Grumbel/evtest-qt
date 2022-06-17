@@ -28,6 +28,8 @@
 
 #include "bits.hpp"
 
+namespace evtest_qt {
+
 class AbsInfo
 {
 public:
@@ -190,6 +192,8 @@ public:
     }
   }
 };
+
+} // namespace evtest_qt
 
 #endif
 

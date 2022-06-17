@@ -21,6 +21,8 @@
 
 #include <stdint.h>
 
+namespace evtest_qt {
+
 class EvdevState;
 
 class AxisWidget : public QWidget
@@ -46,6 +48,8 @@ public slots:
 protected:
   void paintEvent(QPaintEvent* event) override;
 };
+
+} // namespace evtest_qt
 
 #endif
 

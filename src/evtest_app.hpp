@@ -41,6 +41,8 @@
 #include "evdev_list.hpp"
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 class EvdevState;
 class EvdevDevice;
 
@@ -80,6 +82,8 @@ private:
   EvtestApp(const EvtestApp&) = delete;
   EvtestApp& operator=(const EvtestApp&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

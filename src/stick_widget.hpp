@@ -17,6 +17,8 @@
 #ifndef HEADER_STICK_WIDGET_HPP
 #define HEADER_STICK_WIDGET_HPP
 
+namespace evtest_qt {
+
 class StickWidget
 {
 private:
@@ -28,6 +30,8 @@ private:
   StickWidget(const StickWidget&) = delete;
   StickWidget& operator=(const StickWidget&) = delete;
 };
+
+} // namespace evtest_qt
 
 #endif
 

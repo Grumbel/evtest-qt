@@ -21,6 +21,8 @@
 #include "util.hpp"
 #include "evdev_widget.hpp"
 
+namespace evtest_qt {
+
 EvtestApp::EvtestApp() :
   m_window(),
   m_widget(),
@@ -156,5 +158,7 @@ EvtestApp::on_device_change(const std::string& filename)
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
 }
+
+} // namespace evtest_qt
 
 /* EOF */

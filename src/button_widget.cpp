@@ -21,6 +21,8 @@
 #include "evdev_enum.hpp"
 #include "evdev_state.hpp"
 
+namespace evtest_qt {
+
 ButtonWidget::ButtonWidget(uint16_t code, QWidget* parent_) :
   QWidget(parent_),
   m_code(code),
@@ -79,5 +81,7 @@ ButtonWidget::paintEvent(QPaintEvent* ev)
   painter.setPen(QColor(0, 0, 0));
   painter.drawRect(0, 0, width(), height());
 }
+
+} // namespace evtest_qt
 
 /* EOF */

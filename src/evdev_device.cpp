@@ -29,6 +29,8 @@
 #include "util.hpp"
 #include "bits.hpp"
 
+namespace evtest_qt {
+
 std::unique_ptr<EvdevDevice>
 EvdevDevice::open(const std::string& filename)
 {
@@ -194,5 +196,7 @@ EvdevDevice::read_events(struct input_event* ev, size_t count)
     return rd / static_cast<ssize_t>(sizeof(struct input_event));
   }
 }
+
+} // namespace evtest_qt
 
 /* EOF */

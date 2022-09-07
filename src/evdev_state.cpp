@@ -20,7 +20,7 @@
 
 namespace evtest_qt {
 
-EvdevState::EvdevState(const EvdevInfo& info) :
+EvdevState::EvdevState(EvdevInfo const& info) :
   m_info(info),
   m_abs_values(info.abss.size(), 0),
   m_rel_values(info.rels.size(), 0),
@@ -36,7 +36,7 @@ EvdevState::EvdevState(const EvdevInfo& info) :
 }
 
 void
-EvdevState::update(const input_event& ev)
+EvdevState::update(input_event const& ev)
 {
   switch(ev.type)
   {

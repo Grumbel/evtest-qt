@@ -23,7 +23,7 @@
 
 namespace evtest_qt {
 
-EvdevWidget::EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent_) :
+EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent_) :
   QWidget(parent_),
   m_vbox_layout(this),
   m_info_layout(),

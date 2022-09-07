@@ -39,14 +39,14 @@ public:
   QSize sizeHint() const  override { return QSize(128, 16); };
 
 public slots:
-  void on_change(const EvdevState& state);
+  void on_change(EvdevState const& state);
 
 protected:
   void paintEvent(QPaintEvent* ev) override;
 
 private:
-  RelWidget(const RelWidget&) = delete;
-  RelWidget& operator=(const RelWidget&) = delete;
+  RelWidget(RelWidget const&) = delete;
+  RelWidget& operator=(RelWidget const&) = delete;
 };
 
 } // namespace evtest_qt

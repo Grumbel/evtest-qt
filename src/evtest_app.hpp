@@ -65,11 +65,11 @@ public:
   EvtestApp();
 
   void refresh_device_list();
-  void select_device(const QString& device);
+  void select_device(QString const& device);
 
 private:
   void on_data(EvdevDevice& device, EvdevState& state);
-  void on_device_change(const std::string& filename);
+  void on_device_change(std::string const& filename);
 
 public slots:
   void on_item_change(int index);
@@ -77,8 +77,8 @@ public slots:
   void on_notification(int);
 
 private:
-  EvtestApp(const EvtestApp&) = delete;
-  EvtestApp& operator=(const EvtestApp&) = delete;
+  EvtestApp(EvtestApp const&) = delete;
+  EvtestApp& operator=(EvtestApp const&) = delete;
 };
 
 } // namespace evtest_qt

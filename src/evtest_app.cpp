@@ -63,7 +63,7 @@ EvtestApp::refresh_device_list()
       str << dev.substr(11) << ": " << info.name;
       m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       std::cout << dev << ": " << err.what() << std::endl;
 
@@ -75,7 +75,7 @@ EvtestApp::refresh_device_list()
 }
 
 void
-EvtestApp::select_device(const QString& device)
+EvtestApp::select_device(QString const& device)
 {
   on_device_change(device.toStdString());
 }
@@ -127,7 +127,7 @@ EvtestApp::on_notification(int fd)
 }
 
 void
-EvtestApp::on_device_change(const std::string& filename)
+EvtestApp::on_device_change(std::string const& filename)
 {
   m_notifier.reset();
   m_state.reset();
@@ -151,7 +151,7 @@ EvtestApp::on_device_change(const std::string& filename)
 
     QTimer::singleShot(0, this, SIGNAL(on_shrink_action()));
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::cout << filename << ": " << err.what() << std::endl;
     m_ev_widget = util::make_unique<QLabel>(err.what());

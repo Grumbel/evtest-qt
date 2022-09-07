@@ -36,7 +36,7 @@ MultitouchWidget::~MultitouchWidget()
 }
 
 void
-MultitouchWidget::on_change(const EvdevState& state)
+MultitouchWidget::on_change(EvdevState const& state)
 {
   m_max_x = state.get_info().get_absinfo(ABS_MT_POSITION_X).maximum;
   m_max_y = state.get_info().get_absinfo(ABS_MT_POSITION_Y).maximum;

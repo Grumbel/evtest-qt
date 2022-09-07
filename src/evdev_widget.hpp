@@ -66,12 +66,12 @@ private:
   QLabel m_device_phys_v_label;
 
 public:
-  EvdevWidget(const EvdevState& state, const EvdevInfo& info, QWidget* parent = nullptr);
+  EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent = nullptr);
   virtual ~EvdevWidget();
 
 private:
-  EvdevWidget(const EvdevWidget&) = delete;
-  EvdevWidget& operator=(const EvdevWidget&) = delete;
+  EvdevWidget(EvdevWidget const&) = delete;
+  EvdevWidget& operator=(EvdevWidget const&) = delete;
 };
 
 } // namespace evtest_qt

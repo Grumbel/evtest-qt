@@ -51,7 +51,7 @@ RelWidget::paintEvent(QPaintEvent* ev)
 }
 
 void
-RelWidget::on_change(const EvdevState& state)
+RelWidget::on_change(EvdevState const& state)
 {
   m_offset_x += state.get_rel_value(m_code);
   //m_offset_y += state.get_rel_value(m_code);

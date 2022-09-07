@@ -43,7 +43,7 @@ public:
 
 public slots:
   void set_axis_pos(int v);
-  void on_change(const EvdevState& state);
+  void on_change(EvdevState const& state);
 
 protected:
   void paintEvent(QPaintEvent* event) override;

@@ -31,8 +31,8 @@ private:
   std::string m_filename;
 
 public:
-  static std::unique_ptr<EvdevDevice> open(const std::string& filename);
-  EvdevDevice(int fd, const std::string& filename);
+  static std::unique_ptr<EvdevDevice> open(std::string const& filename);
+  EvdevDevice(int fd, std::string const& filename);
   ~EvdevDevice();
 
   EvdevInfo read_evdev_info();
@@ -40,8 +40,8 @@ public:
   int get_fd() const { return m_fd; }
 
 private:
-  EvdevDevice(const EvdevDevice&) = delete;
-  EvdevDevice& operator=(const EvdevDevice&) = delete;
+  EvdevDevice(EvdevDevice const&) = delete;
+  EvdevDevice& operator=(EvdevDevice const&) = delete;
 };
 
 } // namespace evtest_qt

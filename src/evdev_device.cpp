@@ -32,7 +32,7 @@
 namespace evtest_qt {
 
 std::unique_ptr<EvdevDevice>
-EvdevDevice::open(const std::string& filename)
+EvdevDevice::open(std::string const& filename)
 {
   int fd = ::open(filename.c_str(), O_RDWR | O_NONBLOCK);
   if (fd < 0)
@@ -50,7 +50,7 @@ EvdevDevice::open(const std::string& filename)
   }
 }
 
-EvdevDevice::EvdevDevice(int fd, const std::string& filename) :
+EvdevDevice::EvdevDevice(int fd, std::string const& filename) :
   m_fd(fd),
   m_filename(filename)
 {

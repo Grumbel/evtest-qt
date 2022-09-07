@@ -27,8 +27,8 @@ public:
   virtual ~StickWidget();
 
 private:
-  StickWidget(const StickWidget&) = delete;
-  StickWidget& operator=(const StickWidget&) = delete;
+  StickWidget(StickWidget const&) = delete;
+  StickWidget& operator=(StickWidget const&) = delete;
 };
 
 } // namespace evtest_qt

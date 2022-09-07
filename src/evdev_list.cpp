@@ -27,7 +27,7 @@
 namespace evtest_qt {
 
 std::vector<std::string>
-EvdevList::scan(const std::string& evdev_directory)
+EvdevList::scan(std::string const& evdev_directory)
 {
   DIR* dirp = opendir(evdev_directory.c_str());
   if (!dirp)

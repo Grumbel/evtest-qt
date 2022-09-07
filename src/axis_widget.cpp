@@ -45,7 +45,7 @@ AxisWidget::set_axis_pos(int v)
 }
 
 void
-AxisWidget::on_change(const EvdevState& state)
+AxisWidget::on_change(EvdevState const& state)
 {
   int old_value = m_value;
   m_value = state.get_abs_value(m_code);

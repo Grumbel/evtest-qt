@@ -23,7 +23,7 @@
 
 namespace evtest_qt {
 
-void print_evdev_info(const EvdevInfo& info)
+void print_evdev_info(EvdevInfo const& info)
 {
   std::cout << "name: '" << info.name << "'" << std::endl;
 

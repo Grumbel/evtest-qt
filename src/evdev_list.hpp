@@ -25,11 +25,11 @@ namespace evtest_qt {
 class EvdevList
 {
 public:
-  static std::vector<std::string> scan(const std::string& evdev_directory);
+  static std::vector<std::string> scan(std::string const& evdev_directory);
 
 private:
-  EvdevList(const EvdevList&) = delete;
-  EvdevList& operator=(const EvdevList&) = delete;
+  EvdevList(EvdevList const&) = delete;
+  EvdevList& operator=(EvdevList const&) = delete;
 };
 
 } // namespace evtest_qt

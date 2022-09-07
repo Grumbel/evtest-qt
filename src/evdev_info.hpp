@@ -50,7 +50,7 @@ public:
   {
   }
 
-  AbsInfo(const input_absinfo& absinfo) :
+  AbsInfo(input_absinfo const& absinfo) :
     value(absinfo.value),
     minimum(absinfo.minimum),
     maximum(absinfo.maximum),

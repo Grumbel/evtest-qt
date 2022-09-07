@@ -60,9 +60,9 @@ private:
   std::vector<MultitouchState> m_mt_states;
 
 public:
-  EvdevState(const EvdevInfo& info);
+  EvdevState(EvdevInfo const& info);
 
-  void update(const input_event& ev);
+  void update(input_event const& ev);
 
   int get_key_value(uint16_t code) const;
   int get_abs_value(uint16_t code) const;
@@ -71,10 +71,10 @@ public:
   int get_mt_slot_count() const;
   MultitouchState get_mt_state(int slot) const;
 
-  const EvdevInfo& get_info() const { return m_info; }
+  EvdevInfo const& get_info() const { return m_info; }
 
 signals:
-  void sig_change(const EvdevState& state) const;
+  void sig_change(EvdevState const& state) const;
 };
 
 } // namespace evtest_qt

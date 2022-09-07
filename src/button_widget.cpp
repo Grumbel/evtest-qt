@@ -36,7 +36,7 @@ ButtonWidget::~ButtonWidget()
 }
 
 void
-ButtonWidget::on_change(const EvdevState& state)
+ButtonWidget::on_change(EvdevState const& state)
 {
   int old_value = m_value;
   m_value = state.get_key_value(m_code);

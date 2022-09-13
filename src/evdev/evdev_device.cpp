@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "util.hpp"
 #include "util/bits.hpp"
 
 namespace evtest_qt {
@@ -43,7 +42,7 @@ EvdevDevice::open(std::string const& filename)
   }
   else
   {
-    auto controller = util::make_unique<EvdevDevice>(fd, filename);
+    auto controller = std::make_unique<EvdevDevice>(fd, filename);
     //controller->read_evdev_info();
     //controller->start_qsocket_notifier();
     return controller;

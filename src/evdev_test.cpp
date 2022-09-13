@@ -18,8 +18,8 @@
 #include <iomanip>
 #include <string.h>
 
-#include "evdev_device.hpp"
-#include "evdev_enum.hpp"
+#include "evdev/evdev_device.hpp"
+#include "evdev/evdev_enum.hpp"
 
 namespace evtest_qt {
 

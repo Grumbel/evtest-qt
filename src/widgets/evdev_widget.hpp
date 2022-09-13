@@ -36,10 +36,10 @@
 
 #include "axis_widget.hpp"
 #include "button_widget.hpp"
-#include "evdev_device.hpp"
-#include "evdev_enum.hpp"
-#include "evdev_list.hpp"
-#include "evdev_state.hpp"
+#include "evdev/evdev_device.hpp"
+#include "evdev/evdev_enum.hpp"
+#include "evdev/evdev_list.hpp"
+#include "evdev/evdev_state.hpp"
 #include "fwd.hpp"
 #include "rel_widget.hpp"
 

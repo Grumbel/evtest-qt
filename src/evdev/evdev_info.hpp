@@ -26,7 +26,7 @@
 #include <linux/input.h>
 #include <stdexcept>
 
-#include "bits.hpp"
+#include "util/bits.hpp"
 
 namespace evtest_qt {
 

@@ -27,7 +27,7 @@
 #include <iostream>
 
 #include "util.hpp"
-#include "bits.hpp"
+#include "util/bits.hpp"
 
 namespace evtest_qt {
 

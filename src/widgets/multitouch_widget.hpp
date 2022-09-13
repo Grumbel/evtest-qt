@@ -19,7 +19,7 @@
 
 #include <QWidget>
 
-#include "evdev_state.hpp"
+#include "evdev/evdev_state.hpp"
 
 namespace evtest_qt {
 

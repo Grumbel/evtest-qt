@@ -49,11 +49,7 @@ endif(BUILD_TESTS)
 
 file(GLOB EVTEST_QT_SOURCES
   src/widgets/*.cpp
-  src/evdev_device.cpp
-  src/evdev_enum.cpp
-  src/evdev_info.cpp
-  src/evdev_list.cpp
-  src/evdev_state.cpp
+  src/evdev/*.cpp
   src/evtest_app.cpp
   )
 add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})

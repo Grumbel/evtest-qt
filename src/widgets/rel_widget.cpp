@@ -18,8 +18,8 @@
 
 #include <QPainter>
 
-#include "evdev_enum.hpp"
-#include "evdev_state.hpp"
+#include "evdev/evdev_enum.hpp"
+#include "evdev/evdev_state.hpp"
 
 namespace evtest_qt {
 

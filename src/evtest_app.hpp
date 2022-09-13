@@ -35,8 +35,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "axis_widget.hpp"
-#include "button_widget.hpp"
+#include "widgets/axis_widget.hpp"
+#include "widgets/button_widget.hpp"
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
 #include "evdev_list.hpp"

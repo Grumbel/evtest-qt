@@ -20,7 +20,7 @@
 #include <QMenuBar>
 
 #include "util.hpp"
-#include "evdev_widget.hpp"
+#include "widgets/evdev_widget.hpp"
 
 namespace evtest_qt {
 

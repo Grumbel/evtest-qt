@@ -48,20 +48,16 @@ if (BUILD_TESTS)
 endif(BUILD_TESTS)
 
 file(GLOB EVTEST_QT_SOURCES
-  src/axis_widget.cpp
-  src/button_widget.cpp
+  src/widgets/*.cpp
   src/evdev_device.cpp
   src/evdev_enum.cpp
   src/evdev_info.cpp
   src/evdev_list.cpp
   src/evdev_state.cpp
-  src/evdev_widget.cpp
   src/evtest_app.cpp
-  src/multitouch_widget.cpp
-  src/rel_widget.cpp
-  src/stick_widget.cpp
   )
 add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})
+target_include_directories(evtest-qt PUBLIC src/)
 target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES})
 target_compile_options(evtest-qt PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 

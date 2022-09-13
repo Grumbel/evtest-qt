@@ -14,8 +14,10 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-      in rec {
-        packages = flake-utils.lib.flattenTree {
+      in {
+        packages = rec {
+          default = evtest-qt;
+
           evtest-qt = pkgs.stdenv.mkDerivation {
             pname = "evtest-qt";
             version = "0.2.0";
@@ -30,6 +32,7 @@
               pkgconfig
               qt6.wrapQtAppsHook
             ];
+
             buildInputs = with pkgs; [
               qt6.qtbase
             ] ++ [
@@ -37,7 +40,6 @@
             ];
            };
         };
-        defaultPackage = packages.evtest-qt;
       }
     );
 }

@@ -20,6 +20,11 @@
             pname = "evtest-qt";
             version = "0.2.0";
             src = nixpkgs.lib.cleanSource ./.;
+            cmakeFlags = [
+              "-DWARNINGS=ON"
+              "-DWERROR=ON"
+            ];
+
             nativeBuildInputs = with pkgs; [
               cmake
               pkgconfig

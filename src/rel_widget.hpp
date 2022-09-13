@@ -28,21 +28,26 @@ class RelWidget : public QWidget
 {
   Q_OBJECT
 
-private:
-  uint16_t m_code;
-  int m_offset_x;
-
 public:
   RelWidget(uint16_t code, QWidget* parent = nullptr);
   virtual ~RelWidget();
 
   QSize sizeHint() const  override { return QSize(128, 16); };
 
+  void set_verification_mode(bool value);
+
 public slots:
   void on_change(EvdevState const& state);
 
 protected:
   void paintEvent(QPaintEvent* ev) override;
+
+private:
+  bool m_verification_mode;
+  bool m_unused;
+
+  uint16_t m_code;
+  int m_offset_x;
 
 private:
   RelWidget(RelWidget const&) = delete;

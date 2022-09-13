@@ -29,24 +29,30 @@ class AxisWidget : public QWidget
 {
   Q_OBJECT
 
-private:
-  uint16_t m_code;
-  int m_min;
-  int m_max;
-  int m_value;
-
 public:
   AxisWidget(uint16_t code, int min, int max, QWidget* parent = nullptr);
   virtual ~AxisWidget();
 
-  QSize sizeHint() const  override { return QSize(128, 16); };
+  QSize sizeHint() const override { return QSize(128, 16); };
+
+  void set_verification_mode(bool value);
 
 public slots:
-  void set_axis_pos(int v);
   void on_change(EvdevState const& state);
 
 protected:
   void paintEvent(QPaintEvent* event) override;
+
+private:
+  bool m_verification_mode;
+
+  int m_used_min;
+  int m_used_max;
+
+  uint16_t m_code;
+  int m_min;
+  int m_max;
+  int m_value;
 };
 
 } // namespace evtest_qt

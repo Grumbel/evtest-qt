@@ -17,15 +17,16 @@
 #ifndef HEADER_EVTEST_QT_EVTEST_APP_HPP
 #define HEADER_EVTEST_QT_EVTEST_APP_HPP
 
-#include <QMainWindow>
 #include <QApplication>
+#include <QComboBox>
 #include <QGridLayout>
+#include <QLabel>
 #include <QLabel>
 #include <QLayout>
 #include <QMainWindow>
+#include <QMainWindow>
 #include <QSocketNotifier>
 #include <QVBoxLayout>
-#include <QComboBox>
 
 #include <fcntl.h>
 #include <iostream>
@@ -48,21 +49,9 @@ class EvtestApp : public QObject
 {
   Q_OBJECT
 
-private:
-  QMainWindow m_window;
-  QWidget m_widget;
-
-  QVBoxLayout m_vbox_layout;
-  QComboBox m_evdev_list_box;
-
-  std::unique_ptr<QWidget> m_ev_widget;
-
-  std::unique_ptr<EvdevDevice> m_device;
-  std::unique_ptr<EvdevState> m_state;
-  std::unique_ptr<QSocketNotifier> m_notifier;
-
 public:
-  EvtestApp();
+  EvtestApp(QApplication& app);
+  ~EvtestApp();
 
   void refresh_device_list();
   void select_device(QString const& device);
@@ -75,6 +64,24 @@ public slots:
   void on_item_change(int index);
   void on_shrink_action();
   void on_notification(int);
+
+private:
+  QApplication& m_app;
+  QMainWindow m_window;
+  QWidget m_widget;
+
+  QAction m_action_exit;
+  QAction m_action_verification_mode;
+
+  QVBoxLayout m_vbox_layout;
+  QComboBox m_evdev_list_box;
+
+  std::unique_ptr<EvdevWidget> m_ev_widget;
+  std::unique_ptr<QLabel> m_ev_widget_placeholder;
+
+  std::unique_ptr<EvdevDevice> m_device;
+  std::unique_ptr<EvdevState> m_state;
+  std::unique_ptr<QSocketNotifier> m_notifier;
 
 private:
   EvtestApp(EvtestApp const&) = delete;

@@ -17,35 +17,67 @@
 #include "evtest_app.hpp"
 
 #include <QTimer>
+#include <QMenuBar>
 
 #include "util.hpp"
 #include "evdev_widget.hpp"
 
 namespace evtest_qt {
 
-EvtestApp::EvtestApp() :
+EvtestApp::EvtestApp(QApplication& app) :
+  m_app(app),
   m_window(),
   m_widget(),
+  m_action_exit("Exit"),
+  m_action_verification_mode("Verification Mode"),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
   m_ev_widget(),
+  m_ev_widget_placeholder(),
   m_device(),
   m_state(),
   m_notifier()
 {
+  // setup actions
+  connect(&m_action_exit, &QAction::triggered, [this](){
+    std::cout << "Exit" << std::endl;
+    m_app.quit();
+  });
+
+  m_action_verification_mode.setCheckable(true);
+  m_action_verification_mode.setToolTip("Highlight buttons have been used");
+  connect(&m_action_verification_mode, &QAction::toggled, [this](bool value){
+    if (m_ev_widget) {
+      m_ev_widget->set_verification_mode(value);
+    }
+  });
+
+  // build GUI
+  QMenuBar* menubar = m_window.menuBar();
+  QMenu* file_menu = menubar->addMenu("&File");
+  file_menu->addAction(&m_action_exit);
+
+
+  QMenu* view_menu = menubar->addMenu("&View");
+  view_menu->addAction(&m_action_verification_mode);
+
   //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);
 
   m_vbox_layout.addWidget(&m_evdev_list_box);
 
-  m_ev_widget = util::make_unique<QLabel>("nothing selected");
-  static_cast<QLabel*>(m_ev_widget.get())->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-  m_vbox_layout.addWidget(m_ev_widget.get());
+  m_ev_widget_placeholder = util::make_unique<QLabel>("nothing selected");
+  m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+  m_vbox_layout.addWidget(m_ev_widget_placeholder.get());
 
   QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
                    this, SLOT(on_item_change(int)));
 
   m_window.show();
+}
+
+EvtestApp::~EvtestApp()
+{
 }
 
 void
@@ -141,7 +173,9 @@ EvtestApp::on_device_change(std::string const& filename)
 
     m_state = util::make_unique<EvdevState>(info);
 
+    m_ev_widget_placeholder.reset();
     m_ev_widget = util::make_unique<EvdevWidget>(*m_state, info);
+    m_ev_widget->set_verification_mode(m_action_verification_mode.isChecked());
     m_vbox_layout.addWidget(m_ev_widget.get());
 
     m_notifier = util::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
@@ -154,7 +188,8 @@ EvtestApp::on_device_change(std::string const& filename)
   catch(std::exception const& err)
   {
     std::cout << filename << ": " << err.what() << std::endl;
-    m_ev_widget = util::make_unique<QLabel>(err.what());
+    m_ev_widget.reset();
+    m_ev_widget_placeholder = util::make_unique<QLabel>(err.what());
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
 }

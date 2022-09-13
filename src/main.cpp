@@ -73,7 +73,7 @@ int main(int argc, char** argv)
     }
   }
 
-  evtest_qt::EvtestApp evtest;
+  evtest_qt::EvtestApp evtest(app);
   evtest.refresh_device_list();
 
   if (!args.empty())

@@ -25,6 +25,8 @@ namespace evtest_qt {
 
 RelWidget::RelWidget(uint16_t code, QWidget* parent_) :
   QWidget(parent_),
+  m_verification_mode(false),
+  m_unused(true),
   m_code(code),
   m_offset_x()
 {
@@ -36,9 +38,26 @@ RelWidget::~RelWidget()
 }
 
 void
+RelWidget::set_verification_mode(bool value)
+{
+  m_verification_mode = value;
+
+  m_unused = true;
+
+  update();
+}
+
+void
 RelWidget::paintEvent(QPaintEvent* ev)
 {
   QPainter painter(this);
+
+  if (m_verification_mode) {
+    if (!m_unused) {
+      painter.setPen(Qt::NoPen);
+      painter.fillRect(0, 0, width(), height(), QColor(0, 255, 0));
+    }
+  }
 
   int x_pos = ((m_offset_x % width()) + width()) % width();
   int b = 8;
@@ -53,8 +72,14 @@ RelWidget::paintEvent(QPaintEvent* ev)
 void
 RelWidget::on_change(EvdevState const& state)
 {
-  m_offset_x += state.get_rel_value(m_code);
-  //m_offset_y += state.get_rel_value(m_code);
+  int const value = state.get_rel_value(m_code);
+
+  if (value != 0) {
+    m_unused = false;
+  }
+
+  m_offset_x += value;
+
   update();
 }
 

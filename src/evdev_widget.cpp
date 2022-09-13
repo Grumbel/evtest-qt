@@ -37,7 +37,10 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
   m_driver_version_v_label(),
   m_device_id_v_label(),
   m_device_name_v_label(),
-  m_device_phys_v_label()
+  m_device_phys_v_label(),
+  m_axis_widgets(),
+  m_button_widgets(),
+  m_rel_widgets()
 {
   m_info_layout.setColumnStretch(0, 0);
   m_info_layout.setColumnStretch(1, 1);
@@ -102,6 +105,7 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
     QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
                      axis_widget.get(), SLOT(on_change(EvdevState const&)));
 
+    m_axis_widgets.emplace_back(axis_widget.get());
     m_axis_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_axis_layout.addWidget(axis_widget.release(), static_cast<int>(i), 1);
   }
@@ -118,6 +122,7 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
     QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
                      rel_widget.get(), SLOT(on_change(EvdevState const&)));
 
+    m_rel_widgets.emplace_back(rel_widget.get());
     m_rel_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_rel_layout.addWidget(rel_widget.release(), static_cast<int>(i), 1);
   }
@@ -133,6 +138,7 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
                      button_widget.get(), SLOT(on_change(EvdevState const&)));
 
     button_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    m_button_widgets.emplace_back(button_widget.get());
     m_button_layout.addWidget(button_widget.release(), row, col);
 
     col += 1;
@@ -146,6 +152,22 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
 
 EvdevWidget::~EvdevWidget()
 {
+}
+
+void
+EvdevWidget::set_verification_mode(bool value)
+{
+  for (auto* const widget : m_axis_widgets) {
+    widget->set_verification_mode(value);
+  }
+
+  for (auto* const widget : m_button_widgets) {
+    widget->set_verification_mode(value);
+  }
+
+  for (auto* const widget : m_rel_widgets) {
+    widget->set_verification_mode(value);
+  }
 }
 
 } // namespace evtest_qt

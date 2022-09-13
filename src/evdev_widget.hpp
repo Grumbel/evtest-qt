@@ -32,20 +32,28 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 #include "axis_widget.hpp"
-#include "rel_widget.hpp"
 #include "button_widget.hpp"
 #include "evdev_device.hpp"
 #include "evdev_enum.hpp"
 #include "evdev_list.hpp"
 #include "evdev_state.hpp"
+#include "fwd.hpp"
+#include "rel_widget.hpp"
 
 namespace evtest_qt {
 
 class EvdevWidget : public QWidget
 {
   Q_OBJECT
+
+public:
+  EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent = nullptr);
+  virtual ~EvdevWidget();
+
+  void set_verification_mode(bool value);
 
 private:
   QVBoxLayout m_vbox_layout;
@@ -65,9 +73,9 @@ private:
   QLabel m_device_name_v_label;
   QLabel m_device_phys_v_label;
 
-public:
-  EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent = nullptr);
-  virtual ~EvdevWidget();
+  std::vector<AxisWidget*> m_axis_widgets;
+  std::vector<ButtonWidget*> m_button_widgets;
+  std::vector<RelWidget*> m_rel_widgets;
 
 private:
   EvdevWidget(EvdevWidget const&) = delete;

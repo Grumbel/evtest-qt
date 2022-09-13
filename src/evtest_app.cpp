@@ -56,7 +56,6 @@ EvtestApp::EvtestApp(QApplication& app) :
   QMenu* file_menu = menubar->addMenu("&File");
   file_menu->addAction(&m_action_exit);
 
-
   QMenu* view_menu = menubar->addMenu("&View");
   view_menu->addAction(&m_action_verification_mode);
 
@@ -109,6 +108,12 @@ void
 EvtestApp::select_device(QString const& device)
 {
   on_device_change(device.toStdString());
+}
+
+void
+EvtestApp::set_verification_mode(bool value)
+{
+  m_action_verification_mode.setChecked(value);
 }
 
 void

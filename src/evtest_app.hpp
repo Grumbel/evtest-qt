@@ -55,6 +55,7 @@ public:
 
   void refresh_device_list();
   void select_device(QString const& device);
+  void set_verification_mode(bool value);
 
 private:
   void on_data(EvdevDevice& device, EvdevState& state);

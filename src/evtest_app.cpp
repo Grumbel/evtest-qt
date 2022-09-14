@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QMenuBar>
 
+#include "widgets/about_dialog.hpp"
 #include "widgets/evdev_widget.hpp"
 
 namespace evtest_qt {
@@ -28,6 +29,7 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_window(),
   m_widget(),
   m_action_exit("Exit"),
+  m_action_show_about("About"),
   m_action_verification_mode("Verification Mode"),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
@@ -41,6 +43,13 @@ EvtestApp::EvtestApp(QApplication& app) :
   connect(&m_action_exit, &QAction::triggered, [this](){
     std::cout << "Exit" << std::endl;
     m_app.quit();
+  });
+
+  m_action_show_about.setToolTip("Show About dialog");
+  connect(&m_action_show_about, &QAction::triggered, [this](bool checked){
+    auto about_dialog = std::make_unique<AboutDialog>(&m_window);
+    about_dialog->show();
+    about_dialog.release();
   });
 
   m_action_verification_mode.setCheckable(true);
@@ -58,6 +67,9 @@ EvtestApp::EvtestApp(QApplication& app) :
 
   QMenu* view_menu = menubar->addMenu("&View");
   view_menu->addAction(&m_action_verification_mode);
+
+  QMenu* help_menu = menubar->addMenu("&Help");
+  help_menu->addAction(&m_action_show_about);
 
   //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);

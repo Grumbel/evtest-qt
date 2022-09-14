@@ -72,6 +72,7 @@ private:
   QWidget m_widget;
 
   QAction m_action_exit;
+  QAction m_action_show_about;
   QAction m_action_verification_mode;
 
   QVBoxLayout m_vbox_layout;

@@ -17,8 +17,6 @@
 #ifndef HEADER_EVTEST_QT_EVDEV_STATE_HPP
 #define HEADER_EVTEST_QT_EVDEV_STATE_HPP
 
-#include <QObject>
-
 #include <stdint.h>
 #include <linux/input.h>
 #include <vector>
@@ -48,21 +46,14 @@ public:
   int tracking_id;
 };
 
-class EvdevState : public QObject
+class EvdevState
 {
-  Q_OBJECT
-
-private:
-  EvdevInfo m_info;
-  std::vector<int32_t> m_abs_values;
-  std::vector<int32_t> m_rel_values;
-  std::vector<int32_t> m_key_values;
-  std::vector<MultitouchState> m_mt_states;
-
 public:
   EvdevState(EvdevInfo const& info);
 
-  void update(input_event const& ev);
+  /** Return true if a sync event was received and the state is
+      complete, false otherwise */
+  bool update(input_event const& ev);
 
   int get_key_value(uint16_t code) const;
   int get_abs_value(uint16_t code) const;
@@ -73,8 +64,13 @@ public:
 
   EvdevInfo const& get_info() const { return m_info; }
 
-signals:
-  void sig_change(EvdevState const& state) const;
+private:
+  EvdevInfo m_info;
+  std::vector<int32_t> m_abs_values;
+  std::vector<int32_t> m_rel_values;
+  std::vector<int32_t> m_key_values;
+  std::vector<MultitouchState> m_mt_states;
+  bool m_complete;
 };
 
 } // namespace evtest_qt

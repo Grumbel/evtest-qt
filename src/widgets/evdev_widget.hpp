@@ -50,9 +50,10 @@ class EvdevWidget : public QWidget
   Q_OBJECT
 
 public:
-  EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent = nullptr);
+  EvdevWidget(EvdevInfo const& info, QWidget* parent = nullptr);
   virtual ~EvdevWidget();
 
+  void set_state(EvdevState const& state);
   void set_verification_mode(bool value);
 
 private:
@@ -76,6 +77,7 @@ private:
   std::vector<AxisWidget*> m_axis_widgets;
   std::vector<ButtonWidget*> m_button_widgets;
   std::vector<RelWidget*> m_rel_widgets;
+  std::vector<MultitouchWidget*> m_multitouch_widgets;
 
 private:
   EvdevWidget(EvdevWidget const&) = delete;

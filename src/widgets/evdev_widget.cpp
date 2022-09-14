@@ -22,7 +22,7 @@
 
 namespace evtest_qt {
 
-EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget* parent_) :
+EvdevWidget::EvdevWidget(EvdevInfo const& info, QWidget* parent_) :
   QWidget(parent_),
   m_vbox_layout(this),
   m_info_layout(),
@@ -39,7 +39,8 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
   m_device_phys_v_label(),
   m_axis_widgets(),
   m_button_widgets(),
-  m_rel_widgets()
+  m_rel_widgets(),
+  m_multitouch_widgets()
 {
   m_info_layout.setColumnStretch(0, 0);
   m_info_layout.setColumnStretch(1, 1);
@@ -64,9 +65,7 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
     auto multitouch_widget = std::make_unique<MultitouchWidget>();
     multitouch_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, SIGNAL(sig_change(EvdevState const &)),
-                     multitouch_widget.get(), SLOT(on_change(EvdevState const &)));
-
+    m_multitouch_widgets.emplace_back(multitouch_widget.get());
     m_vbox_layout.addWidget(multitouch_widget.release());
   }
 
@@ -101,9 +100,6 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     axis_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
-                     axis_widget.get(), SLOT(on_change(EvdevState const&)));
-
     m_axis_widgets.emplace_back(axis_widget.get());
     m_axis_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_axis_layout.addWidget(axis_widget.release(), static_cast<int>(i), 1);
@@ -118,9 +114,6 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     rel_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
-                     rel_widget.get(), SLOT(on_change(EvdevState const&)));
-
     m_rel_widgets.emplace_back(rel_widget.get());
     m_rel_layout.addWidget(label.release(), static_cast<int>(i), 0, Qt::AlignRight);
     m_rel_layout.addWidget(rel_widget.release(), static_cast<int>(i), 1);
@@ -132,9 +125,6 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
   for(size_t i = 0; i < info.keys.size(); ++i)
   {
     auto button_widget = std::make_unique<ButtonWidget>(info.keys[i]);
-
-    QObject::connect(&state, SIGNAL(sig_change(EvdevState const&)),
-                     button_widget.get(), SLOT(on_change(EvdevState const&)));
 
     button_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     m_button_widgets.emplace_back(button_widget.get());
@@ -151,6 +141,26 @@ EvdevWidget::EvdevWidget(EvdevState const& state, EvdevInfo const& info, QWidget
 
 EvdevWidget::~EvdevWidget()
 {
+}
+
+void
+EvdevWidget::set_state(EvdevState const& state)
+{
+  for (auto* const widget : m_axis_widgets) {
+    widget->on_change(state);
+  }
+
+  for (auto* const widget : m_button_widgets) {
+    widget->on_change(state);
+  }
+
+  for (auto* const widget : m_rel_widgets) {
+    widget->on_change(state);
+  }
+
+  for (auto* const widget : m_multitouch_widgets) {
+    widget->on_change(state);
+  }
 }
 
 void

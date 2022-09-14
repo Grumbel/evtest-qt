@@ -25,7 +25,8 @@ EvdevState::EvdevState(EvdevInfo const& info) :
   m_abs_values(info.abss.size(), 0),
   m_rel_values(info.rels.size(), 0),
   m_key_values(info.keys.size(), 0),
-  m_mt_states()
+  m_mt_states(),
+  m_complete(false)
 {
   if (info.has_abs(ABS_MT_SLOT))
   {
@@ -35,19 +36,23 @@ EvdevState::EvdevState(EvdevInfo const& info) :
   }
 }
 
-void
+bool
 EvdevState::update(input_event const& ev)
 {
-  switch(ev.type)
+  if (m_complete)
+  {
+    m_complete = false;
+
+    // clear rel values
+    for(auto& v : m_rel_values) {
+      v = 0;
+    }
+  }
+
+  switch (ev.type)
   {
     case EV_SYN:
-      sig_change(*this);
-
-      // clear rel values
-      for(auto& v : m_rel_values)
-      {
-        v = 0;
-      }
+      m_complete = true;
       break;
 
     case EV_KEY:
@@ -81,6 +86,8 @@ EvdevState::update(input_event const& ev)
       m_rel_values[m_info.get_rel_idx(ev.code)] += ev.value;
       break;
   }
+
+  return m_complete;
 }
 
 int

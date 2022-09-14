@@ -156,7 +156,9 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
     {
       for(ssize_t i = 0; i < num_events; ++i)
       {
-        state.update(ev[static_cast<size_t>(i)]);
+        if (state.update(ev[static_cast<size_t>(i)])) {
+          m_ev_widget->set_state(state);
+        }
       }
     }
   }
@@ -190,7 +192,7 @@ EvtestApp::on_device_change(std::string const& filename)
     m_state = std::make_unique<EvdevState>(info);
 
     m_ev_widget_placeholder.reset();
-    m_ev_widget = std::make_unique<EvdevWidget>(*m_state, info);
+    m_ev_widget = std::make_unique<EvdevWidget>(info);
     m_ev_widget->set_verification_mode(m_action_verification_mode.isChecked());
     m_vbox_layout.addWidget(m_ev_widget.get());
 

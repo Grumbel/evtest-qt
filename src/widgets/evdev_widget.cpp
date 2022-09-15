@@ -177,6 +177,11 @@ EvdevWidget::set_verification_mode(bool value)
   for (auto* const widget : m_rel_widgets) {
     widget->set_verification_mode(value);
   }
+
+  for (auto* const widget : m_multitouch_widgets) {
+    widget->set_verification_mode(value);
+  }
+
 }
 
 } // namespace evtest_qt

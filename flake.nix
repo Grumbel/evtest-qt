@@ -36,7 +36,7 @@
             buildInputs = with pkgs; [
               qt6.qtbase
             ] ++ [
-              tinycmmc.defaultPackage.${system}
+              tinycmmc.packages.${system}.default
             ];
            };
         };

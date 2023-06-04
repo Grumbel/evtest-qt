@@ -2,7 +2,7 @@
   description = "A simple input device tester for Linux";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
 
     tinycmmc.url = "github:grumbel/tinycmmc";
@@ -21,7 +21,9 @@
           evtest-qt = pkgs.stdenv.mkDerivation {
             pname = "evtest-qt";
             version = "0.2.0";
-            src = nixpkgs.lib.cleanSource ./.;
+
+            src = ./.;
+
             cmakeFlags = [
               "-DWARNINGS=ON"
               "-DWERROR=ON"

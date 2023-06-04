@@ -22,6 +22,7 @@ namespace evtest_qt {
 
 EvdevState::EvdevState(EvdevInfo const& info) :
   m_info(info),
+  m_time(),
   m_abs_values(info.abss.size(), 0),
   m_rel_values(info.rels.size(), 0),
   m_key_values(info.keys.size(), 0),
@@ -52,6 +53,7 @@ EvdevState::update(input_event const& ev)
   switch (ev.type)
   {
     case EV_SYN:
+      m_time = ev.time.tv_sec * 1000 + ev.time.tv_usec / 1000;
       m_complete = true;
       break;
 
@@ -88,6 +90,12 @@ EvdevState::update(input_event const& ev)
   }
 
   return m_complete;
+}
+
+long int
+EvdevState::get_time() const
+{
+  return m_time;
 }
 
 int

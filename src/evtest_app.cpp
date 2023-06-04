@@ -20,6 +20,7 @@
 #include <QMenuBar>
 
 #include "widgets/about_dialog.hpp"
+#include "widgets/evgraph_widget.hpp"
 #include "widgets/evdev_widget.hpp"
 
 namespace evtest_qt {
@@ -31,9 +32,11 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_action_exit("Exit"),
   m_action_show_about("About"),
   m_action_verification_mode("Verification Mode"),
+  m_action_show_graph("Show Event Graph"),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
   m_ev_widget(),
+  m_evgraph_widget(),
   m_ev_widget_placeholder(),
   m_device(),
   m_state(),
@@ -54,9 +57,22 @@ EvtestApp::EvtestApp(QApplication& app) :
 
   m_action_verification_mode.setCheckable(true);
   m_action_verification_mode.setToolTip("Highlight buttons have been used");
-  connect(&m_action_verification_mode, &QAction::toggled, [this](bool value){
+  connect(&m_action_verification_mode, &QAction::toggled, [this](bool checked){
     if (m_ev_widget) {
-      m_ev_widget->set_verification_mode(value);
+      m_ev_widget->set_verification_mode(checked);
+    }
+  });
+
+  m_action_show_graph.setCheckable(true);
+  m_action_show_graph.setToolTip("Show Event Graph");
+  connect(&m_action_show_graph, &QAction::toggled, [this](bool checked){
+    if (m_evgraph_widget) {
+      m_vbox_layout.removeWidget(m_evgraph_widget);
+      m_evgraph_widget = nullptr;
+    } else {
+      auto evgraph_widget = std::make_unique<EvgraphWidget>();
+      evgraph_widget->setMinimumSize(100, 100);
+      m_vbox_layout.addWidget(m_evgraph_widget = evgraph_widget.release());
     }
   });
 
@@ -67,6 +83,7 @@ EvtestApp::EvtestApp(QApplication& app) :
 
   QMenu* view_menu = menubar->addMenu("&View");
   view_menu->addAction(&m_action_verification_mode);
+  view_menu->addAction(&m_action_show_graph);
 
   QMenu* help_menu = menubar->addMenu("&Help");
   help_menu->addAction(&m_action_show_about);
@@ -158,6 +175,10 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
       {
         if (state.update(ev[static_cast<size_t>(i)])) {
           m_ev_widget->set_state(state);
+
+          if (m_evgraph_widget) {
+            m_evgraph_widget->set_state(state);
+          }
         }
       }
     }
@@ -196,6 +217,23 @@ EvtestApp::on_device_change(std::string const& filename)
     m_ev_widget->set_verification_mode(m_action_verification_mode.isChecked());
     m_vbox_layout.addWidget(m_ev_widget.get());
 
+    if (m_evgraph_widget) {
+      m_vbox_layout.removeWidget(m_evgraph_widget);
+    }
+
+    if (m_action_show_graph.isChecked()) {
+      auto evgraph_widget = std::make_unique<EvgraphWidget>();
+      //evgraph_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+      evgraph_widget->setMinimumSize(100, 100);
+      //evgraph_widget->update();
+      m_vbox_layout.addWidget(m_evgraph_widget = evgraph_widget.release());
+    } else {
+      if (m_evgraph_widget) {
+        m_vbox_layout.removeWidget(m_evgraph_widget);
+        m_evgraph_widget = nullptr;
+      }
+    }
+
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
 
     QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
@@ -208,6 +246,8 @@ EvtestApp::on_device_change(std::string const& filename)
     std::cout << filename << ": " << err.what() << std::endl;
     m_ev_widget.reset();
     m_ev_widget_placeholder = std::make_unique<QLabel>(err.what());
+    m_vbox_layout.removeWidget(m_evgraph_widget);
+    m_evgraph_widget = nullptr;
     m_vbox_layout.addWidget(m_ev_widget.get());
   }
 }

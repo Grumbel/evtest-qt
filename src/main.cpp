@@ -84,6 +84,14 @@ Options parse_args(int argc, char** argv)
   return opts;
 }
 
+class Application
+{
+public:
+  Application()
+  {
+  }
+};
+
 } // namespace evtest_qt
 
 int main(int argc, char** argv)

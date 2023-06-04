@@ -74,11 +74,13 @@ private:
   QAction m_action_exit;
   QAction m_action_show_about;
   QAction m_action_verification_mode;
+  QAction m_action_show_graph;
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;
 
   std::unique_ptr<EvdevWidget> m_ev_widget;
+  EvgraphWidget* m_evgraph_widget;
   std::unique_ptr<QLabel> m_ev_widget_placeholder;
 
   std::unique_ptr<EvdevDevice> m_device;

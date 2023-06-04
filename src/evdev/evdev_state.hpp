@@ -51,9 +51,14 @@ class EvdevState
 public:
   EvdevState(EvdevInfo const& info);
 
+  //EvdevState(EvdevState const& other) = default;
+  //EvdevState& operator=(EvdevState const& other) = default;
+
   /** Return true if a sync event was received and the state is
       complete, false otherwise */
   bool update(input_event const& ev);
+
+  long int get_time() const;
 
   int get_key_value(uint16_t code) const;
   int get_abs_value(uint16_t code) const;
@@ -66,6 +71,7 @@ public:
 
 private:
   EvdevInfo m_info;
+  long int m_time;
   std::vector<int32_t> m_abs_values;
   std::vector<int32_t> m_rel_values;
   std::vector<int32_t> m_key_values;

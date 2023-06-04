@@ -30,6 +30,7 @@ class EvdevInfo;
 class EvdevList;
 class EvdevState;
 class EvdevWidget;
+class EvgraphWidget;
 class EvtestApp;
 class MultitouchState;
 class MultitouchWidget;

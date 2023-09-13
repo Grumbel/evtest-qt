@@ -82,14 +82,4 @@ install(FILES
   evtest-qt.desktop
   DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-configure_file(evtest-qt.appdata.xml.in ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
-
-if (BUILD_TESTS)
-  add_test(NAME evtest-qt.appdata.xml
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND appstream-util validate-relax ${CMAKE_CURRENT_BINARY_DIR}/evtest-qt.appdata.xml)
-endif(BUILD_TESTS)
-
 # EOF #

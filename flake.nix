@@ -2,7 +2,7 @@
   description = "A simple input device tester for Linux";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
 
     tinycmmc.url = "github:grumbel/tinycmmc";
@@ -31,7 +31,7 @@
 
             nativeBuildInputs = with pkgs; [
               cmake
-              pkgconfig
+              pkg-config
               qt6.wrapQtAppsHook
             ];
 

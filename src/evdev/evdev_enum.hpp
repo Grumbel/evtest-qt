@@ -17,6 +17,8 @@
 #ifndef HEADER_EVTEST_QT_EVDEV_ENUM_HPP
 #define HEADER_EVTEST_QT_EVDEV_ENUM_HPP
 
+#include <cstdint>
+#include <string>
 #include "util/enum_box.hpp"
 
 namespace evtest_qt {

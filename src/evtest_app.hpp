@@ -17,6 +17,7 @@
 #ifndef HEADER_EVTEST_QT_EVTEST_APP_HPP
 #define HEADER_EVTEST_QT_EVTEST_APP_HPP
 
+#include <QAction>
 #include <QApplication>
 #include <QComboBox>
 #include <QGridLayout>

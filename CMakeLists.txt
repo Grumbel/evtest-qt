@@ -63,7 +63,6 @@ if(WARNINGS)
       -Wsign-conversion
       -Wdouble-promotion
       -Wformat=2
-      -Wnull-dereference
       -Wold-style-cast
       -Woverloaded-virtual
       -Wnon-virtual-dtor

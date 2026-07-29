@@ -112,14 +112,13 @@ EventGraphWidget::push_state(EvdevState const& state)
 
   Sample s;
   s.t_ms = m_clock.elapsed();
-  s.abs_values.resize(m_abs_channels.size());
-  s.key_values.resize(m_key_codes.size());
-
-  for (size_t i = 0; i < m_abs_channels.size(); ++i) {
-    s.abs_values[i] = state.get_abs_value(m_abs_channels[i].code);
+  s.abs_values.reserve(m_abs_channels.size());
+  for (AbsChannel const& ch : m_abs_channels) {
+    s.abs_values.push_back(state.get_abs_value(ch.code));
   }
-  for (size_t i = 0; i < m_key_codes.size(); ++i) {
-    s.key_values[i] = state.get_key_value(m_key_codes[i]);
+  s.key_values.reserve(m_key_codes.size());
+  for (uint16_t code : m_key_codes) {
+    s.key_values.push_back(state.get_key_value(code));
   }
 
   m_samples.push_back(std::move(s));

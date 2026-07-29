@@ -110,6 +110,8 @@ EvtestApp::EvtestApp(QApplication& app) :
   connect(m_udev_monitor.get(), SIGNAL(monitor_error(QString)),
           this, SLOT(on_udev_monitor_error(QString)));
 
+  append_log(QStringLiteral("evtest-qt %1")
+             .arg(QStringLiteral(EVTEST_QT_VERSION)));
   if (m_udev_monitor->is_valid()) {
     append_log(QStringLiteral("listening for input device add/remove (udev)"));
   } else {

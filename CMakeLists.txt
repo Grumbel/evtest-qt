@@ -124,6 +124,7 @@ add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})
 target_include_directories(evtest-qt PUBLIC src/ ${LIBUDEV_INCLUDE_DIRS})
 target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES} ${LIBUDEV_LIBRARIES})
 target_compile_options(evtest-qt PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS} ${LIBUDEV_CFLAGS_OTHER})
+target_compile_definitions(evtest-qt PRIVATE -DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
 file(GLOB EVTEST_QT_MAIN_SOURCES
   src/main.cpp

@@ -48,8 +48,9 @@ Extra warnings: `cmake .. -DWARNINGS=ON`
 Usage
 -----
 
-Access to `/dev/input/event*` often needs root or suitable group
-membership:
+Reading `/dev/input/event*` needs permission. Most distributions grant
+that via the `input` group (`usermod -aG input $USER`, then re-login).
+Otherwise run as root:
 
 ```bash
 sudo ./build/evtest-qt

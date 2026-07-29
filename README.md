@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/Grumbel/evtest-qt.svg?branch=master)](https://travis-ci.org/Grumbel/evtest-qt)
-
 evtest-qt
 =========
 
@@ -52,7 +50,7 @@ cmake ..
 make
 ```
 
-Extra warnings: `cmake .. -DWARNINGS=ON`
+Extra warnings: `cmake .. -DWARNINGS=ON` (and optionally `-DWERROR=ON`).
 
 
 Usage
@@ -63,8 +61,8 @@ that via the `input` group (`usermod -aG input $USER`, then re-login).
 Otherwise run as root:
 
 ```bash
-sudo ./build/evtest-qt
-sudo ./build/evtest-qt /dev/input/event1
+./build/evtest-qt
+./build/evtest-qt /dev/input/event1
 ```
 
 Options: `-h` / `--help`, `-v` / `--version`, `--verification-mode`.
@@ -74,10 +72,17 @@ Nix
 ---
 
 ```bash
-nix run github:Grumbel/evtest-qt
+nix run github:Grumbel/evtest-qt          # Qt6 (default)
+nix run github:Grumbel/evtest-qt#evtest-qt5
 ```
 
-From a local checkout: `nix run` (pass args after `--`).
+From a local checkout:
+
+```bash
+nix run .#evtest-qt6    # same as nix run / .#evtest-qt
+nix run .#evtest-qt5
+nix flake check         # includes reuse lint
+```
 
 
 Screenshots

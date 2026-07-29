@@ -77,6 +77,7 @@ private:
   QAction m_action_exit;
   QAction m_action_show_about;
   QAction m_action_verification_mode;
+  QAction m_action_hide_event_log;
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;

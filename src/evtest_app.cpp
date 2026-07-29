@@ -37,6 +37,7 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_action_exit("Exit"),
   m_action_show_about("About"),
   m_action_verification_mode("Verification Mode"),
+  m_action_hide_event_log("Hide Event Log"),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
   m_device_log(),
@@ -68,12 +69,20 @@ EvtestApp::EvtestApp(QApplication& app) :
     }
   });
 
+  m_action_hide_event_log.setCheckable(true);
+  m_action_hide_event_log.setChecked(false);
+  m_action_hide_event_log.setToolTip("Hide the input device event log");
+  connect(&m_action_hide_event_log, &QAction::toggled, [this](bool hide){
+    m_device_log.setVisible(!hide);
+  });
+
   QMenuBar* menubar = m_window.menuBar();
   QMenu* file_menu = menubar->addMenu("&File");
   file_menu->addAction(&m_action_exit);
 
   QMenu* view_menu = menubar->addMenu("&View");
   view_menu->addAction(&m_action_verification_mode);
+  view_menu->addAction(&m_action_hide_event_log);
 
   QMenu* help_menu = menubar->addMenu("&Help");
   help_menu->addAction(&m_action_show_about);

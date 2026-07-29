@@ -51,6 +51,19 @@
             ];
           };
         };
+
+        checks = {
+          reuse = pkgs.stdenvNoCC.mkDerivation {
+            name = "reuse-lint";
+            src = ./.;
+            nativeBuildInputs = [ pkgs.reuse ];
+            dontConfigure = true;
+            dontBuild = true;
+            doCheck = true;
+            checkPhase = "reuse lint";
+            installPhase = "mkdir -p $out";
+          };
+        };
       }
     );
 }

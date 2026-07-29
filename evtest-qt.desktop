@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
-# SPDX-License-Identifier: GPL-3.0-or-later
-
 [Desktop Entry]
 Name=evtest-qt
 Comment=Linux input device tester using Qt

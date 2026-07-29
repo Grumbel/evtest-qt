@@ -5,6 +5,10 @@ path = [
     "VERSION",
     "flake.lock",
     "screenshot.png",
+    "README.md",
+    "AGENTS.md",
+    "evtest-qt.svg",
+    "evtest-qt.desktop",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "2015-2026 Ingo Ruhnke <grumbel@gmail.com>"

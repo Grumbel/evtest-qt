@@ -1,8 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
-SPDX-License-Identifier: GPL-3.0-or-later
--->
-
 [![Build Status](https://travis-ci.org/Grumbel/evtest-qt.svg?branch=master)](https://travis-ci.org/Grumbel/evtest-qt)
 
 evtest-qt
@@ -38,6 +33,14 @@ Dependencies
 - **libudev**
 - **libevdev**
 - **CMake** ≥ 3.7, **C++23**, **pkg-config**
+
+Ubuntu / Debian:
+
+```bash
+sudo apt install build-essential cmake pkg-config qt6-base-dev libudev-dev libevdev-dev
+```
+
+(Use `qtbase5-dev` instead of `qt6-base-dev` for Qt5.)
 
 
 Compiling

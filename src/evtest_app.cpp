@@ -24,6 +24,7 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <array>
 
 #include "widgets/about_dialog.hpp"
 #include "widgets/evdev_widget.hpp"
@@ -391,8 +392,8 @@ EvtestApp::on_device_change(std::string const& filename)
     QString path = QString::fromStdString(filename);
     append_log(QStringLiteral("open failed %1: %2")
                .arg(device_href(path, path.section(QLatin1Char('/'), -1)),
-                    QString::fromLocal8Bit(err.what()).toHtmlEscaped()));
-    m_ev_widget_placeholder = std::make_unique<QLabel>(QString::fromLocal8Bit(err.what()));
+                    QString::fromUtf8(err.what()).toHtmlEscaped()));
+    m_ev_widget_placeholder = std::make_unique<QLabel>(QString::fromUtf8(err.what()));
     m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
     m_vbox_layout.insertWidget(1, m_ev_widget_placeholder.get(), /*stretch=*/1);
   }

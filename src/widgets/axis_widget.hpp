@@ -46,6 +46,7 @@ protected:
 private:
   bool m_verification_mode;
 
+  bool m_has_used_range;
   int m_used_min;
   int m_used_max;
 

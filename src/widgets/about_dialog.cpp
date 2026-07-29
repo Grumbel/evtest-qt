@@ -26,6 +26,7 @@ AboutDialog::AboutDialog(QWidget* parent) :
   QDialog(parent)
 {
   setWindowTitle(QStringLiteral("About evtest-qt"));
+  setAttribute(Qt::WA_DeleteOnClose);
 
   auto icon_label = std::make_unique<QLabel>();
   icon_label->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);

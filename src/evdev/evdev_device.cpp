@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 #include <unistd.h>
 #include <iostream>
 
@@ -33,7 +34,8 @@ namespace evtest_qt {
 std::unique_ptr<EvdevDevice>
 EvdevDevice::open(std::string const& filename)
 {
-  int fd = ::open(filename.c_str(), O_RDWR | O_NONBLOCK);
+  // O_RDONLY is enough to read events and is more likely to succeed for non-root users
+  int fd = ::open(filename.c_str(), O_RDONLY | O_NONBLOCK);
   if (fd < 0)
   {
     std::ostringstream out;
@@ -42,10 +44,7 @@ EvdevDevice::open(std::string const& filename)
   }
   else
   {
-    auto controller = std::make_unique<EvdevDevice>(fd, filename);
-    //controller->read_evdev_info();
-    //controller->start_qsocket_notifier();
-    return controller;
+    return std::make_unique<EvdevDevice>(fd, filename);
   }
 }
 
@@ -182,18 +181,19 @@ ssize_t
 EvdevDevice::read_events(struct input_event* ev, size_t count)
 {
   ssize_t rd = ::read(m_fd, ev, sizeof(struct input_event) * count);
-  if (rd < EAGAIN)
+  if (rd < 0)
+  {
+    if (errno == EAGAIN)
+    {
+      return 0;
+    }
+    return rd;
+  }
+  if (rd == 0)
   {
     return 0;
   }
-  else if (rd < 0)
-  {
-    return rd;
-  }
-  else
-  {
-    return rd / static_cast<ssize_t>(sizeof(struct input_event));
-  }
+  return rd / static_cast<ssize_t>(sizeof(struct input_event));
 }
 
 } // namespace evtest_qt

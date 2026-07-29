@@ -78,17 +78,16 @@ MultitouchWidget::paintEvent(QPaintEvent* ev)
   if (m_verification_mode)
   {
     for (QPoint const& p : m_history) {
-      painter.fillRect(p.x() * width() / m_max_x - b,
-                       p.y() * width() / m_max_x - b,
-                       2 * b, 2 * b,
-                       QColor(0, 255, 0));
+      int const hx = (m_max_x != 0) ? (p.x() * width() / m_max_x) : 0;
+      int const hy = (m_max_y != 0) ? (p.y() * height() / m_max_y) : 0;
+      painter.fillRect(hx - b, hy - b, 2 * b, 2 * b, QColor(0, 255, 0));
     }
   }
 
   for(size_t slot = 0; slot < m_mt_states.size(); ++slot)
   {
-    int const x_pos = m_mt_states[slot].x * width() / m_max_x;
-    int const y_pos = m_mt_states[slot].y * height() / m_max_y;
+    int const x_pos = (m_max_x != 0) ? (m_mt_states[slot].x * width() / m_max_x) : 0;
+    int const y_pos = (m_max_y != 0) ? (m_mt_states[slot].y * height() / m_max_y) : 0;
 
     if (m_mt_states[slot].tracking_id == -1)
     {

@@ -28,6 +28,7 @@ namespace evtest_qt {
 AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent_) :
   QWidget(parent_),
   m_verification_mode(false),
+  m_has_used_range(false),
   m_used_min(0),
   m_used_max(0),
   m_code(code),
@@ -50,6 +51,7 @@ AxisWidget::set_verification_mode(bool value)
 {
   m_verification_mode = value;
 
+  m_has_used_range = false;
   m_used_min = 0;
   m_used_max = 0;
 
@@ -62,8 +64,14 @@ AxisWidget::on_change(EvdevState const& state)
   int old_value = m_value;
   m_value = state.get_abs_value(m_code);
 
-  m_used_min = std::min(m_used_min, m_value);
-  m_used_max = std::max(m_used_max, m_value);
+  if (!m_has_used_range) {
+    m_used_min = m_value;
+    m_used_max = m_value;
+    m_has_used_range = true;
+  } else {
+    m_used_min = std::min(m_used_min, m_value);
+    m_used_max = std::max(m_used_max, m_value);
+  }
 
   if (old_value != m_value)
   {
@@ -86,7 +94,7 @@ AxisWidget::paintEvent(QPaintEvent* ev)
   }
 
   if (m_verification_mode) {
-    if (m_used_min != m_used_max) {
+    if (m_has_used_range && m_used_min != m_used_max) {
       painter.setPen(Qt::NoPen);
       painter.fillRect(QRect(QPoint(width() * (m_used_min - m_min) / (m_max - m_min),
                                     0),

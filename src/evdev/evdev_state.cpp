@@ -56,34 +56,45 @@ EvdevState::update(input_event const& ev)
       break;
 
     case EV_KEY:
-      m_key_values[m_info.get_key_idx(ev.code)] = ev.value;
+      if (m_info.has_key(ev.code))
+      {
+        m_key_values[m_info.get_key_idx(ev.code)] = ev.value;
+      }
       break;
 
     case EV_ABS:
-      m_abs_values[m_info.get_abs_idx(ev.code)] = ev.value;
-
-      if (m_info.has_abs(ABS_MT_SLOT))
+      if (m_info.has_abs(ev.code))
       {
-        const int slot = m_abs_values[m_info.get_abs_idx(ABS_MT_SLOT)];
+        m_abs_values[m_info.get_abs_idx(ev.code)] = ev.value;
 
-        if (ev.code == ABS_MT_POSITION_X)
+        if (m_info.has_abs(ABS_MT_SLOT))
         {
-          m_mt_states[static_cast<size_t>(slot)].x = ev.value;
-        }
-        else if (ev.code == ABS_MT_POSITION_Y)
-        {
-          m_mt_states[static_cast<size_t>(slot)].y = ev.value;
-        }
-        else if (ev.code == ABS_MT_TRACKING_ID)
-        {
-          m_mt_states[static_cast<size_t>(slot)].tracking_id = ev.value;
+          const int slot = m_abs_values[m_info.get_abs_idx(ABS_MT_SLOT)];
+          if (slot >= 0 && static_cast<size_t>(slot) < m_mt_states.size())
+          {
+            if (ev.code == ABS_MT_POSITION_X)
+            {
+              m_mt_states[static_cast<size_t>(slot)].x = ev.value;
+            }
+            else if (ev.code == ABS_MT_POSITION_Y)
+            {
+              m_mt_states[static_cast<size_t>(slot)].y = ev.value;
+            }
+            else if (ev.code == ABS_MT_TRACKING_ID)
+            {
+              m_mt_states[static_cast<size_t>(slot)].tracking_id = ev.value;
+            }
+          }
         }
       }
       break;
 
     case EV_REL:
-      // rel values are accumulated until a EV_SYN event
-      m_rel_values[m_info.get_rel_idx(ev.code)] += ev.value;
+      // rel values are accumulated until an EV_SYN event
+      if (m_info.has_rel(ev.code))
+      {
+        m_rel_values[m_info.get_rel_idx(ev.code)] += ev.value;
+      }
       break;
   }
 

@@ -16,86 +16,41 @@
 
 #include "evdev_enum.hpp"
 
+#include <sstream>
+
+#include <libevdev/libevdev.h>
 #include <linux/input.h>
 
 namespace evtest_qt {
 
-class EvDevRelEnum : public EnumBox<uint16_t>
-{
-public:
-  EvDevRelEnum() :
-    EnumBox<uint16_t>("EV_REL")
-  {
-#  include "rel_list.x"
-  }
-};
+namespace {
 
-class EvDevAbsEnum : public EnumBox<uint16_t>
+std::string code_name_or_fallback(unsigned int type, uint16_t code,
+                                  char const* prefix)
 {
-public:
-  EvDevAbsEnum() :
-    EnumBox<uint16_t>("EV_ABS")
-  {
-#  include "abs_list.x"
+  if (char const* name = libevdev_event_code_get_name(type, code)) {
+    return name;
   }
-};
+  std::ostringstream out;
+  out << prefix << "#" << code;
+  return out.str();
+}
 
-class EvDevKeyEnum : public EnumBox<uint16_t>
-{
-public:
-  EvDevKeyEnum() :
-    EnumBox<uint16_t>("EV_KEY")
-  {
-#  include "key_list.x"
-  }
-};
+} // namespace
 
 std::string evdev_abs_name(uint16_t code)
 {
-  static EvDevAbsEnum evdev_abs_names;
-  auto it = evdev_abs_names.find(code);
-  if (it == evdev_abs_names.end())
-  {
-    std::ostringstream out;
-    out << "ABS_#" << code;
-    return out.str();
-  }
-  else
-  {
-    return it->second;
-  }
+  return code_name_or_fallback(EV_ABS, code, "ABS_");
 }
 
 std::string evdev_key_name(uint16_t code)
 {
-  static EvDevKeyEnum evdev_key_names;
-  auto it = evdev_key_names.find(code);
-  if (it == evdev_key_names.end())
-  {
-    std::ostringstream out;
-    out << "KEY_#" << code;
-    return out.str();
-  }
-  else
-  {
-    return it->second;
-  }
+  return code_name_or_fallback(EV_KEY, code, "KEY_");
 }
 
 std::string evdev_rel_name(uint16_t code)
 {
-  static EvDevRelEnum evdev_rel_names;
-  auto it = evdev_rel_names.find(code);
-  if (it == evdev_rel_names.end())
-  {
-    std::ostringstream out;
-    out << "REL_#" << code;
-    return out.str();
-  }
-  else
-  {
-    return it->second;
-  }
+  return code_name_or_fallback(EV_REL, code, "REL_");
 }
 
 } // namespace evtest_qt

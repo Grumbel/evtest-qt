@@ -42,7 +42,7 @@ Agents must not change `VERSION` unless the task is explicitly a release or a ve
 
 - Prefer small, focused changes that match existing style (GPL-3.0 headers, namespaces, include guards).
 - Keep UI widgets lightweight; heavy logic belongs in `evdev/` types (`EvdevDevice`, `EvdevInfo`, `EvdevState`).
-- Do not regenerate `*_list.x` files by hand unless the generator script or kernel headers change; they are produced by `src/evdev/gen_event_lists.py`.
+- Event code names come from **libevdev** (`libevdev_event_code_get_name`); do not reintroduce generated `*_list.x` tables.
 - When adding or changing UI feedback (e.g. showing raw values), keep the existing verification-mode behaviour intact unless the task explicitly changes it.
 - Test builds with both Debug and Release when practical (`cmake -DCMAKE_BUILD_TYPE=...`).
 - Warning flags: `-DWARNINGS=ON` and `-DWERROR=ON` (defined in `CMakeLists.txt`, not an external module).

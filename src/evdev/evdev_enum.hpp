@@ -19,7 +19,6 @@
 
 #include <cstdint>
 #include <string>
-#include "util/enum_box.hpp"
 
 namespace evtest_qt {
 

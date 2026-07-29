@@ -22,9 +22,6 @@ namespace evtest_qt {
 class AbsInfo;
 class AxisWidget;
 class ButtonWidget;
-class EvDevAbsEnum;
-class EvDevKeyEnum;
-class EvDevRelEnum;
 class EvdevDevice;
 class EvdevInfo;
 class EvdevList;

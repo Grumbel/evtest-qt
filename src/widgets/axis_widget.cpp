@@ -35,7 +35,10 @@ AxisWidget::AxisWidget(uint16_t code, int min, int max, QWidget* parent_) :
   m_max(max),
   m_value(0)
 {
-  setToolTip(QString::fromStdString(evdev_abs_name(m_code)));
+  setToolTip(QString("%1  min:%2 max:%3")
+             .arg(QString::fromStdString(evdev_abs_name(m_code)))
+             .arg(m_min)
+             .arg(m_max));
 }
 
 AxisWidget::~AxisWidget()
@@ -109,6 +112,21 @@ AxisWidget::paintEvent(QPaintEvent* ev)
   // value line
   painter.setPen(QColor(0, 0, 0));
   painter.drawLine(value_pos, 0, value_pos, height());
+
+  // raw value text
+  painter.setPen(QColor(0, 0, 0));
+  QString value_text = QString::number(m_value);
+  QFontMetrics fm(painter.font());
+  int text_width = fm.horizontalAdvance(value_text);
+  int text_x = value_pos + 4;
+  if (text_x + text_width > width() - 2) {
+    text_x = value_pos - text_width - 4;
+  }
+  if (text_x < 2) {
+    text_x = 2;
+  }
+  painter.drawText(text_x, 0, text_width + 2, height(),
+                   Qt::AlignVCenter | Qt::AlignLeft, value_text);
 
   // box outline
   painter.setPen(QColor(0, 0, 0));

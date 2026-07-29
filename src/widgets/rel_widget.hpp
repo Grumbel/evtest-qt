@@ -48,6 +48,7 @@ private:
 
   uint16_t m_code;
   int m_offset_x;
+  int m_last_value;
 
 private:
   RelWidget(RelWidget const&) = delete;

@@ -28,7 +28,8 @@ RelWidget::RelWidget(uint16_t code, QWidget* parent_) :
   m_verification_mode(false),
   m_unused(true),
   m_code(code),
-  m_offset_x()
+  m_offset_x(),
+  m_last_value(0)
 {
   setToolTip(QString::fromStdString(evdev_rel_name(m_code)));
 }
@@ -65,6 +66,12 @@ RelWidget::paintEvent(QPaintEvent* ev)
   painter.fillRect(x_pos - b, 0, 2*b, height(), QColor(255, 0, 0));
   painter.fillRect(x_pos - b + width(), 0, 2*b, height(), QColor(255, 0, 0));
 
+  // raw value text
+  painter.setPen(QColor(0, 0, 0));
+  QString value_text = QString::number(m_last_value);
+  painter.drawText(0, 0, width(), height(),
+                   Qt::AlignVCenter | Qt::AlignCenter, value_text);
+
   painter.setPen(QColor(0, 0, 0));
   painter.drawRect(0, 0, width()-1, height()-1);
 }
@@ -78,6 +85,7 @@ RelWidget::on_change(EvdevState const& state)
     m_unused = false;
   }
 
+  m_last_value = value;
   m_offset_x += value;
 
   update();

@@ -17,8 +17,59 @@
 cmake_minimum_required(VERSION 3.7)
 project(evtest-qt)
 
-include(mk/cmake/TinyCMMC.cmake)
+# --- Project version (from VERSION file, git describe, or directory name) ---
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake")
+include(GetProjectVersion)
 
+# --- Install directories ---
+include(GNUInstallDirs)
+
+# --- Compiler warnings (replaces tinycmmc WARNINGS / WERROR) ---
+option(WARNINGS "Enable extra compiler warnings" OFF)
+option(WERROR "Treat warnings as errors" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+
+set(EVTEST_QT_WARNINGS_CXX_FLAGS "")
+if(WARNINGS)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    list(APPEND EVTEST_QT_WARNINGS_CXX_FLAGS
+      -Wall
+      -Wextra
+      -Wpedantic
+      -Wshadow
+      -Wconversion
+      -Wsign-conversion
+      -Wdouble-promotion
+      -Wformat=2
+      -Wnull-dereference
+      -Wold-style-cast
+      -Woverloaded-virtual
+      -Wnon-virtual-dtor
+      -Wcast-align
+      -Wno-unused
+    )
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      list(APPEND EVTEST_QT_WARNINGS_CXX_FLAGS
+        -Wduplicated-cond
+        -Wduplicated-branches
+        -Wlogical-op
+        -Wuseless-cast
+      )
+    endif()
+  elseif(MSVC)
+    list(APPEND EVTEST_QT_WARNINGS_CXX_FLAGS /W4)
+  endif()
+endif()
+
+if(WERROR)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    list(APPEND EVTEST_QT_WARNINGS_CXX_FLAGS -Werror)
+  elseif(MSVC)
+    list(APPEND EVTEST_QT_WARNINGS_CXX_FLAGS /WX)
+  endif()
+endif()
+
+# --- Qt ---
 find_package(Qt6 COMPONENTS Core Widgets)
 if(Qt6_FOUND)
   set(QT_LIBRARIES Qt6::Core Qt6::Widgets)
@@ -43,9 +94,9 @@ else()
   set(CMAKE_AUTOUIC ON)
 endif()
 
-if (BUILD_TESTS)
+if(BUILD_TESTS)
   enable_testing()
-endif(BUILD_TESTS)
+endif()
 
 file(GLOB EVTEST_QT_SOURCES
   src/widgets/*.cpp
@@ -55,7 +106,7 @@ file(GLOB EVTEST_QT_SOURCES
 add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})
 target_include_directories(evtest-qt PUBLIC src/)
 target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES})
-target_compile_options(evtest-qt PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+target_compile_options(evtest-qt PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS})
 
 file(GLOB EVTEST_QT_MAIN_SOURCES
   src/main.cpp
@@ -64,12 +115,12 @@ add_executable(evtest-qt_exe ${EVTEST_QT_MAIN_SOURCES})
 target_link_libraries(evtest-qt_exe evtest-qt)
 set_target_properties(evtest-qt_exe PROPERTIES
   OUTPUT_NAME "evtest-qt")
-target_compile_options(evtest-qt_exe PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+target_compile_options(evtest-qt_exe PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS})
 target_compile_definitions(evtest-qt_exe PRIVATE -DEVTEST_QT_VERSION="${PROJECT_VERSION}")
 
 add_executable(evdev-test src/evdev_test.cpp)
 target_link_libraries(evdev-test evtest-qt)
-target_compile_options(evdev-test PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+target_compile_options(evdev-test PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS})
 
 install(TARGETS evtest-qt_exe
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

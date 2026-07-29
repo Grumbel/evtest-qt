@@ -10,13 +10,22 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
+
+        # VERSION is the source of truth (e.g. "0.3.0-dev"). Nix appends a
+        # short git revision so each evaluation is uniquely identifiable.
+        # A datestring is intentionally not used: shortRev is stable per
+        # commit and sufficient for uniqueness.
+        versionBase = lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
+        gitRev = self.shortRev or self.dirtyShortRev or "dirty";
+        version = "${versionBase}+g${gitRev}";
       in {
         packages = rec {
           default = evtest-qt;
 
           evtest-qt = pkgs.stdenv.mkDerivation {
             pname = "evtest-qt";
-            version = "0.2.0";
+            inherit version;
 
             src = ./.;
 
@@ -34,7 +43,7 @@
             buildInputs = with pkgs; [
               qt6.qtbase
             ];
-           };
+          };
         };
       }
     );

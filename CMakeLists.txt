@@ -17,9 +17,19 @@
 cmake_minimum_required(VERSION 3.7)
 project(evtest-qt)
 
-# --- Project version (from VERSION file, git describe, or directory name) ---
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake")
-include(GetProjectVersion)
+# --- Project version (VERSION file is the source of truth) ---
+if(NOT EXISTS "${CMAKE_SOURCE_DIR}/VERSION")
+  message(FATAL_ERROR
+    "VERSION file not found at ${CMAKE_SOURCE_DIR}/VERSION. "
+    "The VERSION file is the sole source of the project version.")
+endif()
+file(STRINGS "${CMAKE_SOURCE_DIR}/VERSION" _evtest_qt_version_lines)
+list(GET _evtest_qt_version_lines 0 PROJECT_VERSION)
+string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
+if(PROJECT_VERSION STREQUAL "")
+  message(FATAL_ERROR "VERSION file is empty")
+endif()
+message(STATUS "Project version: ${PROJECT_VERSION}")
 
 # --- Install directories ---
 include(GNUInstallDirs)

@@ -16,8 +16,13 @@
 
 #include "evtest_app.hpp"
 
-#include <QTimer>
+#include <QDateTime>
 #include <QMenuBar>
+#include <QTimer>
+
+#include <iostream>
+#include <cerrno>
+#include <cstring>
 
 #include "widgets/about_dialog.hpp"
 #include "widgets/evdev_widget.hpp"
@@ -33,20 +38,23 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_action_verification_mode("Verification Mode"),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
+  m_device_log(),
   m_ev_widget(),
   m_ev_widget_placeholder(),
   m_device(),
   m_state(),
-  m_notifier()
+  m_notifier(),
+  m_udev_monitor(),
+  m_refresh_timer(),
+  m_current_device()
 {
   // setup actions
   connect(&m_action_exit, &QAction::triggered, [this](){
-    std::cout << "Exit" << std::endl;
     m_app.quit();
   });
 
   m_action_show_about.setToolTip("Show About dialog");
-  connect(&m_action_show_about, &QAction::triggered, [this](bool checked){
+  connect(&m_action_show_about, &QAction::triggered, [this](bool){
     auto about_dialog = std::make_unique<AboutDialog>(&m_window);
     about_dialog->show();
     about_dialog.release();
@@ -71,17 +79,42 @@ EvtestApp::EvtestApp(QApplication& app) :
   QMenu* help_menu = menubar->addMenu("&Help");
   help_menu->addAction(&m_action_show_about);
 
-  //m_widget.setMinimumSize(400, 300);
   m_window.setCentralWidget(&m_widget);
 
   m_vbox_layout.addWidget(&m_evdev_list_box);
 
   m_ev_widget_placeholder = std::make_unique<QLabel>("nothing selected");
   m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
-  m_vbox_layout.addWidget(m_ev_widget_placeholder.get());
+  m_vbox_layout.addWidget(m_ev_widget_placeholder.get(), /*stretch=*/1);
+
+  m_device_log.setReadOnly(true);
+  m_device_log.setMaximumBlockCount(500);
+  m_device_log.setPlaceholderText(QStringLiteral("Input device events (udev)…"));
+  m_device_log.setFixedHeight(120);
+  m_device_log.setStyleSheet(QStringLiteral("QPlainTextEdit { font-family: monospace; }"));
+  m_vbox_layout.addWidget(&m_device_log);
 
   QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
                    this, SLOT(on_item_change(int)));
+
+  m_refresh_timer.setSingleShot(true);
+  m_refresh_timer.setInterval(150);
+  connect(&m_refresh_timer, SIGNAL(timeout()), this, SLOT(on_refresh_timeout()));
+
+  // udev hotplug monitor (input event devices only)
+  m_udev_monitor = std::make_unique<UdevInputMonitor>(this);
+  connect(m_udev_monitor.get(), SIGNAL(device_added(QString,QString)),
+          this, SLOT(on_udev_device_added(QString,QString)));
+  connect(m_udev_monitor.get(), SIGNAL(device_removed(QString,QString)),
+          this, SLOT(on_udev_device_removed(QString,QString)));
+  connect(m_udev_monitor.get(), SIGNAL(monitor_error(QString)),
+          this, SLOT(on_udev_monitor_error(QString)));
+
+  if (m_udev_monitor->is_valid()) {
+    append_log(QStringLiteral("listening for input device add/remove (udev)"));
+  } else {
+    append_log(QStringLiteral("warning: udev monitor unavailable; list will not auto-update"));
+  }
 
   m_window.show();
 }
@@ -91,10 +124,88 @@ EvtestApp::~EvtestApp()
 }
 
 void
+EvtestApp::append_log(QString const& line)
+{
+  QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("hh:mm:ss"));
+  m_device_log.appendPlainText(stamp + QLatin1Char(' ') + line);
+}
+
+void
+EvtestApp::schedule_device_list_refresh()
+{
+  // Coalesce bursts of udev events (e.g. one stick creates several nodes)
+  m_refresh_timer.start();
+}
+
+void
+EvtestApp::on_refresh_timeout()
+{
+  refresh_device_list();
+}
+
+void
+EvtestApp::on_udev_device_added(QString const& devnode, QString const& name)
+{
+  QString base = devnode.section(QLatin1Char('/'), -1);
+  if (name.isEmpty()) {
+    append_log(QStringLiteral("add    %1").arg(base));
+  } else {
+    append_log(QStringLiteral("add    %1  \"%2\"").arg(base, name));
+  }
+  schedule_device_list_refresh();
+}
+
+void
+EvtestApp::on_udev_device_removed(QString const& devnode, QString const& name)
+{
+  QString base = devnode.section(QLatin1Char('/'), -1);
+  if (name.isEmpty()) {
+    append_log(QStringLiteral("remove %1").arg(base));
+  } else {
+    append_log(QStringLiteral("remove %1  \"%2\"").arg(base, name));
+  }
+
+  if (m_current_device == devnode) {
+    append_log(QStringLiteral("current device disconnected; closing view"));
+    clear_device_view(QStringLiteral("device disconnected: %1").arg(base));
+  }
+
+  schedule_device_list_refresh();
+}
+
+void
+EvtestApp::on_udev_monitor_error(QString const& message)
+{
+  append_log(QStringLiteral("error: %1").arg(message));
+}
+
+void
+EvtestApp::clear_device_view(QString const& message)
+{
+  m_notifier.reset();
+  m_state.reset();
+  m_device.reset();
+  m_ev_widget.reset();
+  m_current_device.clear();
+
+  m_ev_widget_placeholder = std::make_unique<QLabel>(message);
+  m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+  m_vbox_layout.insertWidget(1, m_ev_widget_placeholder.get(), /*stretch=*/1);
+}
+
+void
 EvtestApp::refresh_device_list()
 {
+  QString previous = m_current_device;
+  if (previous.isEmpty() && m_evdev_list_box.currentIndex() >= 0) {
+    previous = m_evdev_list_box.currentData().toString();
+  }
+
+  m_evdev_list_box.blockSignals(true);
   m_evdev_list_box.clear();
-  for(auto dev : EvdevList::scan("/dev/input"))
+
+  int select_index = -1;
+  for (auto const& dev : EvdevList::scan("/dev/input"))
   {
     try
     {
@@ -103,23 +214,44 @@ EvtestApp::refresh_device_list()
 
       std::ostringstream str;
       str << dev.substr(11) << ": " << info.name;
-      m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+      m_evdev_list_box.addItem(QString::fromStdString(str.str()),
+                               QString::fromStdString(dev));
     }
-    catch(std::exception const& err)
+    catch (std::exception const& err)
     {
-      std::cout << dev << ": " << err.what() << std::endl;
-
       std::ostringstream str;
       str << dev.substr(11) << ": " << "[error: " << err.what() << "]";
-      m_evdev_list_box.addItem(str.str().c_str(), QString::fromStdString(dev));
+      m_evdev_list_box.addItem(QString::fromStdString(str.str()),
+                               QString::fromStdString(dev));
+    }
+
+    if (!previous.isEmpty() && previous == QString::fromStdString(dev)) {
+      select_index = m_evdev_list_box.count() - 1;
     }
   }
+
+  if (select_index >= 0) {
+    m_evdev_list_box.setCurrentIndex(select_index);
+  } else if (!previous.isEmpty() && previous == m_current_device) {
+    // Selected device path vanished between udev remove and rescan
+    clear_device_view(QStringLiteral("device disconnected"));
+  }
+
+  m_evdev_list_box.blockSignals(false);
 }
 
 void
 EvtestApp::select_device(QString const& device)
 {
   on_device_change(device.toStdString());
+
+  // Sync combo box selection if the device is listed
+  for (int i = 0; i < m_evdev_list_box.count(); ++i) {
+    if (m_evdev_list_box.itemData(i).toString() == device) {
+      m_evdev_list_box.setCurrentIndex(i);
+      break;
+    }
+  }
 }
 
 void
@@ -132,7 +264,6 @@ void
 EvtestApp::on_item_change(int index)
 {
   std::string dev = m_evdev_list_box.itemData(index).toString().toUtf8().data();
-  std::cout << "activated: " << dev << std::endl;
   on_device_change(dev);
 }
 
@@ -140,12 +271,16 @@ void
 EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
 {
   std::array<struct input_event, 128> ev;
-  while(true)
+  while (true)
   {
     ssize_t num_events = device.read_events(ev.data(), ev.size());
     if (num_events < 0)
     {
-      std::cout << "error: " << num_events << ": " << strerror(errno) << std::endl;
+      // Device likely went away (EIO/ENODEV); udev remove will clean up UI
+      append_log(QStringLiteral("read error on %1: %2")
+                 .arg(m_current_device.section(QLatin1Char('/'), -1),
+                      QString::fromLocal8Bit(strerror(errno))));
+      m_notifier.reset();
       return;
     }
     else if (num_events == 0)
@@ -154,10 +289,12 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
     }
     else
     {
-      for(ssize_t i = 0; i < num_events; ++i)
+      for (ssize_t i = 0; i < num_events; ++i)
       {
         if (state.update(ev[static_cast<size_t>(i)])) {
-          m_ev_widget->set_state(state);
+          if (m_ev_widget) {
+            m_ev_widget->set_state(state);
+          }
         }
       }
     }
@@ -171,9 +308,11 @@ EvtestApp::on_shrink_action()
 }
 
 void
-EvtestApp::on_notification(int fd)
+EvtestApp::on_notification(int)
 {
-  on_data(*m_device, *m_state);
+  if (m_device && m_state) {
+    on_data(*m_device, *m_state);
+  }
 }
 
 void
@@ -181,8 +320,10 @@ EvtestApp::on_device_change(std::string const& filename)
 {
   m_notifier.reset();
   m_state.reset();
-  //m_vbox_layout.removeWidget(m_ev_widget.get());
+  m_device.reset();
   m_ev_widget.reset();
+  m_ev_widget_placeholder.reset();
+  m_current_device.clear();
 
   try
   {
@@ -191,24 +332,30 @@ EvtestApp::on_device_change(std::string const& filename)
 
     m_state = std::make_unique<EvdevState>(info);
 
-    m_ev_widget_placeholder.reset();
     m_ev_widget = std::make_unique<EvdevWidget>(info);
     m_ev_widget->set_verification_mode(m_action_verification_mode.isChecked());
-    m_vbox_layout.addWidget(m_ev_widget.get());
+    m_vbox_layout.insertWidget(1, m_ev_widget.get(), /*stretch=*/1);
 
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
 
     QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
                      this, SLOT(on_notification(int)));
 
-    QTimer::singleShot(0, this, SIGNAL(on_shrink_action()));
+    m_current_device = QString::fromStdString(filename);
+    append_log(QStringLiteral("open   %1  \"%2\"")
+               .arg(m_current_device.section(QLatin1Char('/'), -1),
+                    QString::fromStdString(info.name)));
+
+    QTimer::singleShot(0, this, SLOT(on_shrink_action()));
   }
-  catch(std::exception const& err)
+  catch (std::exception const& err)
   {
-    std::cout << filename << ": " << err.what() << std::endl;
-    m_ev_widget.reset();
-    m_ev_widget_placeholder = std::make_unique<QLabel>(err.what());
-    m_vbox_layout.addWidget(m_ev_widget.get());
+    append_log(QStringLiteral("open failed %1: %2")
+               .arg(QString::fromStdString(filename),
+                    QString::fromLocal8Bit(err.what())));
+    m_ev_widget_placeholder = std::make_unique<QLabel>(QString::fromLocal8Bit(err.what()));
+    m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
+    m_vbox_layout.insertWidget(1, m_ev_widget_placeholder.get(), /*stretch=*/1);
   }
 }
 

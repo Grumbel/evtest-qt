@@ -20,28 +20,20 @@
 #include <QAction>
 #include <QApplication>
 #include <QComboBox>
-#include <QGridLayout>
 #include <QLabel>
-#include <QLabel>
-#include <QLayout>
 #include <QMainWindow>
-#include <QMainWindow>
+#include <QPlainTextEdit>
 #include <QSocketNotifier>
+#include <QTimer>
 #include <QVBoxLayout>
 
-#include <fcntl.h>
-#include <iostream>
-#include <linux/input.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <memory>
+#include <string>
 
-#include "widgets/axis_widget.hpp"
-#include "widgets/button_widget.hpp"
 #include "evdev/evdev_device.hpp"
-#include "evdev/evdev_enum.hpp"
 #include "evdev/evdev_list.hpp"
 #include "evdev/evdev_state.hpp"
+#include "evdev/udev_monitor.hpp"
 #include "fwd.hpp"
 
 namespace evtest_qt {
@@ -52,7 +44,7 @@ class EvtestApp : public QObject
 
 public:
   EvtestApp(QApplication& app);
-  ~EvtestApp();
+  ~EvtestApp() override;
 
   void refresh_device_list();
   void select_device(QString const& device);
@@ -61,11 +53,18 @@ public:
 private:
   void on_data(EvdevDevice& device, EvdevState& state);
   void on_device_change(std::string const& filename);
+  void clear_device_view(QString const& message);
+  void append_log(QString const& line);
+  void schedule_device_list_refresh();
 
 public slots:
   void on_item_change(int index);
   void on_shrink_action();
   void on_notification(int);
+  void on_udev_device_added(QString const& devnode, QString const& name);
+  void on_udev_device_removed(QString const& devnode, QString const& name);
+  void on_udev_monitor_error(QString const& message);
+  void on_refresh_timeout();
 
 private:
   QApplication& m_app;
@@ -78,6 +77,7 @@ private:
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;
+  QPlainTextEdit m_device_log;
 
   std::unique_ptr<EvdevWidget> m_ev_widget;
   std::unique_ptr<QLabel> m_ev_widget_placeholder;
@@ -85,6 +85,10 @@ private:
   std::unique_ptr<EvdevDevice> m_device;
   std::unique_ptr<EvdevState> m_state;
   std::unique_ptr<QSocketNotifier> m_notifier;
+
+  std::unique_ptr<UdevInputMonitor> m_udev_monitor;
+  QTimer m_refresh_timer;
+  QString m_current_device; // path of device shown in the UI, if any
 
 private:
   EvtestApp(EvtestApp const&) = delete;

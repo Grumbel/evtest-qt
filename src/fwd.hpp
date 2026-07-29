@@ -35,6 +35,7 @@ class MultitouchState;
 class MultitouchWidget;
 class RelWidget;
 class StickWidget;
+class UdevInputMonitor;
 
 } // namespace evtest_qt
 

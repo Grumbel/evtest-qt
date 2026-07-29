@@ -42,6 +42,7 @@
 
             buildInputs = with pkgs; [
               qt6.qtbase
+              systemd  # libudev
             ];
           };
         };

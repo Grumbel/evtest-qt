@@ -38,6 +38,7 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_action_show_about("About"),
   m_action_verification_mode("Verification Mode"),
   m_action_hide_event_log("Hide Event Log"),
+  m_action_event_graph("Event Graph..."),
   m_vbox_layout(&m_widget),
   m_evdev_list_box(),
   m_device_log(),
@@ -47,6 +48,7 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_state(),
   m_notifier(),
   m_udev_monitor(),
+  m_graph_window(),
   m_refresh_timer(),
   m_current_device()
 {
@@ -76,6 +78,9 @@ EvtestApp::EvtestApp(QApplication& app) :
     m_device_log.setVisible(!hide);
   });
 
+  m_action_event_graph.setToolTip("Open a time-series plot of axes and buttons");
+  connect(&m_action_event_graph, &QAction::triggered, this, &EvtestApp::on_show_event_graph);
+
   QMenuBar* menubar = m_window.menuBar();
   QMenu* file_menu = menubar->addMenu("&File");
   file_menu->addAction(&m_action_exit);
@@ -83,6 +88,8 @@ EvtestApp::EvtestApp(QApplication& app) :
   QMenu* view_menu = menubar->addMenu("&View");
   view_menu->addAction(&m_action_verification_mode);
   view_menu->addAction(&m_action_hide_event_log);
+  view_menu->addSeparator();
+  view_menu->addAction(&m_action_event_graph);
 
   QMenu* help_menu = menubar->addMenu("&Help");
   help_menu->addAction(&m_action_show_about);
@@ -168,6 +175,20 @@ EvtestApp::on_log_anchor_clicked(QUrl const& link)
 }
 
 void
+EvtestApp::on_show_event_graph()
+{
+  if (!m_graph_window) {
+    m_graph_window = std::make_unique<EventGraphWindow>();
+    if (m_device && m_state) {
+      m_graph_window->set_device(m_state->get_info());
+    }
+  }
+  m_graph_window->show();
+  m_graph_window->raise();
+  m_graph_window->activateWindow();
+}
+
+void
 EvtestApp::schedule_device_list_refresh()
 {
   // Coalesce bursts of udev events (e.g. one stick creates several nodes)
@@ -226,6 +247,9 @@ EvtestApp::clear_device_view(QString const& message)
   m_device.reset();
   m_ev_widget.reset();
   m_current_device.clear();
+  if (m_graph_window) {
+    m_graph_window->clear_device();
+  }
 
   m_ev_widget_placeholder = std::make_unique<QLabel>(message);
   m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
@@ -330,6 +354,9 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
           if (m_ev_widget) {
             m_ev_widget->set_state(state);
           }
+          if (m_graph_window) {
+            m_graph_window->push_state(state);
+          }
         }
       }
     }
@@ -377,6 +404,9 @@ EvtestApp::on_device_change(std::string const& filename)
                      this, SLOT(on_notification(int)));
 
     m_current_device = QString::fromStdString(filename);
+    if (m_graph_window) {
+      m_graph_window->set_device(info);
+    }
     append_log(QStringLiteral("open   %1  \"%2\"")
                .arg(device_href(m_current_device,
                                 m_current_device.section(QLatin1Char('/'), -1)),

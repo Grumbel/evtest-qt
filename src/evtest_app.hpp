@@ -35,6 +35,7 @@
 #include "evdev/evdev_list.hpp"
 #include "evdev/evdev_state.hpp"
 #include "evdev/udev_monitor.hpp"
+#include "widgets/event_graph_window.hpp"
 #include "fwd.hpp"
 
 namespace evtest_qt {
@@ -68,6 +69,7 @@ public slots:
   void on_udev_monitor_error(QString const& message);
   void on_refresh_timeout();
   void on_log_anchor_clicked(QUrl const& link);
+  void on_show_event_graph();
 
 private:
   QApplication& m_app;
@@ -78,6 +80,7 @@ private:
   QAction m_action_show_about;
   QAction m_action_verification_mode;
   QAction m_action_hide_event_log;
+  QAction m_action_event_graph;
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;
@@ -91,6 +94,7 @@ private:
   std::unique_ptr<QSocketNotifier> m_notifier;
 
   std::unique_ptr<UdevInputMonitor> m_udev_monitor;
+  std::unique_ptr<EventGraphWindow> m_graph_window;
   QTimer m_refresh_timer;
   QString m_current_device; // path of device shown in the UI, if any
 

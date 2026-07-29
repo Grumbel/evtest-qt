@@ -22,8 +22,7 @@
 
 #include <cerrno>
 #include <cstring>
-#include <iostream>
-#include <sstream>
+#include <format>
 #include <array>
 
 #include "widgets/about_dialog.hpp"
@@ -252,17 +251,15 @@ EvtestApp::refresh_device_list()
       auto dev_fp = EvdevDevice::open(dev);
       auto info = dev_fp->read_evdev_info();
 
-      std::ostringstream str;
-      str << dev.substr(11) << ": " << info.name;
-      m_evdev_list_box.addItem(QString::fromStdString(str.str()),
-                               QString::fromStdString(dev));
+      m_evdev_list_box.addItem(
+        QString::fromStdString(std::format("{}: {}", dev.substr(11), info.name)),
+        QString::fromStdString(dev));
     }
     catch (std::exception const& err)
     {
-      std::ostringstream str;
-      str << dev.substr(11) << ": " << "[error: " << err.what() << "]";
-      m_evdev_list_box.addItem(QString::fromStdString(str.str()),
-                               QString::fromStdString(dev));
+      m_evdev_list_box.addItem(
+        QString::fromStdString(std::format("{}: [error: {}]", dev.substr(11), err.what())),
+        QString::fromStdString(dev));
     }
 
     if (!previous.isEmpty() && previous == QString::fromStdString(dev)) {

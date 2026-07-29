@@ -16,7 +16,7 @@
 
 #include "evdev_enum.hpp"
 
-#include <sstream>
+#include <format>
 
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
@@ -31,9 +31,7 @@ std::string code_name_or_fallback(unsigned int type, uint16_t code,
   if (char const* name = libevdev_event_code_get_name(type, code)) {
     return name;
   }
-  std::ostringstream out;
-  out << prefix << "#" << code;
-  return out.str();
+  return std::format("{}#{}", prefix, code);
 }
 
 } // namespace

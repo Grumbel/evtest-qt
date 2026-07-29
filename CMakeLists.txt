@@ -17,6 +17,10 @@
 cmake_minimum_required(VERSION 3.7)
 project(evtest-qt)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # --- Project version (VERSION file is the source of truth) ---
 # Nix/packaging may pass -DPROJECT_VERSION_FULL=... to embed a git revision.
 if(NOT DEFINED PROJECT_VERSION_FULL)

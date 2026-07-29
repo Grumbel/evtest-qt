@@ -16,7 +16,6 @@
 
 #include "evdev_state.hpp"
 
-#include <iostream>
 
 namespace evtest_qt {
 

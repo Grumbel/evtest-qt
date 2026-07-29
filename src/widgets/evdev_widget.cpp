@@ -18,7 +18,6 @@
 
 #include "multitouch_widget.hpp"
 
-#include <iostream>
 
 namespace evtest_qt {
 

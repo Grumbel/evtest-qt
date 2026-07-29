@@ -17,7 +17,8 @@
 #include "evdev_device.hpp"
 
 #include <map>
-#include <sstream>
+#include <format>
+#include <print>
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -25,7 +26,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <iostream>
 
 #include "util/bits.hpp"
 
@@ -38,9 +38,7 @@ EvdevDevice::open(std::string const& filename)
   int fd = ::open(filename.c_str(), O_RDONLY | O_NONBLOCK);
   if (fd < 0)
   {
-    std::ostringstream out;
-    out << filename << ": " << strerror(errno);
-    throw std::runtime_error(out.str());
+    throw std::runtime_error(std::format("{}: {}", filename, strerror(errno)));
   }
   else
   {
@@ -67,16 +65,14 @@ EvdevDevice::read_evdev_info()
   int version = 0;
   if (ioctl(m_fd, EVIOCGVERSION, &version) < 0)
   {
-    std::cout << m_filename << ": " << strerror(errno) << '\n';
+    std::println("{}: {}", m_filename, strerror(errno));
   }
 
   { // Get the human readable name
     char c_name[1024] = "unknown";
     if (ioctl(m_fd, EVIOCGNAME(sizeof(c_name)), c_name) < 0)
     {
-      std::ostringstream out;
-      out << m_filename << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+      throw std::runtime_error(std::format("{}: {}", m_filename, strerror(errno)));
     }
     else
     {
@@ -89,7 +85,7 @@ EvdevDevice::read_evdev_info()
     char c_name[1024] = "unknown";
     if (ioctl(m_fd, EVIOCGPHYS(sizeof(c_name)), c_name) < 0) {
       // only worth a warning, as uinput devices might not have this set
-      std::cerr << m_filename << ": EVIOCGPHYS failed: " << strerror(errno) << std::endl;
+      std::println(stderr, "{}: EVIOCGPHYS failed: {}", m_filename, strerror(errno));
     }
     phys = c_name;
   }
@@ -99,11 +95,11 @@ EvdevDevice::read_evdev_info()
     char c_name[256] = "unknown";
     if (ioctl(m_fd, EVIOCGUNIQ(sizeof(c_name)), c_name) < 0)
     {
-      std::cout << m_filename << ": " << strerror(errno) << '\n';
+      std::println("{}: {}", m_filename, strerror(errno));
     }
     else
     {
-      std::cout << "uniq: '" << c_name << "'" << std::endl;
+      std::println("uniq: '{}'", c_name);
     }
   }
 
@@ -111,9 +107,7 @@ EvdevDevice::read_evdev_info()
     unsigned long propbits[INPUT_PROP_MAX];
     if (ioctl(m_fd, EVIOCGPROP(sizeof(propbits)), propbits) < 0)
     {
-      std::ostringstream out;
-      out << m_filename << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+      throw std::runtime_error(std::format("{}: {}", m_filename, strerror(errno)));
     }
     else
     {
@@ -127,9 +121,7 @@ EvdevDevice::read_evdev_info()
   {
     if (ioctl(m_fd, EVIOCGID, &id) < 0)
     {
-      std::ostringstream out;
-      out << m_filename << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+      throw std::runtime_error(std::format("{}: {}", m_filename, strerror(errno)));
     }
     else
     {
@@ -157,7 +149,7 @@ EvdevDevice::read_evdev_info()
       struct input_absinfo absinfo;
       if (ioctl(m_fd, EVIOCGABS(i), &absinfo) < 0)
       {
-        std::cout << "error\n";
+        std::println("error");
       }
       else
       {

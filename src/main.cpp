@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <print>
 #include <string>
+#include <vector>
 
 #include <QIcon>
 
@@ -25,18 +28,19 @@ namespace evtest_qt {
 
 void print_help()
 {
-  std::cout << "Usage: evtest-qt [DEVICE]\n"
-            << "A graphical joystick tester\n"
-            << "\n"
-            << "   DEVICE  event device file to start with\n"
-            << "\n"
-            << "   -v, --version   Print version number\n"
-            << "   -h, --help      Print help\n"
-            << "\n"
-            << "Options:\n"
-            << "   --verification-mode\n"
-            << "                   Start with verification mode enabled\n"
-            << std::endl;
+  std::print(
+    "Usage: evtest-qt [DEVICE]\n"
+    "A graphical joystick tester\n"
+    "\n"
+    "   DEVICE  event device file to start with\n"
+    "\n"
+    "   -v, --version   Print version number\n"
+    "   -h, --help      Print help\n"
+    "\n"
+    "Options:\n"
+    "   --verification-mode\n"
+    "                   Start with verification mode enabled\n"
+  );
 }
 
 struct Options
@@ -49,7 +53,7 @@ Options parse_args(int argc, char** argv)
 {
   Options opts;
 
-  for(int i = 1; i < argc; ++i)
+  for (int i = 1; i < argc; ++i)
   {
     if (strcmp(argv[i], "-h") == 0 ||
         strcmp(argv[i], "--help") == 0)
@@ -60,7 +64,7 @@ Options parse_args(int argc, char** argv)
     else if (strcmp(argv[i], "-v") == 0 ||
              strcmp(argv[i], "--version") == 0)
     {
-      std::cout << "evtest-qt " << EVTEST_QT_VERSION << std::endl;
+      std::println("evtest-qt {}", EVTEST_QT_VERSION);
       exit(EXIT_SUCCESS);
     }
     else if (strcmp(argv[i], "--verification-mode") == 0)

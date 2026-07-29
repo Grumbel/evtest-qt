@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <iomanip>
-#include <string.h>
+#include <array>
+#include <cerrno>
+#include <cstring>
+#include <print>
 
 #include "evdev/evdev_device.hpp"
 #include "evdev/evdev_enum.hpp"
@@ -25,94 +26,89 @@ namespace evtest_qt {
 
 void print_evdev_info(EvdevInfo const& info)
 {
-  std::cout << "name: '" << info.name << "'" << std::endl;
+  std::println("name: '{}'", info.name);
 
   if (!info.abss.empty())
   {
-    std::cout << "abs: " << info.abss.size() << "\n";
-    for(size_t i = 0; i < info.abss.size(); ++i)
+    std::println("abs: {}", info.abss.size());
+    for (size_t i = 0; i < info.abss.size(); ++i)
     {
       auto absinfo = info.get_absinfo(info.abss[i]);
-      std::cout << "  " << evdev_abs_name(info.abss[i])
-                << " value:" << absinfo.value
-                << " min:" << absinfo.minimum
-                << " max:" <<  absinfo.maximum
-                << " fuzz:" <<  absinfo.fuzz
-                << " flat:" << absinfo.flat
-                << " res:" << absinfo.resolution << "\n";
+      std::println("  {} value:{} min:{} max:{} fuzz:{} flat:{} res:{}",
+                   evdev_abs_name(info.abss[i]),
+                   absinfo.value,
+                   absinfo.minimum,
+                   absinfo.maximum,
+                   absinfo.fuzz,
+                   absinfo.flat,
+                   absinfo.resolution);
     }
-    std::cout << "\n";
+    std::println("");
   }
 
   if (!info.rels.empty())
   {
-    std::cout << "rel: " << info.rels.size() << "\n";
-    for(size_t i = 0; i < info.rels.size(); ++i)
+    std::println("rel: {}", info.rels.size());
+    for (size_t i = 0; i < info.rels.size(); ++i)
     {
-      std::cout << "  " << evdev_rel_name(info.rels[i]) << "\n";
+      std::println("  {}", evdev_rel_name(info.rels[i]));
     }
-    std::cout << "\n";
+    std::println("");
   }
 
   if (!info.keys.empty())
   {
-    std::cout << "key: " << info.keys.size() << "\n";
-    for(size_t i = 0; i < info.keys.size(); ++i)
+    std::println("key: {}", info.keys.size());
+    for (size_t i = 0; i < info.keys.size(); ++i)
     {
-      std::cout << "  " << evdev_key_name(info.keys[i]) << "\n";
+      std::println("  {}", evdev_key_name(info.keys[i]));
     }
-    std::cout << "\n";
+    std::println("");
   }
 }
 
 void print_events(EvdevDevice& device)
 {
-  std::cout << "reading events..." << std::endl;
+  std::println("reading events...");
   std::array<struct input_event, 1> ev;
-  while(true)
+  while (true)
   {
     ssize_t num_events = device.read_events(ev.data(), ev.size());
     if (num_events < 0)
     {
-      std::cout << "error: " << num_events << ": " << strerror(errno) << std::endl;
+      std::println("error: {}: {}", num_events, strerror(errno));
       break;
     }
-    else
+
+    for (size_t i = 0; i < static_cast<size_t>(num_events); ++i)
     {
-      for(size_t i = 0; i < static_cast<size_t>(num_events); ++i)
+      if (ev[i].type == EV_SYN)
       {
-        if (ev[i].type == EV_SYN)
+        std::println("--------- sync ---------");
+      }
+      else
+      {
+        switch (ev[i].type)
         {
-          std::cout << "--------- sync ---------" << std::endl;
-        }
-        else
-        {
-          switch(ev[i].type)
-          {
-            case EV_ABS:
-              std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_abs_name(ev[i].code) << " "
-                        << std::setw(8) << ev[i].value << std::endl;
-              break;
+          case EV_ABS:
+            std::println("{:>8} {:>8} {:>8}",
+                         ev[i].type, evdev_abs_name(ev[i].code), ev[i].value);
+            break;
 
-            case EV_REL:
-              std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_rel_name(ev[i].code) << " "
-                        << std::setw(8) << ev[i].value << std::endl;
-              break;
+          case EV_REL:
+            std::println("{:>8} {:>8} {:>8}",
+                         ev[i].type, evdev_rel_name(ev[i].code), ev[i].value);
+            break;
 
-            case EV_KEY:
-              std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << evdev_key_name(ev[i].code) << " "
-                        << std::setw(8) << ev[i].value << std::endl;
-              break;
+          case EV_KEY:
+            std::println("{:>8} {:>8} {:>8}",
+                         ev[i].type, evdev_key_name(ev[i].code), ev[i].value);
+            break;
 
-            default:
-              std::cout << std::setw(8) << ev[i].type << " "
-                        << std::setw(8) << ev[i].code << " "
-                        << std::setw(8) << ev[i].value << std::endl;
-              break;
-          }
+          default:
+            std::println("{:>8} {:>8} {:>8}",
+                         ev[i].type, ev[i].code, ev[i].value);
+            break;
         }
       }
     }
@@ -125,26 +121,24 @@ int main(int argc, char** argv)
 {
   if (argc != 2)
   {
-    std::cout << "Usage: " << argv[0] << " DEVICE\n";
+    std::println("Usage: {} DEVICE", argv[0]);
     return 1;
   }
-  else
+
+  try
   {
-    try
-    {
-      auto device = evtest_qt::EvdevDevice::open(argv[1]);
-      auto info = device->read_evdev_info();
+    auto device = evtest_qt::EvdevDevice::open(argv[1]);
+    auto info = device->read_evdev_info();
 
-      print_evdev_info(info);
-      print_events(*device);
+    print_evdev_info(info);
+    print_events(*device);
 
-      return 0;
-    }
-    catch(std::exception const& err)
-    {
-      std::cerr << "error: " << err.what() << std::endl;
-      return 1;
-    }
+    return 0;
+  }
+  catch (std::exception const& err)
+  {
+    std::println(stderr, "error: {}", err.what());
+    return 1;
   }
 }
 

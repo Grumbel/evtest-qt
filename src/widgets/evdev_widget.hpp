@@ -27,7 +27,6 @@
 #include <QComboBox>
 
 #include <fcntl.h>
-#include <iostream>
 #include <linux/input.h>
 #include <sys/stat.h>
 #include <sys/types.h>

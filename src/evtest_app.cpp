@@ -179,9 +179,13 @@ EvtestApp::on_show_event_graph()
 {
   if (!m_graph_window) {
     m_graph_window = std::make_unique<EventGraphWindow>();
-    if (m_device && m_state) {
-      m_graph_window->set_device(m_state->get_info());
-    }
+  }
+  if (m_device && m_state) {
+    m_graph_window->set_device(m_state->get_info());
+    m_graph_window->set_state_source(m_state.get());
+  } else {
+    m_graph_window->clear_device();
+    m_graph_window->set_state_source(nullptr);
   }
   m_graph_window->show();
   m_graph_window->raise();
@@ -248,6 +252,7 @@ EvtestApp::clear_device_view(QString const& message)
   m_ev_widget.reset();
   m_current_device.clear();
   if (m_graph_window) {
+    m_graph_window->set_state_source(nullptr);
     m_graph_window->clear_device();
   }
 
@@ -406,6 +411,7 @@ EvtestApp::on_device_change(std::string const& filename)
     m_current_device = QString::fromStdString(filename);
     if (m_graph_window) {
       m_graph_window->set_device(info);
+      m_graph_window->set_state_source(m_state.get());
     }
     append_log(QStringLiteral("open   %1  \"%2\"")
                .arg(device_href(m_current_device,

@@ -20,9 +20,10 @@
 #include <QMenuBar>
 #include <QTimer>
 
-#include <iostream>
 #include <cerrno>
 #include <cstring>
+#include <iostream>
+#include <sstream>
 
 #include "widgets/about_dialog.hpp"
 #include "widgets/evdev_widget.hpp"
@@ -48,7 +49,6 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_refresh_timer(),
   m_current_device()
 {
-  // setup actions
   connect(&m_action_exit, &QAction::triggered, [this](){
     m_app.quit();
   });
@@ -68,7 +68,6 @@ EvtestApp::EvtestApp(QApplication& app) :
     }
   });
 
-  // build GUI
   QMenuBar* menubar = m_window.menuBar();
   QMenu* file_menu = menubar->addMenu("&File");
   file_menu->addAction(&m_action_exit);
@@ -88,11 +87,17 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_vbox_layout.addWidget(m_ev_widget_placeholder.get(), /*stretch=*/1);
 
   m_device_log.setReadOnly(true);
-  m_device_log.setMaximumBlockCount(500);
-  m_device_log.setPlaceholderText(QStringLiteral("Input device events (udev)…"));
+  m_device_log.setOpenExternalLinks(false);
+  m_device_log.setOpenLinks(false);
+  m_device_log.document()->setMaximumBlockCount(500);
   m_device_log.setFixedHeight(120);
-  m_device_log.setStyleSheet(QStringLiteral("QPlainTextEdit { font-family: monospace; }"));
+  m_device_log.setStyleSheet(QStringLiteral(
+    "QTextBrowser { font-family: monospace; }"
+    "QTextBrowser a { text-decoration: none; }"
+  ));
   m_vbox_layout.addWidget(&m_device_log);
+  connect(&m_device_log, SIGNAL(anchorClicked(QUrl)),
+          this, SLOT(on_log_anchor_clicked(QUrl)));
 
   QObject::connect(&m_evdev_list_box, SIGNAL(activated(int)),
                    this, SLOT(on_item_change(int)));
@@ -101,7 +106,6 @@ EvtestApp::EvtestApp(QApplication& app) :
   m_refresh_timer.setInterval(150);
   connect(&m_refresh_timer, SIGNAL(timeout()), this, SLOT(on_refresh_timeout()));
 
-  // udev hotplug monitor (input event devices only)
   m_udev_monitor = std::make_unique<UdevInputMonitor>(this);
   connect(m_udev_monitor.get(), SIGNAL(device_added(QString,QString)),
           this, SLOT(on_udev_device_added(QString,QString)));
@@ -125,11 +129,33 @@ EvtestApp::~EvtestApp()
 {
 }
 
+QString
+EvtestApp::device_href(QString const& devnode, QString const& label)
+{
+  // device:/dev/input/eventN — handled in on_log_anchor_clicked
+  return QStringLiteral("<a href=\"device:%1\">%2</a>")
+    .arg(devnode.toHtmlEscaped(), label.toHtmlEscaped());
+}
+
 void
-EvtestApp::append_log(QString const& line)
+EvtestApp::append_log(QString const& html_line)
 {
   QString stamp = QDateTime::currentDateTime().toString(QStringLiteral("hh:mm:ss"));
-  m_device_log.appendPlainText(stamp + QLatin1Char(' ') + line);
+  m_device_log.append(QStringLiteral("%1 %2").arg(stamp, html_line));
+}
+
+void
+EvtestApp::on_log_anchor_clicked(QUrl const& link)
+{
+  if (link.scheme() != QLatin1String("device")) {
+    return;
+  }
+  // QUrl("device:/dev/input/event0") -> path() == "/dev/input/event0"
+  QString path = link.path();
+  if (path.isEmpty()) {
+    return;
+  }
+  select_device(path);
 }
 
 void
@@ -149,10 +175,11 @@ void
 EvtestApp::on_udev_device_added(QString const& devnode, QString const& name)
 {
   QString base = devnode.section(QLatin1Char('/'), -1);
+  QString link = device_href(devnode, base);
   if (name.isEmpty()) {
-    append_log(QStringLiteral("add    %1").arg(base));
+    append_log(QStringLiteral("add    %1").arg(link));
   } else {
-    append_log(QStringLiteral("add    %1  \"%2\"").arg(base, name));
+    append_log(QStringLiteral("add    %1  \"%2\"").arg(link, name.toHtmlEscaped()));
   }
   schedule_device_list_refresh();
 }
@@ -161,10 +188,11 @@ void
 EvtestApp::on_udev_device_removed(QString const& devnode, QString const& name)
 {
   QString base = devnode.section(QLatin1Char('/'), -1);
+  QString link = device_href(devnode, base);
   if (name.isEmpty()) {
-    append_log(QStringLiteral("remove %1").arg(base));
+    append_log(QStringLiteral("remove %1").arg(link));
   } else {
-    append_log(QStringLiteral("remove %1  \"%2\"").arg(base, name));
+    append_log(QStringLiteral("remove %1  \"%2\"").arg(link, name.toHtmlEscaped()));
   }
 
   if (m_current_device == devnode) {
@@ -178,7 +206,7 @@ EvtestApp::on_udev_device_removed(QString const& devnode, QString const& name)
 void
 EvtestApp::on_udev_monitor_error(QString const& message)
 {
-  append_log(QStringLiteral("error: %1").arg(message));
+  append_log(QStringLiteral("error: %1").arg(message.toHtmlEscaped()));
 }
 
 void
@@ -235,7 +263,6 @@ EvtestApp::refresh_device_list()
   if (select_index >= 0) {
     m_evdev_list_box.setCurrentIndex(select_index);
   } else if (!previous.isEmpty() && previous == m_current_device) {
-    // Selected device path vanished between udev remove and rescan
     clear_device_view(QStringLiteral("device disconnected"));
   }
 
@@ -247,7 +274,6 @@ EvtestApp::select_device(QString const& device)
 {
   on_device_change(device.toStdString());
 
-  // Sync combo box selection if the device is listed
   for (int i = 0; i < m_evdev_list_box.count(); ++i) {
     if (m_evdev_list_box.itemData(i).toString() == device) {
       m_evdev_list_box.setCurrentIndex(i);
@@ -278,10 +304,10 @@ EvtestApp::on_data(EvdevDevice& device, EvdevState& state)
     ssize_t num_events = device.read_events(ev.data(), ev.size());
     if (num_events < 0)
     {
-      // Device likely went away (EIO/ENODEV); udev remove will clean up UI
       append_log(QStringLiteral("read error on %1: %2")
-                 .arg(m_current_device.section(QLatin1Char('/'), -1),
-                      QString::fromLocal8Bit(strerror(errno))));
+                 .arg(device_href(m_current_device,
+                                  m_current_device.section(QLatin1Char('/'), -1)),
+                      QString::fromLocal8Bit(strerror(errno)).toHtmlEscaped()));
       m_notifier.reset();
       return;
     }
@@ -345,16 +371,18 @@ EvtestApp::on_device_change(std::string const& filename)
 
     m_current_device = QString::fromStdString(filename);
     append_log(QStringLiteral("open   %1  \"%2\"")
-               .arg(m_current_device.section(QLatin1Char('/'), -1),
-                    QString::fromStdString(info.name)));
+               .arg(device_href(m_current_device,
+                                m_current_device.section(QLatin1Char('/'), -1)),
+                    QString::fromStdString(info.name).toHtmlEscaped()));
 
     QTimer::singleShot(0, this, SLOT(on_shrink_action()));
   }
   catch (std::exception const& err)
   {
+    QString path = QString::fromStdString(filename);
     append_log(QStringLiteral("open failed %1: %2")
-               .arg(QString::fromStdString(filename),
-                    QString::fromLocal8Bit(err.what())));
+               .arg(device_href(path, path.section(QLatin1Char('/'), -1)),
+                    QString::fromLocal8Bit(err.what()).toHtmlEscaped()));
     m_ev_widget_placeholder = std::make_unique<QLabel>(QString::fromLocal8Bit(err.what()));
     m_ev_widget_placeholder->setAlignment(Qt::AlignCenter | Qt::AlignVCenter);
     m_vbox_layout.insertWidget(1, m_ev_widget_placeholder.get(), /*stretch=*/1);

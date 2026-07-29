@@ -22,9 +22,10 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QMainWindow>
-#include <QPlainTextEdit>
+#include <QTextBrowser>
 #include <QSocketNotifier>
 #include <QTimer>
+#include <QUrl>
 #include <QVBoxLayout>
 
 #include <memory>
@@ -54,8 +55,9 @@ private:
   void on_data(EvdevDevice& device, EvdevState& state);
   void on_device_change(std::string const& filename);
   void clear_device_view(QString const& message);
-  void append_log(QString const& line);
+  void append_log(QString const& html_line);
   void schedule_device_list_refresh();
+  static QString device_href(QString const& devnode, QString const& label);
 
 public slots:
   void on_item_change(int index);
@@ -65,6 +67,7 @@ public slots:
   void on_udev_device_removed(QString const& devnode, QString const& name);
   void on_udev_monitor_error(QString const& message);
   void on_refresh_timeout();
+  void on_log_anchor_clicked(QUrl const& link);
 
 private:
   QApplication& m_app;
@@ -77,7 +80,7 @@ private:
 
   QVBoxLayout m_vbox_layout;
   QComboBox m_evdev_list_box;
-  QPlainTextEdit m_device_log;
+  QTextBrowser m_device_log;
 
   std::unique_ptr<EvdevWidget> m_ev_widget;
   std::unique_ptr<QLabel> m_ev_widget_placeholder;

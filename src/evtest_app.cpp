@@ -1,18 +1,5 @@
-// evtest-qt - A graphical joystick tester
-// Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "evtest_app.hpp"
 
@@ -436,8 +423,18 @@ EvtestApp::on_device_change(std::string const& filename)
 
     m_notifier = std::make_unique<QSocketNotifier>(m_device->get_fd(), QSocketNotifier::Read);
 
-    QObject::connect(m_notifier.get(), SIGNAL(activated(int)),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QObject::connect(m_notifier.get(), &QSocketNotifier::activated,
+                     this, [this](QSocketDescriptor) { on_notification(0); });
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    QObject::connect(m_notifier.get(),
+                     QOverload<QSocketDescriptor>::of(&QSocketNotifier::activated),
+                     this, [this](QSocketDescriptor) { on_notification(0); });
+#else
+    QObject::connect(m_notifier.get(),
+                     static_cast<void (QSocketNotifier::*)(int)>(&QSocketNotifier::activated),
                      this, SLOT(on_notification(int)));
+#endif
 
     m_current_device = QString::fromStdString(filename);
     if (m_graph_window) {

@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
 # AGENTS.md
 
 Guidance for AI agents and contributors working on **evtest-qt**.

@@ -1,10 +1,5 @@
-// evtest-qt - A graphical joystick tester
-// Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "udev_monitor.hpp"
 
@@ -89,8 +84,18 @@ UdevInputMonitor::UdevInputMonitor(QObject* parent) :
 
   int fd = udev_monitor_get_fd(m_monitor);
   m_notifier = std::make_unique<QSocketNotifier>(fd, QSocketNotifier::Read);
-  connect(m_notifier.get(), SIGNAL(activated(int)),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  connect(m_notifier.get(), &QSocketNotifier::activated,
+          this, [this](QSocketDescriptor) { on_udev_readable(0); });
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+  connect(m_notifier.get(),
+          QOverload<QSocketDescriptor>::of(&QSocketNotifier::activated),
+          this, [this](QSocketDescriptor) { on_udev_readable(0); });
+#else
+  connect(m_notifier.get(),
+          static_cast<void (QSocketNotifier::*)(int)>(&QSocketNotifier::activated),
           this, SLOT(on_udev_readable(int)));
+#endif
 }
 
 UdevInputMonitor::~UdevInputMonitor()

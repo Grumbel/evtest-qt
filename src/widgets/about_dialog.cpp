@@ -1,18 +1,5 @@
-// evtest-qt - A graphical joystick tester
-// Copyright (C) 2022 Ingo Ruhnke <grumbel@gmail.com>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// SPDX-FileCopyrightText: 2015-2026 Ingo Ruhnke <grumbel@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "about_dialog.hpp"
 
@@ -40,7 +27,7 @@ AboutDialog::AboutDialog(QWidget* parent) :
       "<p>Version %1</p>"
       "<p>A graphical input device tester for Linux.</p>"
       "<p><a href=\"https://github.com/Grumbel/evtest-qt\">https://github.com/Grumbel/evtest-qt</a></p>"
-      "<p>Copyright (C) 2015–2022 Ingo Ruhnke "
+      "<p>Copyright (C) 2015–2026 Ingo Ruhnke "
       "&lt;<a href=\"mailto:grumbel@gmail.com\">grumbel@gmail.com</a>&gt;</p>"
       "<p>Licensed under the GPLv3+</p>"
       "</center>"

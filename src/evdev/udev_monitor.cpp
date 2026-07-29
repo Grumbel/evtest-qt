@@ -87,14 +87,11 @@ UdevInputMonitor::UdevInputMonitor(QObject* parent) :
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   connect(m_notifier.get(), &QSocketNotifier::activated,
           this, [this](QSocketDescriptor) { on_udev_readable(0); });
-#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-  connect(m_notifier.get(),
-          QOverload<QSocketDescriptor>::of(&QSocketNotifier::activated),
-          this, [this](QSocketDescriptor) { on_udev_readable(0); });
 #else
-  connect(m_notifier.get(),
-          static_cast<void (QSocketNotifier::*)(int)>(&QSocketNotifier::activated),
-          this, SLOT(on_udev_readable(int)));
+  // Qt 5.15+: signal is activated(QSocketDescriptor, Type); connect() accepts the
+  // QPrivateSignal form of the PMF. Do not use QOverload/static_cast here.
+  connect(m_notifier.get(), &QSocketNotifier::activated,
+          this, [this](QSocketDescriptor, QSocketNotifier::Type) { on_udev_readable(0); });
 #endif
 }
 

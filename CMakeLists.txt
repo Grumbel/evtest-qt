@@ -61,7 +61,7 @@ if(WARNINGS)
         -Wduplicated-cond
         -Wduplicated-branches
         -Wlogical-op
-        -Wuseless-cast
+        # -Wuseless-cast
       )
     endif()
   elseif(MSVC)

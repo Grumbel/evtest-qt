@@ -22,11 +22,9 @@
         versionBase = lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
         gitRev = self.shortRev or self.dirtyShortRev or "dirty";
         version = "${versionBase}+g${gitRev}";
-      in {
-        packages = rec {
-          default = evtest-qt;
 
-          evtest-qt = pkgs.stdenv.mkDerivation {
+        mkEvtestQt = { qtbase, wrapQtAppsHook }:
+          pkgs.stdenv.mkDerivation {
             pname = "evtest-qt";
             inherit version;
 
@@ -38,17 +36,33 @@
               "-DPROJECT_VERSION_FULL=${version}"
             ];
 
-            nativeBuildInputs = with pkgs; [
-              cmake
-              pkg-config
-              qt6.wrapQtAppsHook
+            nativeBuildInputs = [
+              pkgs.cmake
+              pkgs.pkg-config
+              wrapQtAppsHook
             ];
 
-            buildInputs = with pkgs; [
-              qt6.qtbase
-              systemd  # libudev
-              libevdev
+            buildInputs = [
+              qtbase
+              pkgs.systemd # libudev
+              pkgs.libevdev
             ];
+          };
+      in {
+        packages = rec {
+          default = evtest-qt;
+
+          # Qt6 (default)
+          evtest-qt = mkEvtestQt {
+            qtbase = pkgs.qt6.qtbase;
+            wrapQtAppsHook = pkgs.qt6.wrapQtAppsHook;
+          };
+
+          evtest-qt6 = evtest-qt;
+
+          evtest-qt5 = mkEvtestQt {
+            qtbase = pkgs.qt5.qtbase;
+            wrapQtAppsHook = pkgs.qt5.wrapQtAppsHook;
           };
         };
 

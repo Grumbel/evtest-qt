@@ -426,14 +426,9 @@ EvtestApp::on_device_change(std::string const& filename)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QObject::connect(m_notifier.get(), &QSocketNotifier::activated,
                      this, [this](QSocketDescriptor) { on_notification(0); });
-#elif QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    QObject::connect(m_notifier.get(),
-                     QOverload<QSocketDescriptor>::of(&QSocketNotifier::activated),
-                     this, [this](QSocketDescriptor) { on_notification(0); });
 #else
-    QObject::connect(m_notifier.get(),
-                     static_cast<void (QSocketNotifier::*)(int)>(&QSocketNotifier::activated),
-                     this, SLOT(on_notification(int)));
+    QObject::connect(m_notifier.get(), &QSocketNotifier::activated,
+                     this, [this](QSocketDescriptor, QSocketNotifier::Type) { on_notification(0); });
 #endif
 
     m_current_device = QString::fromStdString(filename);

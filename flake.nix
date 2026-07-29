@@ -32,6 +32,7 @@
             cmakeFlags = [
               "-DWARNINGS=ON"
               "-DWERROR=ON"
+              "-DPROJECT_VERSION_FULL=${version}"
             ];
 
             nativeBuildInputs = with pkgs; [

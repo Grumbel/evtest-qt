@@ -18,21 +18,28 @@ cmake_minimum_required(VERSION 3.7)
 project(evtest-qt)
 
 # --- Project version (VERSION file is the source of truth) ---
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/VERSION")
-  message(FATAL_ERROR
-    "VERSION file not found at ${CMAKE_SOURCE_DIR}/VERSION. "
-    "The VERSION file is the sole source of the project version.")
+# Nix/packaging may pass -DPROJECT_VERSION_FULL=... to embed a git revision.
+if(NOT DEFINED PROJECT_VERSION_FULL)
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/VERSION")
+    message(FATAL_ERROR
+      "VERSION file not found at ${CMAKE_SOURCE_DIR}/VERSION. "
+      "The VERSION file is the sole source of the project version.")
+  endif()
+  file(STRINGS "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_FULL LIMIT_COUNT 1)
 endif()
-file(STRINGS "${CMAKE_SOURCE_DIR}/VERSION" _evtest_qt_version_lines)
-list(GET _evtest_qt_version_lines 0 PROJECT_VERSION)
-string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
-if(PROJECT_VERSION STREQUAL "")
-  message(FATAL_ERROR "VERSION file is empty")
+string(STRIP "${PROJECT_VERSION_FULL}" PROJECT_VERSION_FULL)
+if(PROJECT_VERSION_FULL STREQUAL "")
+  message(FATAL_ERROR "PROJECT_VERSION_FULL is empty")
 endif()
+set(PROJECT_VERSION "${PROJECT_VERSION_FULL}")
 message(STATUS "Project version: ${PROJECT_VERSION}")
 
 # --- Install directories ---
 include(GNUInstallDirs)
+
+# --- libudev (input hotplug monitoring) ---
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBUDEV REQUIRED libudev)
 
 # --- Compiler warnings (replaces tinycmmc WARNINGS / WERROR) ---
 option(WARNINGS "Enable extra compiler warnings" OFF)
@@ -114,9 +121,9 @@ file(GLOB EVTEST_QT_SOURCES
   src/evtest_app.cpp
   )
 add_library(evtest-qt STATIC ${EVTEST_QT_SOURCES})
-target_include_directories(evtest-qt PUBLIC src/)
-target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES})
-target_compile_options(evtest-qt PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS})
+target_include_directories(evtest-qt PUBLIC src/ ${LIBUDEV_INCLUDE_DIRS})
+target_link_libraries(evtest-qt PUBLIC ${QT_LIBRARIES} ${LIBUDEV_LIBRARIES})
+target_compile_options(evtest-qt PRIVATE ${EVTEST_QT_WARNINGS_CXX_FLAGS} ${LIBUDEV_CFLAGS_OTHER})
 
 file(GLOB EVTEST_QT_MAIN_SOURCES
   src/main.cpp

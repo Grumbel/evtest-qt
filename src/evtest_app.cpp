@@ -17,6 +17,7 @@
 #include "evtest_app.hpp"
 
 #include <QDateTime>
+#include <QFileInfo>
 #include <QMenuBar>
 #include <QTimer>
 
@@ -305,13 +306,41 @@ EvtestApp::refresh_device_list()
   m_evdev_list_box.blockSignals(false);
 }
 
+QString
+EvtestApp::normalize_device_path(QString const& arg)
+{
+  QString path = arg.trimmed();
+  if (path.isEmpty()) {
+    return path;
+  }
+
+  // Accept "event12" or "input/event12" as shorthand for /dev/input/event12
+  if (!path.startsWith(QLatin1Char('/'))) {
+    if (path.startsWith(QStringLiteral("input/"))) {
+      path = QStringLiteral("/dev/") + path;
+    } else if (path.startsWith(QStringLiteral("event"))) {
+      path = QStringLiteral("/dev/input/") + path;
+    }
+  }
+
+  QFileInfo fi(path);
+  if (fi.exists()) {
+    // Prefer absolute path; canonical may be empty for some special nodes
+    path = fi.absoluteFilePath();
+  }
+  return path;
+}
+
 void
 EvtestApp::select_device(QString const& device)
 {
-  on_device_change(device.toStdString());
+  QString path = normalize_device_path(device);
+  on_device_change(path.toStdString());
 
   for (int i = 0; i < m_evdev_list_box.count(); ++i) {
-    if (m_evdev_list_box.itemData(i).toString() == device) {
+    QString item_path = m_evdev_list_box.itemData(i).toString();
+    if (item_path == path
+        || QFileInfo(item_path).fileName() == QFileInfo(path).fileName()) {
       m_evdev_list_box.setCurrentIndex(i);
       break;
     }
@@ -327,8 +356,10 @@ EvtestApp::set_verification_mode(bool value)
 void
 EvtestApp::on_item_change(int index)
 {
-  std::string dev = m_evdev_list_box.itemData(index).toString().toUtf8().data();
-  on_device_change(dev);
+  QString dev = m_evdev_list_box.itemData(index).toString();
+  if (!dev.isEmpty()) {
+    on_device_change(dev.toStdString());
+  }
 }
 
 void
@@ -418,7 +449,7 @@ EvtestApp::on_device_change(std::string const& filename)
                                 m_current_device.section(QLatin1Char('/'), -1)),
                     QString::fromStdString(info.name).toHtmlEscaped()));
 
-    QTimer::singleShot(0, this, SLOT(on_shrink_action()));
+    QTimer::singleShot(0, this, &EvtestApp::on_shrink_action);
   }
   catch (std::exception const& err)
   {

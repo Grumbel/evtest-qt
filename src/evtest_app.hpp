@@ -56,6 +56,7 @@ private:
   void on_data(EvdevDevice& device, EvdevState& state);
   void on_device_change(std::string const& filename);
   void clear_device_view(QString const& message);
+  static QString normalize_device_path(QString const& arg);
   void append_log(QString const& html_line);
   void schedule_device_list_refresh();
   static QString device_href(QString const& devnode, QString const& label);
